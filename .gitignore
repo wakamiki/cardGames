@@ -1,4 +1,5 @@
-echo .vs/ >> .gitignore
-echo bin/ >> .gitignore
-echo obj/ >> .gitignore
-git add .
+.vs/
+bin/
+obj/
+*.user
+*.suo
