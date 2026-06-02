@@ -14,7 +14,7 @@ namespace CardGames.Models
     internal class Card
     {
         internal Suit? Suit { get;}
-        internal Runk? Rank { get; }
+        internal Rank? Rank { get; }
         internal bool IsJoker{ get; set; }
         internal string DisplayName{ get; }
     }
