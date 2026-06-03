@@ -5,100 +5,36 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
+using CardGames.Models;
 
 namespace CardGames.Models
 {
-
-//・名前を持つ
-//・手札を持つ
-//・CPUかどうかを持つ
-//・勝ち抜け済みかどうかを持つ
-//・手札にカードを追加する
-//・手札からカードを取り出す
-//・手札枚数を返す
     internal class Player
     {
-        //プロパティ名：
-        //Name
-        //役割：
-        //プレイヤー名を保持する。
-        //例：
-        //・プレイヤー
-        //・CPU1
-        //・CPU2
-        //・CPU3
+
+        //インスタンスを作成
+        Deck deck = new Deck();
+
+        //・名前を持つ
+        private string _name {  get; set; }
+
+        //・手札を持つ
+        private List<Card> _handDeck {  get; set; }
+
+        //・プレイヤーかどうかを持つ
+        private bool _isCpu {  get; set; }
+
+        //・勝ち抜け済みかどうかを持つ
+        private bool _isFinished {  get; set; }
+
+        private int _handCount { get; set; }
 
 
 
-        //プロパティ名：
-        //Hand
-
-        //役割：
-        //現在の手札を保持する。
-
-        //内容：
-        //Card のリスト。
-
-        //注意：
-        //外から勝手に手札を書き換えられると危ないため、
-        //最終的には直接変更しにくい形にするか検討する。
-
-
-
-        //プロパティ名：
-        //IsCpu
-
-        //役割：
-        //人間プレイヤーかCPUかを判別する。
-
-        //true：
-        //CPU
-
-        //false：
-        //人間プレイヤー
-
-
-
-        //プロパティ名：
-        //IsFinished
-
-        //役割：
-        //手札がなくなって勝ち抜け済みかどうかを保持する。
-
-        //true：
-        //勝ち抜け済み
-
-        //false：
-        //まだゲーム中
-
-
-
-        //プロパティ名：
-        //HandCount
-
-        //役割：
-        //現在の手札枚数を返す。
-
-        //用途：
-        //GameFormでCPUの裏向きカード枚数を表示するときに使う。
-
-
-
-
-        //メソッド名：
-        //AddCard
-
-        //役割：
-        //手札にカードを1枚追加する。
-
-        //入力：
-        //Card
-
-        //担当しないこと：
-        //ペア削除は行わない。
-        //カード追加後の勝敗判定も行わない。
-
-
+        internal void AddCard()
+        {
+            _handDeck.Add(deck.DrawCard());
+        }
 
 
         //メソッド名：
@@ -122,14 +58,14 @@ namespace CardGames.Models
 
 
 
-//プロパティ名：
-//IsHandEmpty
+        //プロパティ名：
+        //IsHandEmpty
 
-//役割：
-//手札が0枚かどうかを返す。
+        //役割：
+        //手札が0枚かどうかを返す。
 
-//用途：
-//勝ち抜け判定に使う。
+        //用途：
+        //勝ち抜け判定に使う。
 
     }
 }
