@@ -33,9 +33,10 @@
             this.NumOfCPU = new System.Windows.Forms.Label();
             this.SelectBaba = new System.Windows.Forms.CheckBox();
             this.InputName = new System.Windows.Forms.TextBox();
-            this.Three = new System.Windows.Forms.Label();
+            this.labelCPU = new System.Windows.Forms.Label();
             this.btnGameStart = new System.Windows.Forms.Button();
             this.btnGameEnd = new System.Windows.Forms.Button();
+            this.btnRegist = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // NameOfGame
@@ -90,19 +91,19 @@
             this.InputName.Font = new System.Drawing.Font("MS UI Gothic", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.InputName.Location = new System.Drawing.Point(243, 112);
             this.InputName.Name = "InputName";
-            this.InputName.Size = new System.Drawing.Size(303, 34);
+            this.InputName.Size = new System.Drawing.Size(176, 34);
             this.InputName.TabIndex = 5;
             // 
-            // Three
+            // labelCPU
             // 
-            this.Three.AutoSize = true;
-            this.Three.BackColor = System.Drawing.SystemColors.Control;
-            this.Three.Font = new System.Drawing.Font("MS UI Gothic", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.Three.Location = new System.Drawing.Point(247, 195);
-            this.Three.Name = "Three";
-            this.Three.Size = new System.Drawing.Size(59, 28);
-            this.Three.TabIndex = 6;
-            this.Three.Text = "３人";
+            this.labelCPU.AutoSize = true;
+            this.labelCPU.BackColor = System.Drawing.SystemColors.Control;
+            this.labelCPU.Font = new System.Drawing.Font("MS UI Gothic", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.labelCPU.Location = new System.Drawing.Point(247, 195);
+            this.labelCPU.Name = "labelCPU";
+            this.labelCPU.Size = new System.Drawing.Size(59, 28);
+            this.labelCPU.TabIndex = 6;
+            this.labelCPU.Text = "３人";
             // 
             // btnGameStart
             // 
@@ -126,14 +127,26 @@
             this.btnGameEnd.Text = "戻る";
             this.btnGameEnd.UseVisualStyleBackColor = false;
             // 
+            // btnRegist
+            // 
+            this.btnRegist.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.btnRegist.Font = new System.Drawing.Font("MS UI Gothic", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnRegist.Location = new System.Drawing.Point(462, 112);
+            this.btnRegist.Name = "btnRegist";
+            this.btnRegist.Size = new System.Drawing.Size(111, 39);
+            this.btnRegist.TabIndex = 9;
+            this.btnRegist.Text = "登録";
+            this.btnRegist.UseVisualStyleBackColor = false;
+            // 
             // SettingForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnRegist);
             this.Controls.Add(this.btnGameEnd);
             this.Controls.Add(this.btnGameStart);
-            this.Controls.Add(this.Three);
+            this.Controls.Add(this.labelCPU);
             this.Controls.Add(this.InputName);
             this.Controls.Add(this.SelectBaba);
             this.Controls.Add(this.NumOfCPU);
@@ -153,8 +166,9 @@
         private System.Windows.Forms.Label NumOfCPU;
         private System.Windows.Forms.CheckBox SelectBaba;
         private System.Windows.Forms.TextBox InputName;
-        private System.Windows.Forms.Label Three;
+        private System.Windows.Forms.Label labelCPU;
         private System.Windows.Forms.Button btnGameStart;
         private System.Windows.Forms.Button btnGameEnd;
+        private System.Windows.Forms.Button btnRegist;
     }
 }
