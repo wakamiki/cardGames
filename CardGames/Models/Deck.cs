@@ -13,16 +13,17 @@ namespace CardGames.Models
 //誰にどう配るかはゲームごとのルールなので、BabanukiGameManager側で行う。
     internal class Deck
     {
-        List<Card> deck = new List<Card>();
+        private List<Card> _deck = new List<Card>();
         private Random _random = new Random();
 
-        internal int RemainingCount { get; }
+        internal int RemainingCount => _deck.Count;
+
         //残り枚数を返す
 
         internal List<Card> CreateDeck()
         {
             //一旦初期化
-            deck.Clear();
+            _deck.Clear();
 
             foreach (Suit suit in Enum.GetValues(typeof(Suit)))
             {
@@ -41,7 +42,7 @@ namespace CardGames.Models
                         IsJoker = false,
                         DisplayName = sb.ToString(),
                     };
-                    deck.Add(card);
+                    _deck.Add(card);
                 }
                 //Console.WriteLine(decks.Count);//デバッグ用52枚になるはず
 
@@ -56,27 +57,30 @@ namespace CardGames.Models
             //    通常カード 52枚
             //    ジョーカー 1枚
             //    合計 53枚
-            return deck;
+            return _deck;
         }
 
 
-        internal List<Card> Shuffle(List<Card> deck)
+        internal List<Card> Shuffle()
         {
             //Fisher-Yates シャッフルを採用する。
-            for (int i = deck.Count-1; i > 0; i--)
+            for (int i = _deck.Count-1; i > 0; i--)
             {
-                int move = _random.Next(i + 1);
-                Card tmp = deck[i];
-                deck[i] = deck[move];
-                deck[move] = tmp;
+                int Move = _random.Next(i + 1);
+                Card Tmp = _deck[i];
+                _deck[i] = _deck[Move];
+                _deck[Move] = Tmp;
             }
-            return deck;
+            return _deck;
         }
 
-        //internal Card DrawCard()
-        //{
-        //    //山札から1枚取り出す
-        //}
+        internal Card DrawCard()
+        {
+            //山札から1枚取り出す
+            Card TargetCard = _deck[0];
+            _deck.RemoveAt(0);
+            return TargetCard;
+        }
 
 
         //==============================================
