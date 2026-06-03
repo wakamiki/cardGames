@@ -54,6 +54,8 @@ namespace CardGames.Models
                 IsJoker = true,
                 DisplayName = "Joker",
             };
+            _deck.Add(joker);
+
             //    通常カード 52枚
             //    ジョーカー 1枚
             //    合計 53枚
