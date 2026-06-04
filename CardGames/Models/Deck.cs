@@ -20,7 +20,7 @@ namespace CardGames.Models
 
         //残り枚数を返す
 
-        internal List<Card> CreateDeck()
+        internal void CreateDeck()
         {
             //一旦初期化
             _deck.Clear();
@@ -35,53 +35,46 @@ namespace CardGames.Models
                     sb.Append("-");
                     sb.Append(GetRankText(rank));
 
-                    Card card = new Card
-                    {
-                        Suit = suit,
-                        Rank = rank,
-                        IsJoker = false,
-                        DisplayName = sb.ToString(),
-                    };
+                    Card card = new Card();
+                    card.CreateCard(suit, rank, sb.ToString());
                     _deck.Add(card);
                 }
                 //Console.WriteLine(decks.Count);//デバッグ用52枚になるはず
 
             }
-            Card joker = new Card
-            {
-                Suit = null,
-                Rank = null,
-                IsJoker = true,
-                DisplayName = "Joker",
-            };
+            Card joker = new Card();
+            joker.CreateJoker();  
             _deck.Add(joker);
 
             //    通常カード 52枚
             //    ジョーカー 1枚
             //    合計 53枚
-            return _deck;
         }
 
 
-        internal List<Card> Shuffle()
+        internal void Shuffle()
         {
             //Fisher-Yates シャッフルを採用する。
             for (int i = _deck.Count-1; i > 0; i--)
             {
-                int Move = _random.Next(i + 1);
-                Card Tmp = _deck[i];
-                _deck[i] = _deck[Move];
-                _deck[Move] = Tmp;
+                int move = _random.Next(i + 1);
+                Card tmp = _deck[i];
+                _deck[i] = _deck[move];
+                _deck[move] = tmp;
             }
-            return _deck;
         }
 
         internal Card DrawCard()
         {
+            if (RemainingCount == 0)
+            {
+                throw new InvalidOperationException("山札にカードがありません。");
+            }
+
             //山札から1枚取り出す
-            Card TargetCard = _deck[0];
+            Card targetCard = _deck[0];
             _deck.RemoveAt(0);
-            return TargetCard;
+            return targetCard;
         }
 
 

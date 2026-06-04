@@ -5,15 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
-using CardGames.Models;
 
 namespace CardGames.Models
 {
     internal class Player
     {
 
-        //インスタンスを作成
-        Deck deck = new Deck();
+        //========================================
+        //フィールド
+        //========================================
 
         //・名前を持つ
         private string _name {  get; set; }
@@ -29,14 +29,21 @@ namespace CardGames.Models
 
         private int _handCount => _handDeck.Count;
 
+        //必要かどうか後で判断。必要なければ削除予定。
         private bool _isHandEmpty {  get; set; }
 
 
-        internal void AddCard()
+        //========================================
+        //基本メソッド
+        //========================================
+
+        //山札からカード追加
+        internal void AddCard(Deck deck)
         {
             _handDeck.Add(deck.DrawCard());
         }
 
+        //カードの配列を指定して削除
         internal Card RemoveCardAt(int num)
         {
             if (num>=_handCount|num<0)
@@ -49,8 +56,14 @@ namespace CardGames.Models
 
 
         //========================================
-        //補助メソッド
+        //専用メソッド
         //========================================
 
+        //勝ち抜けCPUの状態変更
+        internal void MarkAsFinished()
+        {
+            _isFinished = true;
+            _isHandEmpty = true;
+        }
     }
 }

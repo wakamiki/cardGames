@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CardGames.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,29 @@ namespace CardGames.Services
 {
     internal class BabanukiGameManager
     {
+
+
+        internal void StartGame()
+        {
+            Player player1 = new Player();
+            Player cpu1 = new Player();
+            Player cpu2 = new Player();
+            Player cpu3 = new Player();
+
+            List<Player> players = new List<Player>() 
+                                    { player1, cpu1, cpu2, cpu3 };
+
+            Deck deck = new Deck();
+
+            deck.CreateDeck();
+            deck.Shuffle();
+
+            DealCardsToPlayers(deck,players);
+            RemovePairs();
+
+
+
+        }
         //メソッド名：
         //StartGame
 
@@ -15,11 +39,7 @@ namespace CardGames.Services
         //ババ抜きのゲーム開始準備を行う。
 
         //処理内容：
-        //・プレイヤー1人とCPU3人を作成する
-        //・Deckを作成する
-        //・カードを生成する
-        //・山札をシャッフルする
-        //・4人に順番にカードを配る
+
         //・各参加者の初期ペアを削除する
         //・最初のターンを設定する
 
@@ -153,13 +173,49 @@ namespace CardGames.Services
 
 
 
-//プロパティ名：
-//TargetPlayer
+        //プロパティ名：
+        //TargetPlayer
 
-//役割：
-//現在のターンの参加者がカードを引く相手を取得する。
+        //役割：
+        //現在のターンの参加者がカードを引く相手を取得する。
 
-//用途：
-//プレイヤーがどのCPUのカードを引くか、画面に表示するために使う。
+        //用途：
+        //プレイヤーがどのCPUのカードを引くか、画面に表示するために使う。
+
+        //==========================
+        //補助メソッド
+        //==========================
+
+        //手札0枚時の勝ち抜け処理(CPU)
+        internal void MarkCpuAsFinishedIfHandEmpty(Player cpu)
+        {
+            //CPUのプレイヤー情報を書き替える
+            cpu.MarkAsFinished();
+        }
+
+        //手札0枚時の勝ち演出遷移(プレイヤー)
+
+        //山札から全員にカードを配り切る
+        internal void DealCardsToPlayers(Deck deck, List<Player> players)
+        {
+            while (deck.RemainingCount > 0) 
+            {
+
+                foreach (Player player in players)
+                {
+                    player.AddCard(deck);
+                    if (deck.RemainingCount == 0)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        //初期とカードを引いた後のペア削除処理
+        internal void RemovePairs(Player player)
+        {
+            
+        }
     }
 }
