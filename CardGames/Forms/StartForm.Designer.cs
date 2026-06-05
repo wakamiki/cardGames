@@ -39,7 +39,7 @@
             this.label1.Font = new System.Drawing.Font("MS UI Gothic", 19.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label1.Location = new System.Drawing.Point(288, 48);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(180, 34);
+            this.label1.Size = new System.Drawing.Size(174, 33);
             this.label1.TabIndex = 0;
             this.label1.Text = "CardGames";
             this.label1.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -54,6 +54,7 @@
             this.btnStart.TabIndex = 1;
             this.btnStart.Text = "スタート";
             this.btnStart.UseVisualStyleBackColor = false;
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
             // btnEnd
             // 
@@ -65,6 +66,7 @@
             this.btnEnd.TabIndex = 2;
             this.btnEnd.Text = "終了";
             this.btnEnd.UseVisualStyleBackColor = false;
+            this.btnEnd.Click += new System.EventHandler(this.btnEnd_Click);
             // 
             // StartForm
             // 
@@ -75,7 +77,7 @@
             this.Controls.Add(this.btnStart);
             this.Controls.Add(this.label1);
             this.Name = "StartForm";
-            this.Text = "Form1";
+            this.Text = "スタート画面";
             this.ResumeLayout(false);
             this.PerformLayout();
 

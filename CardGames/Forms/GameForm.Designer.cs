@@ -227,6 +227,7 @@
             this.Controls.Add(this.DateOfCUP1);
             this.Name = "GameForm";
             this.Text = "Form3";
+            this.Load += new System.EventHandler(this.GameForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
