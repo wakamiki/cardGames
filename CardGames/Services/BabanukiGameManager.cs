@@ -1,6 +1,7 @@
 ﻿using CardGames.Models;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,18 +57,28 @@ namespace CardGames.Services
             {
                 RemovePairs(player);
             }
+            //勝ち抜け参加者がいないかチェック
+
+
             //最初のターンを設定する
             _currentTurnIndex = 0;
 
         }
 
         //人間プレイヤーが、次の相手の手札からカードを1枚選んで引く。
-        internal void DrawCardFromTarget()
+        internal Player GetDrawTarget(Player player)
         {
-
+            for (int i = Players.Count-1 ; i > 0; i--)
+            {
+                if (Players[i].IsFinished)
+                {
+                    continue;
+                }
+                return Players[i];
+            }
+            throw new Exception("カードを引けるプレイヤーがいません");
         }
         //処理内容：
-        //・現在のターンが人間プレイヤーか確認する
         //・引く相手を取得する
         //・指定された位置のカードを相手の手札から取り出す
         //・プレイヤーの手札に追加する
@@ -110,30 +121,6 @@ namespace CardGames.Services
 
         //注意：
         //CPUの行動は初期版ではランダム選択とする。
-
-
-
-
-        //メソッド名：
-        //RemovePairs
-
-        //役割：
-        //指定した参加者の手札から、同じRankのカード2枚をペアとして削除する。
-
-        //処理内容：
-        //・ジョーカーは対象外にする
-        //・同じRankのカードを2枚見つける
-        //・見つかったペアを手札から削除する
-        //・複数ペアがある場合はすべて削除する
-
-        //入力：
-        //・対象のPlayer
-
-        //出力：
-        //・削除したペア数、またはなし
-
-        //注意：
-        //画面から直接呼ぶ処理ではなく、ゲーム開始時やカードを引いた後にGameManager内部で呼ぶ。
 
 
 
@@ -263,6 +250,38 @@ namespace CardGames.Services
                     }
                 }
             }
+        }
+
+        //手札が0枚かチェック
+        private bool IsHandEmpty(Player player)
+        {
+            if (player.HandCount == 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        //CPU手札チェック+0枚時状態遷移
+        private void CheckAndHandleCpuFinish(Player cpu)
+        {
+            if (!IsHandEmpty(cpu))
+            {
+                return;
+            }
+            MarkCpuAsFinishedIfHandEmpty(cpu);
+
+        }
+
+        //プレイヤー手札チェック+0枚時勝利演出遷移
+        private void HandlePlayerWinIfHandEmpty(Player player)
+        {
+            if (!IsHandEmpty(player))
+            {
+                return;
+            }
+
+
         }
     }
 }

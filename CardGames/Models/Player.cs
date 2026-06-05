@@ -24,11 +24,13 @@ namespace CardGames.Models
 
         //・プレイヤーかどうかを持つ
         private bool _isCpu {  get; set; }
+        internal bool IsCpu => _isCpu;
 
         //・勝ち抜け済みかどうかを持つ
         private bool _isFinished {  get; set; }
+        internal bool IsFinished => _isFinished;
 
-        private int _handCount => _handDeck.Count;
+        internal int HandCount => _handDeck.Count;
 
         //必要かどうか後で判断。必要なければ削除予定。
         private bool _isHandEmpty {  get; set; }
@@ -47,11 +49,12 @@ namespace CardGames.Models
         //カードの配列を指定して削除&渡す
         internal Card RemoveCardAt(int num)
         {
-            if (num>=_handCount|num<0)
+            if (num>=HandCount|num<0)
             {
                 throw new Exception("不正な数値が指定されました。");
             }
             Card card = _handDeck[num];
+            _handDeck.RemoveAt(num);
             return card;
         }
 
