@@ -35,15 +35,13 @@ namespace CardGames.Models
                     sb.Append("-");
                     sb.Append(GetRankText(rank));
 
-                    Card card = new Card();
-                    card.CreateCard(suit, rank, sb.ToString());
+                    Card card = new Card(suit, rank,false,sb.ToString());
                     _deck.Add(card);
                 }
                 //Console.WriteLine(decks.Count);//デバッグ用52枚になるはず
 
             }
-            Card joker = new Card();
-            joker.CreateJoker();  
+            Card joker = new Card(null,null,true,"Joker");
             _deck.Add(joker);
 
             //    通常カード 52枚

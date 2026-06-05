@@ -9,53 +9,63 @@ namespace CardGames.Services
 {
     internal class BabanukiGameManager
     {
+        //===========================================
+        //フィールド
+        //===========================================
 
+        private Deck _deck;
+        private List<Card> _discardPile = new List<Card>();
+        internal int DiscardCount => _discardPile.Count;
+        internal IReadOnlyList<Card> DiscardPile => _discardPile;
 
+        private List<Player> _players = new List<Player>();
+        internal IReadOnlyList<Player> Players => _players;
+        private int _currentTurnIndex;
+
+        //===========================================
+        //メソッド
+        //===========================================
+
+        //呼び出し元：
+        //SettingForm または GameForm
         internal void StartGame()
         {
+            //プレイヤーを準備
             Player player1 = new Player();
             Player cpu1 = new Player();
             Player cpu2 = new Player();
             Player cpu3 = new Player();
 
-            List<Player> players = new List<Player>() 
-                                    { player1, cpu1, cpu2, cpu3 };
+            //プレイヤーをリストに追加
+            _players.Add(player1);
+            _players.Add(cpu1);
+            _players.Add(cpu2);
+            _players.Add(cpu3);
+            
+            //山札を準備
+            _deck.CreateDeck();
 
-            Deck deck = new Deck();
+            //山札をシャッフル
+            _deck.Shuffle();
 
-            deck.CreateDeck();
-            deck.Shuffle();
+            //山札からカードをそれぞれの手札に配りきる
+            DealCardsToPlayers();
 
-            DealCardsToPlayers(deck,players);
-            RemovePairs();
-
-
+            //ペアのカードを捨て札エリアに捨てる
+            foreach (Player player in _players)
+            {
+                RemovePairs(player);
+            }
+            //最初のターンを設定する
+            _currentTurnIndex = 0;
 
         }
-        //メソッド名：
-        //StartGame
 
-        //役割：
-        //ババ抜きのゲーム開始準備を行う。
-
-        //処理内容：
-
-        //・各参加者の初期ペアを削除する
-        //・最初のターンを設定する
-
-        //呼び出し元：
-        //SettingForm または GameForm
-
-        //注意：
-        //画面遷移や表示更新は行わない。
-
-
-        //メソッド名：
-        //DrawCardFromTarget
-
-        //役割：
         //人間プレイヤーが、次の相手の手札からカードを1枚選んで引く。
+        internal void DrawCardFromTarget()
+        {
 
+        }
         //処理内容：
         //・現在のターンが人間プレイヤーか確認する
         //・引く相手を取得する
@@ -196,15 +206,15 @@ namespace CardGames.Services
         //手札0枚時の勝ち演出遷移(プレイヤー)
 
         //山札から全員にカードを配り切る
-        internal void DealCardsToPlayers(Deck deck, List<Player> players)
+        internal void DealCardsToPlayers()
         {
-            while (deck.RemainingCount > 0) 
+            while (_deck.RemainingCount > 0) 
             {
 
-                foreach (Player player in players)
+                foreach (Player player in _players)
                 {
-                    player.AddCard(deck);
-                    if (deck.RemainingCount == 0)
+                    player.AddCard(_deck);
+                    if (_deck.RemainingCount == 0)
                     {
                         break;
                     }
@@ -215,11 +225,44 @@ namespace CardGames.Services
         //初期とカードを引いた後のペア削除処理
         internal void RemovePairs(Player player)
         {
-            player.
-            //手札から1つずつ取り出して手札内に同じランクのカードがないか確認
-            //あれば最初に見つけたペアを削除
-            //削除したら最初からやり直す
-            //ジョーカーはペア対象外　nullは除外を忘れないように
+            bool pairFound = true;
+            while (pairFound) {
+
+                pairFound = false;
+
+                //手札の手前からカード1枚とる。
+                for (int i = 0; i < player.HandDeck.Count; i++)
+                {
+                    //残りのカードとランクが同じものが無いか探す
+                    for(int j = i + 1; j < player.HandDeck.Count; j++)
+                    {
+                        //ジョーカーは除外
+                        if (player.HandDeck[i].IsJoker || player.HandDeck[j].IsJoker)
+                        {
+                            continue;
+                        }
+                        //同じペアが見つかった場合の処理
+                        if (player.HandDeck[i].Rank == player.HandDeck[j].Rank)
+                        {
+                            //カードを捨て札エリアに追加
+                            _discardPile.Add(player.HandDeck[j]);
+                            _discardPile.Add(player.HandDeck[i]);
+                            //jが指している配列番号が変わらないよう
+                            //必ず配列の後ろから削除して行く。
+                            player.RemoveCardAt(j);
+                            player.RemoveCardAt(i);
+                            //whileからやり直す
+                            pairFound = true;
+                            break;
+                        }
+                    }
+                    // ペアを削除した場合、外側のforも抜けてwhileの先頭に戻る
+                    if (pairFound)
+                    {
+                        break;
+                    }
+                }
+            }
         }
     }
 }

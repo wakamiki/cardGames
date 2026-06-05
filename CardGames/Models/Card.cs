@@ -16,40 +16,21 @@ namespace CardGames.Models
         //========================================
         //フィールド
         //========================================
-        private Suit? _suit { get; set; }
-        private Rank? _rank { get; set; }
-        private bool _isJoker{ get; set; }
-        private string _displayName{ get; set; }
+        internal Suit? Suit { get; }
+        internal Rank? Rank { get; }
+        internal bool IsJoker { get; }
+        internal string DisplayName { get; }
 
         //========================================
-        //メソッド
+        //コンストラクタ
         //========================================
 
-        internal Card CreateCard(Suit suit,Rank rank,string displayName)
+        internal Card(Suit? suit, Rank? rank, bool isJoker, string displayName)
         {
-            Card card = new Card
-            {
-                _suit = suit,
-                _rank = rank,
-                _isJoker = false,
-                _displayName = displayName,
-            };
-            return card;
+            Suit = suit;
+            Rank = rank;
+            IsJoker = isJoker;
+            DisplayName = displayName;
         }
-
-        internal Card CreateJoker()
-        {
-            Card joker = new Card
-            {
-                _suit = null,
-                _rank = null,
-                _isJoker = true,
-                _displayName = "Joker",
-            };
-            return joker;
-        }
-
-
-
     }
 }
