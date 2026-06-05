@@ -215,7 +215,11 @@ namespace CardGames.Services
         //初期とカードを引いた後のペア削除処理
         internal void RemovePairs(Player player)
         {
-            
+            player.
+            //手札から1つずつ取り出して手札内に同じランクのカードがないか確認
+            //あれば最初に見つけたペアを削除
+            //削除したら最初からやり直す
+            //ジョーカーはペア対象外　nullは除外を忘れないように
         }
     }
 }

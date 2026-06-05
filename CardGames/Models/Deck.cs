@@ -70,7 +70,6 @@ namespace CardGames.Models
             {
                 throw new InvalidOperationException("山札にカードがありません。");
             }
-
             //山札から1枚取り出す
             Card targetCard = _deck[0];
             _deck.RemoveAt(0);

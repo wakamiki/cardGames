@@ -20,6 +20,7 @@ namespace CardGames.Models
 
         //・手札を持つ
         private List<Card> _handDeck {  get; set; }
+        internal IReadOnlyList<Card> HandDeck => _handDeck;
 
         //・プレイヤーかどうかを持つ
         private bool _isCpu {  get; set; }
@@ -43,7 +44,7 @@ namespace CardGames.Models
             _handDeck.Add(deck.DrawCard());
         }
 
-        //カードの配列を指定して削除
+        //カードの配列を指定して削除&渡す
         internal Card RemoveCardAt(int num)
         {
             if (num>=_handCount|num<0)
