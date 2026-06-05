@@ -115,6 +115,7 @@
             this.btnGameStart.TabIndex = 7;
             this.btnGameStart.Text = "ゲーム開始";
             this.btnGameStart.UseVisualStyleBackColor = false;
+            this.btnGameStart.Click += new System.EventHandler(this.btnGameStart_Click);
             // 
             // btnGameEnd
             // 
@@ -126,6 +127,7 @@
             this.btnGameEnd.TabIndex = 8;
             this.btnGameEnd.Text = "戻る";
             this.btnGameEnd.UseVisualStyleBackColor = false;
+            this.btnGameEnd.Click += new System.EventHandler(this.btnGameEnd_Click);
             // 
             // btnRegist
             // 
@@ -137,6 +139,7 @@
             this.btnRegist.TabIndex = 9;
             this.btnRegist.Text = "登録";
             this.btnRegist.UseVisualStyleBackColor = false;
+            this.btnRegist.Click += new System.EventHandler(this.btnRegist_Click);
             // 
             // SettingForm
             // 
@@ -153,7 +156,8 @@
             this.Controls.Add(this.NameOfPlayer);
             this.Controls.Add(this.NameOfGame);
             this.Name = "SettingForm";
-            this.Text = "Form2";
+            this.Text = "設定画面";
+            this.Load += new System.EventHandler(this.SettingForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
