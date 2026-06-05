@@ -12,12 +12,24 @@ namespace CardGames
 {
     public partial class GameForm : Form
     {
-        public GameForm()
+        private string _playerName;
+        private int _playerCount;
+        private int _cpuCount;
+
+        public GameForm(string playerName,int playerCount,int cpuCount)
         {
             InitializeComponent();
+            _playerName = playerName;
+            _playerCount = playerCount;
+            _cpuCount = cpuCount;
         }
 
         private void GameForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnStart_Click(object sender, EventArgs e)
         {
 
         }
