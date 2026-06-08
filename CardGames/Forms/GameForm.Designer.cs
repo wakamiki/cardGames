@@ -35,7 +35,7 @@
             this.DateOfPlayer = new System.Windows.Forms.Label();
             this.OPGuide = new System.Windows.Forms.Label();
             this.GameLog = new System.Windows.Forms.Label();
-            this.btnStart = new System.Windows.Forms.Button();
+            this.btnMainAction = new System.Windows.Forms.Button();
             this.btnBack = new System.Windows.Forms.Button();
             this.Operattion = new System.Windows.Forms.TextBox();
             this.Logs = new System.Windows.Forms.TextBox();
@@ -116,21 +116,21 @@
             this.GameLog.TabIndex = 6;
             this.GameLog.Text = "ゲームログ";
             // 
-            // btnStart
+            // btnMainAction
             // 
-            this.btnStart.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnStart.Location = new System.Drawing.Point(676, 603);
-            this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(82, 58);
-            this.btnStart.TabIndex = 7;
-            this.btnStart.Text = "かいし";
-            this.btnStart.UseVisualStyleBackColor = true;
-            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
+            this.btnMainAction.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnMainAction.Location = new System.Drawing.Point(695, 605);
+            this.btnMainAction.Name = "btnMainAction";
+            this.btnMainAction.Size = new System.Drawing.Size(82, 58);
+            this.btnMainAction.TabIndex = 7;
+            this.btnMainAction.Text = "かいし";
+            this.btnMainAction.UseVisualStyleBackColor = true;
+            this.btnMainAction.Click += new System.EventHandler(this.btnMainAction_Click);
             // 
             // btnBack
             // 
             this.btnBack.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnBack.Location = new System.Drawing.Point(773, 603);
+            this.btnBack.Location = new System.Drawing.Point(792, 605);
             this.btnBack.Name = "btnBack";
             this.btnBack.Size = new System.Drawing.Size(82, 58);
             this.btnBack.TabIndex = 8;
@@ -139,7 +139,7 @@
             // 
             // Operattion
             // 
-            this.Operattion.Location = new System.Drawing.Point(77, 443);
+            this.Operattion.Location = new System.Drawing.Point(70, 446);
             this.Operattion.Multiline = true;
             this.Operattion.Name = "Operattion";
             this.Operattion.ReadOnly = true;
@@ -152,7 +152,7 @@
             this.Logs.Multiline = true;
             this.Logs.Name = "Logs";
             this.Logs.ReadOnly = true;
-            this.Logs.Size = new System.Drawing.Size(804, 118);
+            this.Logs.Size = new System.Drawing.Size(600, 118);
             this.Logs.TabIndex = 10;
             // 
             // flpCpu1Hand
@@ -218,7 +218,7 @@
             this.Controls.Add(this.GameLog);
             this.Controls.Add(this.flpCpu1Hand);
             this.Controls.Add(this.btnBack);
-            this.Controls.Add(this.btnStart);
+            this.Controls.Add(this.btnMainAction);
             this.Controls.Add(this.Logs);
             this.Controls.Add(this.Operattion);
             this.Controls.Add(this.DateOfPlayer);
@@ -243,7 +243,7 @@
         private System.Windows.Forms.Label DateOfPlayer;
         private System.Windows.Forms.Label OPGuide;
         private System.Windows.Forms.Label GameLog;
-        private System.Windows.Forms.Button btnStart;
+        private System.Windows.Forms.Button btnMainAction;
         private System.Windows.Forms.Button btnBack;
         private System.Windows.Forms.TextBox Operattion;
         private System.Windows.Forms.TextBox Logs;
