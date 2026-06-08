@@ -66,7 +66,7 @@ namespace CardGames.Services
         }
 
         //呼び出し元：
-        //SettingForm または GameForm
+        //GameForm
         internal void StartGame()
         {
             //山札をシャッフル
@@ -81,7 +81,8 @@ namespace CardGames.Services
                 RemovePairs(player);
             }
             //勝ち抜け参加者がいないかチェック
-
+            CheckAndHandleCpuFinish();
+            HandlePlayerWinIfHandEmpty(_players[0]);
 
             //最初のターンを設定する
             _currentTurnIndex = 0;
@@ -213,8 +214,6 @@ namespace CardGames.Services
             cpu.MarkAsFinished();
         }
 
-        //手札0枚時の勝ち演出遷移(プレイヤー)
-
         //山札から全員にカードを配り切る
         internal void DealCardsToPlayers()
         {
@@ -275,39 +274,31 @@ namespace CardGames.Services
             }
         }
 
-        //手札が0枚かチェック
-        private bool IsHandEmpty(Player player)
-        {
-            if (player.HandCount == 0)
-            {
-                return true;
-            }
-            return false;
-        }
-
         //CPU手札チェック+0枚時状態遷移
-        private void CheckAndHandleCpuFinish(Player cpu)
+        internal void CheckAndHandleCpuFinish()
         {
-            if (!IsHandEmpty(cpu))
+            for (int i = 1; i < Players.Count; i++)
             {
-                return;
+                if (Players[i].HandCount != 0)
+                {
+                    return;
+                }
+                else
+                {
+                    MarkCpuAsFinishedIfHandEmpty(Players[i]);
+                }
             }
-            MarkCpuAsFinishedIfHandEmpty(cpu);
-
         }
 
         //プレイヤー手札チェック+0枚時勝利演出遷移
         private void HandlePlayerWinIfHandEmpty(Player player)
         {
-            if (!IsHandEmpty(player))
+            if (player.HandCount!=0)
             {
                 return;
             }
+            _currentPhase = GamePhase.GameWin;
         }
-        //ゲーム進行状態変更メソッド
-        private void UpdatePhaseAfterTurn()
-        {
-            
-        }
+
     }
 }

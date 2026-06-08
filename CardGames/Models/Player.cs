@@ -32,9 +32,6 @@ namespace CardGames.Models
 
         internal int HandCount => _handDeck.Count;
 
-        //必要かどうか後で判断。必要なければ削除予定。
-        private bool _isHandEmpty {  get; set; }
-
 
         //========================================
         //基本メソッド
@@ -67,7 +64,6 @@ namespace CardGames.Models
         internal void MarkAsFinished()
         {
             _isFinished = true;
-            _isHandEmpty = true;
         }
     }
 }

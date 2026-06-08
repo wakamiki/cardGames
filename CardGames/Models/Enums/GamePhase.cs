@@ -12,6 +12,8 @@ namespace CardGames.Models.Enums
         PlayerSelecting,    // プレイヤーが引くカードを選んでいる
         PlayerConfirming,   // プレイヤーが選択カードを決定する前
         CpuTurn,            // CPUターン中
-        GameOver            // ゲーム終了
+        GameOver,            // ゲーム終了(敗北)
+        GameWin             //ゲーム終了(勝利)
+
     }
 }

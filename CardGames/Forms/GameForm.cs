@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,6 +69,7 @@ namespace CardGames
                     _gameManager.StartGame();
                     //画面再取得
                     UpdateDisplay();
+
                     break;
 
                 case GamePhase.PlayerSelecting:
@@ -86,11 +88,26 @@ namespace CardGames
                     break;
 
                 case GamePhase.GameOver:
-                    // タイトルへ戻る、または再スタート
+                    // 敗北時演出　タイトルへ戻る、または再スタート
+                    break;
+
+                case GamePhase.GameWin:
+                    //　勝利時演出 タイトルへ戻る、または再スタート
                     break;
             }
 
             UpdateDisplay();
+        }
+
+        //勝利時画面演出(工藤さん担当)
+        internal void ShowPlayerWinResult()
+        {
+
+        }
+        //敗北時画面演出(工藤さん担当)
+        internal void ShowPlayerLoseResult()
+        {
+
         }
 
         //======================================
@@ -104,10 +121,12 @@ namespace CardGames
             foreach (Card card in _gameManager.Deck)
             {
                 string key = card.DisplayName;
-                _cardImages.Add(key, Image.FromFile("Images/Cards/"+key+".png"));
+                string imagePaths = Path.Combine("images", "素材ズ", "07_トランプ表", key + ".png");
+                _cardImages.Add(key, Image.FromFile(imagePaths));
             }
             //裏面画像追加
-            _cardBackImage = Image.FromFile("Images/Cards/Back.png");
+            string imagePath = Path.Combine("images", "素材ズ", "5_Back.png");
+            _cardBackImage = Image.FromFile(imagePath);
         }
 
         //全体更新メソッド
@@ -127,7 +146,9 @@ namespace CardGames
             UpdateButtons();
             //・ボタンの有効 / 無効を更新する
             ShowGameResultIfNeeded();
-//・勝敗状態ならモーダルやMessageBoxを出す
+            //・勝敗状態ならモーダルやMessageBoxを出す
+            _gameManager.CheckAndHandleCpuFinish();
+            //CPUの勝ち抜け判定処理
         }
         //全体更新メソッド関連小メソッド
         //・プレイヤー手札を描き直す
@@ -220,6 +241,27 @@ namespace CardGames
         private void UpdateGameLog()
         {
             //未完成
+            switch (_gameManager.CurrentPhase)
+            {
+                case GamePhase.BeforeStart:
+
+                    break;
+                case GamePhase.PlayerSelecting:
+
+                    break;
+                case GamePhase.PlayerConfirming:
+
+                    break;
+                case GamePhase.CpuTurn:
+
+                    break;
+                case GamePhase.GameOver:
+
+                    break;
+                case GamePhase.GameWin:
+
+                    break;
+            }
         }
         //・ボタンの有効 / 無効を更新する
         private void UpdateButtons()
@@ -241,14 +283,23 @@ namespace CardGames
                 case GamePhase.GameOver:
                     btnMainAction.Enabled = false;
                     break;
+                case GamePhase.GameWin:
+                    btnMainAction.Enabled = false;
+                    break;
             }
         }
-        //・勝敗状態ならモーダルやMessageBoxを出す
-        private void ShowGameResultIfNeeded()
+        //勝敗判定などなど
+        internal void ShowGameResultIfNeeded()
         {
-            
+            if (_gameManager.CurrentPhase==GamePhase.GameOver)
+            {
+                ShowPlayerLoseResult();
+            }
+            else if (_gameManager.CurrentPhase==GamePhase.GameWin)
+            {
+                ShowPlayerWinResult();
+            }
         }
-
         //初期化メソッド
         internal void InitializeGameDisplay()
         {
