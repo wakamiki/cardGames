@@ -15,14 +15,20 @@ namespace CardGames
 {
     public partial class GameForm : Form
     {
-
+        private string _playerName;
+        private int _playerCount;
+        private int _cpuCount;
         private BabanukiGameManager _gameManager;
-        public GameForm()
+
+        public GameForm(string playerName,int playerCount,int cpuCount)
         {
             InitializeComponent();
+            _playerName = playerName;
+            _playerCount = playerCount;
+            _cpuCount = cpuCount;
             _gameManager = new BabanukiGameManager();
-
         }
+
         private void GameForm_Load(object sender, EventArgs e)
         {
             //各種初期化
@@ -33,6 +39,11 @@ namespace CardGames
             //手札数表示=0
             //決定ボタン=かいし
             //フローレイアウトパネル空表示
+        }
+
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+        
         }
         private void btnMainAction_Click(object sender, EventArgs e)
         {
