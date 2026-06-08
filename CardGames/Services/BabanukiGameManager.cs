@@ -1,4 +1,5 @@
 ﻿using CardGames.Models;
+using CardGames.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
@@ -21,7 +22,15 @@ namespace CardGames.Services
 
         private List<Player> _players = new List<Player>();
         internal IReadOnlyList<Player> Players => _players;
+        //今誰の手番かを取得
         private int _currentTurnIndex;
+        internal Player CurrentTurn => _players[_currentTurnIndex];
+        //プレイヤーの手番か確認
+        internal bool IsPlayerTurn => CurrentTurn == _players[0];
+        //ゲーム進行状態
+        private GamePhase _currentPhase = GamePhase.BeforeStart;
+        internal GamePhase CurrentPhase => _currentPhase;
+
 
         //===========================================
         //メソッド
@@ -280,8 +289,11 @@ namespace CardGames.Services
             {
                 return;
             }
-
-
+        }
+        //ゲーム進行状態変更メソッド
+        private void UpdatePhaseAfterTurn()
+        {
+            
         }
     }
 }
