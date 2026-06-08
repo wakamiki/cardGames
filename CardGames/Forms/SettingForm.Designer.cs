@@ -90,6 +90,7 @@
             // 
             this.InputName.Font = new System.Drawing.Font("MS UI Gothic", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.InputName.Location = new System.Drawing.Point(243, 112);
+            this.InputName.MaxLength = 50;
             this.InputName.Name = "InputName";
             this.InputName.Size = new System.Drawing.Size(176, 34);
             this.InputName.TabIndex = 5;

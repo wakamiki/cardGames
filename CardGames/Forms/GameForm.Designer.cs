@@ -125,6 +125,7 @@
             this.btnStart.TabIndex = 7;
             this.btnStart.Text = "かいし";
             this.btnStart.UseVisualStyleBackColor = true;
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
             // btnBack
             // 

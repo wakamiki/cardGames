@@ -27,8 +27,9 @@ namespace CardGames.Models
         //・勝ち抜け済みかどうかを持つ
         private bool _isFinished {  get; set; }
 
-        private int _handCount { get; set; }
+        private int _handCount => _handDeck.Count;
 
+        private bool _isHandEmpty {  get; set; }
 
 
         internal void AddCard()
@@ -36,36 +37,20 @@ namespace CardGames.Models
             _handDeck.Add(deck.DrawCard());
         }
 
-
-        //メソッド名：
-        //RemoveCardAt
-
-        //役割：
-        //指定した位置のカードを手札から取り出して返す。
-
-        //入力：
-        //cardIndex
-
-        //出力：
-        //取り出したCard
-
-        //用途：
-        //プレイヤーやCPUが相手の手札からカードを引くときに使う。
-
-        //注意：
-        //指定された位置が不正な場合の扱いを決める必要がある。
+        internal Card RemoveCardAt(int num)
+        {
+            if (num>=_handCount|num<0)
+            {
+                throw new Exception("不正な数値が指定されました。");
+            }
+            Card card = _handDeck[num];
+            return card;
+        }
 
 
-
-
-        //プロパティ名：
-        //IsHandEmpty
-
-        //役割：
-        //手札が0枚かどうかを返す。
-
-        //用途：
-        //勝ち抜け判定に使う。
+        //========================================
+        //補助メソッド
+        //========================================
 
     }
 }
