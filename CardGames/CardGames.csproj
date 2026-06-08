@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="Models\Card.cs" />
     <Compile Include="Models\Deck.cs" />
+    <Compile Include="Models\Enums\GamePhase.cs" />
     <Compile Include="Models\Enums\Rank.cs" />
     <Compile Include="Models\Enums\Suit.cs" />
     <Compile Include="Models\Player.cs" />

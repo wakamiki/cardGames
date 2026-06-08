@@ -14,6 +14,7 @@ namespace CardGames.Models
     internal class Deck
     {
         private List<Card> _deck = new List<Card>();
+        internal IReadOnlyList<Card> ReadDeck => _deck;
         private Random _random = new Random();
 
         internal int RemainingCount => _deck.Count;

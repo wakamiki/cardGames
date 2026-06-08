@@ -40,7 +40,7 @@
             this.Operattion = new System.Windows.Forms.TextBox();
             this.Logs = new System.Windows.Forms.TextBox();
             this.flpCpu1Hand = new System.Windows.Forms.FlowLayoutPanel();
-            this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.flpCpu2Hand = new System.Windows.Forms.FlowLayoutPanel();
             this.flpPlayerHand = new System.Windows.Forms.FlowLayoutPanel();
             this.flpCpu3Hand = new System.Windows.Forms.FlowLayoutPanel();
@@ -165,15 +165,15 @@
             this.flpCpu1Hand.TabIndex = 11;
             this.flpCpu1Hand.WrapContents = false;
             // 
-            // flowLayoutPanel2
+            // flowLayoutPanel1
             // 
-            this.flowLayoutPanel2.AutoScroll = true;
-            this.flowLayoutPanel2.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(338, 94);
-            this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(237, 160);
-            this.flowLayoutPanel2.TabIndex = 12;
-            this.flowLayoutPanel2.WrapContents = false;
+            this.flowLayoutPanel1.AutoScroll = true;
+            this.flowLayoutPanel1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(338, 94);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(237, 160);
+            this.flowLayoutPanel1.TabIndex = 12;
+            this.flowLayoutPanel1.WrapContents = false;
             // 
             // flpCpu2Hand
             // 
@@ -214,7 +214,7 @@
             this.Controls.Add(this.flpPlayerHand);
             this.Controls.Add(this.OPGuide);
             this.Controls.Add(this.flpCpu2Hand);
-            this.Controls.Add(this.flowLayoutPanel2);
+            this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.GameLog);
             this.Controls.Add(this.flpCpu1Hand);
             this.Controls.Add(this.btnBack);
@@ -248,7 +248,7 @@
         private System.Windows.Forms.TextBox Operattion;
         private System.Windows.Forms.TextBox Logs;
         private System.Windows.Forms.FlowLayoutPanel flpCpu1Hand;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.FlowLayoutPanel flpCpu2Hand;
         private System.Windows.Forms.FlowLayoutPanel flpPlayerHand;
         private System.Windows.Forms.FlowLayoutPanel flpCpu3Hand;

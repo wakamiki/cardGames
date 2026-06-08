@@ -15,7 +15,8 @@ namespace CardGames.Services
         //フィールド
         //===========================================
 
-        private Deck _deck;
+        private Deck _deck = new Deck();
+        internal IReadOnlyList<Card> Deck => _deck.ReadDeck;
         private List<Card> _discardPile = new List<Card>();
         internal int DiscardCount => _discardPile.Count;
         internal IReadOnlyList<Card> DiscardPile => _discardPile;
@@ -30,15 +31,23 @@ namespace CardGames.Services
         //ゲーム進行状態
         private GamePhase _currentPhase = GamePhase.BeforeStart;
         internal GamePhase CurrentPhase => _currentPhase;
+        private string _nameOfPlayer;
+        private int _playerCount;
+        private int _cpuCount;
 
 
         //===========================================
         //メソッド
         //===========================================
 
-        //呼び出し元：
-        //SettingForm または GameForm
-        internal void StartGame()
+        internal void GameSettings(string playerName, int playerCount, int cpuCount)
+        {
+            _nameOfPlayer = playerName;
+            _playerCount = playerCount;
+            _cpuCount = cpuCount;
+        }
+
+        internal void InitializeGame()
         {
             //プレイヤーを準備
             Player player1 = new Player();
@@ -51,10 +60,15 @@ namespace CardGames.Services
             _players.Add(cpu1);
             _players.Add(cpu2);
             _players.Add(cpu3);
-            
+
             //山札を準備
             _deck.CreateDeck();
+        }
 
+        //呼び出し元：
+        //SettingForm または GameForm
+        internal void StartGame()
+        {
             //山札をシャッフル
             _deck.Shuffle();
 
