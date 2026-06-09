@@ -19,7 +19,7 @@ namespace CardGames.Models
         private string _name {  get; set; }
 
         //・手札を持つ
-        private List<Card> _handDeck {  get; set; }
+        private List<Card> _handDeck = new List<Card>();
         internal IReadOnlyList<Card> HandDeck => _handDeck;
 
         //・プレイヤーかどうかを持つ
@@ -32,18 +32,15 @@ namespace CardGames.Models
 
         internal int HandCount => _handDeck.Count;
 
-        //必要かどうか後で判断。必要なければ削除予定。
-        private bool _isHandEmpty {  get; set; }
-
 
         //========================================
         //基本メソッド
         //========================================
 
-        //山札からカード追加
-        internal void AddCard(Deck deck)
+        //カード追加
+        internal void AddCard(Card card)
         {
-            _handDeck.Add(deck.DrawCard());
+            _handDeck.Add(card);
         }
 
         //カードの配列を指定して削除&渡す
@@ -67,7 +64,6 @@ namespace CardGames.Models
         internal void MarkAsFinished()
         {
             _isFinished = true;
-            _isHandEmpty = true;
         }
     }
 }

@@ -63,6 +63,7 @@ namespace CardGames.Models
             }
         }
 
+        //山札からカードを1枚渡す
         internal Card DrawCard()
         {
             if (RemainingCount == 0)
