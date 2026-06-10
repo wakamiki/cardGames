@@ -32,12 +32,22 @@ namespace CardGames.Models
 
         internal int HandCount => _handDeck.Count;
 
+        //========================================
+        //コンストラクタ
+        //========================================
+
+        internal Player(string name, bool isCpu)
+        {
+            _name = name;
+            _isCpu = isCpu;
+            _isFinished = false;
+        }
 
         //========================================
         //基本メソッド
         //========================================
 
-        //カード追加
+            //カード追加
         internal void AddCard(Card card)
         {
             _handDeck.Add(card);

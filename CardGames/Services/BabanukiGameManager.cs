@@ -2,6 +2,7 @@
 using CardGames.Models.Enums;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Reflection;
@@ -58,10 +59,10 @@ namespace CardGames.Services
         internal void InitializeGame()
         {
             //プレイヤーを準備
-            Player player1 = new Player();
-            Player cpu1 = new Player();
-            Player cpu2 = new Player();
-            Player cpu3 = new Player();
+            Player player1 = new Player(_nameOfPlayer, false);
+            Player cpu1 = new Player("cpu1",true);
+            Player cpu2 = new Player("cpu2",true);
+            Player cpu3 = new Player("cpu3",true);
 
             //プレイヤーをリストに追加
             _players.Add(player1);
@@ -118,14 +119,14 @@ namespace CardGames.Services
 
             //【重要】必ずアクティブプレイヤー更新→ターゲットプレイヤー更新の順で処理すること
             //現在ターンを次の有効なプレイヤーへ進める
-            GetNextActivePlayer();
+            _activePlayer = GetNextActivePlayer();
             //ターゲットプレイヤーも更新する
-            GetDrawTarget();
+            _targetPlayer = GetDrawTarget();
 
             //次の手番がプレイヤー時の処理
             if (!_activePlayer.IsCpu)
             {
-                _currentPhase = GamePhase.PlayerSelecting;
+                _currentPhase = GamePhase.PlayerSelecting;//ゲーム進行状態をPlayerSelectingに変更
             }
             //次の手番がCPU
             else
