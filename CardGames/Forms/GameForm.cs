@@ -65,6 +65,7 @@ namespace CardGames
             LoadCardImages();
         }
 
+        //ボタンイベント
         private void btnMainAction_Click(object sender, EventArgs e)
         {
             switch (_gameManager.CurrentPhase)
@@ -242,7 +243,7 @@ namespace CardGames
             _selectedPictureBox = null;
             //勝ち抜けチェック
             _gameManager.CheckAndHandleFinishedPlayer(_gameManager.TargetPlayer);
-            //ゲーム進行状態を変更
+            //ゲーム進行状態を変更(CPUTurn)
             _gameManager.SetCpuTurn();
             //ターン進行
             _gameManager.AdvanceTurn();
