@@ -89,35 +89,37 @@ namespace CardGames
                 case GamePhase.PlayerConfirming:
                     // 選択済みカードを確定して引く
                     ConfirmSelectedCardDraw();
+                    //ターン進行
+                    _gameManager.AdvanceTurn();
                     UpdateDisplay();
                     break;
 
                 // CPUターンスタート
                 case GamePhase.CpuTurn:
-                    // CPUターンを進める
-                    _gameManager.ProcessCpuTurn();
+                    // CPUがカードを引く
+                    _gameManager.CpuTurnCardDraw();
+                    //ターン進行
+                    _gameManager.AdvanceTurn();
                     UpdateDisplay();
+                    //次の手番がプレイヤー時の遷移処理
+                    if (_gameManager.IsPlayerTurn())
+                    {
+                        _gameManager.SetPlayerSelecting();
+                        UpdateButtons();
+                        EnableTargetPlayerCardSelection();
+                    }
                     break;
 
                 case GamePhase.GameOver:
                     // 敗北時演出　タイトルへ戻る、または再スタート
+                    _gameManager.ReStart();
                     break;
 
                 case GamePhase.GameWin:
                     //　勝利時演出 タイトルへ戻る、または再スタート
+                    _gameManager.ReStart();
                     break;
             }
-        }
-
-        //勝利時画面演出(工藤さん担当)
-        internal void ShowPlayerWinResult()
-        {
-
-        }
-        //敗北時画面演出(工藤さん担当)
-        internal void ShowPlayerLoseResult()
-        {
-
         }
 
         //======================================
@@ -233,6 +235,7 @@ namespace CardGames
         //======================================
         //GamePhase.PlayerConfirming
         //======================================
+        //ピクチャボックスを操作するためGameFormメソッドに所属
         private void ConfirmSelectedCardDraw()
         {
             //カードを引く
@@ -245,8 +248,6 @@ namespace CardGames
             _gameManager.CheckAndHandleFinishedPlayer(_gameManager.TargetPlayer);
             //ゲーム進行状態を変更(CPUTurn)
             _gameManager.SetCpuTurn();
-            //ターン進行
-            _gameManager.AdvanceTurn();
         }
 
 
@@ -261,6 +262,24 @@ namespace CardGames
         //======================================
         //GamePhase.GameWin
         //======================================
+
+        //勝敗判定などなど
+        internal void ShowGameResultIfNeeded()
+        {
+            if (_gameManager.CurrentPhase == GamePhase.GameOver)
+            {
+                ShowPlayerLoseResult();
+                ShowMessegeBoxLose();
+                //画面変更メソッド
+            }
+            else if (_gameManager.CurrentPhase == GamePhase.GameWin)
+            {
+                ShowPlayerWinResult();
+                ShowMessegeBoxWin();
+                //画面変更メソッド
+            }
+        }
+
 
         //======================================
         //共通メソッド
@@ -425,17 +444,45 @@ namespace CardGames
                     break;
             }
         }
-        //勝敗判定などなど
-        internal void ShowGameResultIfNeeded()
+
+        //勝敗後画面表示
+        private void ShowResultActionButtons()
         {
-            if (_gameManager.CurrentPhase==GamePhase.GameOver)
-            {
-                ShowPlayerLoseResult();
-            }
-            else if (_gameManager.CurrentPhase==GamePhase.GameWin)
-            {
-                ShowPlayerWinResult();
-            }
+            btnMainAction.Enabled = true;
+            btnMainAction.Text = "もう一度あそぶ";
+        }
+
+        //======================================
+        //共通演出メソッド
+        //======================================
+        //工藤さん担当
+
+        //(仮)削除変更OK!
+        private void ShowMessegeBoxWin()
+        {
+            MessageBox.Show("あなたの勝ちです！","勝利",MessageBoxButtons.OK,MessageBoxIcon.None);
+        }
+        private void ShowMessegeBoxLose()
+        {
+            MessageBox.Show("あなたの負けです。", "敗北", MessageBoxButtons.OK, MessageBoxIcon.None);
+        }
+
+        //勝ち抜けCPUの画面表示(アクティブじゃないのが分かるように)
+
+        //カードを引く際の演出
+
+        //カードを捨てる際の演出
+
+        //勝利時画面演出(工藤さん担当)
+        internal void ShowPlayerWinResult()
+        {
+
+        }
+
+        //敗北時画面演出(工藤さん担当)
+        internal void ShowPlayerLoseResult()
+        {
+
         }
     }
 }
