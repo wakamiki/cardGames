@@ -44,17 +44,17 @@ namespace CardGames.Services
         //CPU処理用ランダム用意
         private Random _random = new Random();
 
-
-        //===========================================
-        //メソッド
-        //===========================================
-
+        //フィールドセット
         internal void GameSettings(string playerName, int playerCount, int cpuCount)
         {
             _nameOfPlayer = playerName;
             _playerCount = playerCount;
             _cpuCount = cpuCount;
         }
+
+        //===========================================
+        //進行メソッド
+        //===========================================
 
         internal void InitializeGame()
         {
@@ -74,8 +74,7 @@ namespace CardGames.Services
             _deck.CreateDeck();
         }
 
-        //呼び出し元：
-        //GameForm
+        //ゲームスタート処理
         internal void StartGame()
         {
             //山札をシャッフル
@@ -108,6 +107,12 @@ namespace CardGames.Services
 
         }
 
+        //勝敗後にリスタート
+        internal void ReStart()
+        {
+
+        }
+
         //ターンを進める処理
         internal void AdvanceTurn()
         {
@@ -122,62 +127,63 @@ namespace CardGames.Services
             _activePlayer = GetNextActivePlayer();
             //ターゲットプレイヤーも更新する
             _targetPlayer = GetDrawTarget();
-
-            //次の手番がプレイヤー時の処理
-            if (!_activePlayer.IsCpu)
+            //ターゲットプレイヤーとアクティブプレイヤーが同じ時プレイヤー敗北
+            if (_activePlayer==_targetPlayer)
             {
-                _currentPhase = GamePhase.PlayerSelecting;//ゲーム進行状態をPlayerSelectingに変更
-            }
-            //次の手番がCPU
-            else
-            {
-                return;
+                PlayerLose();
             }
         }
 
-        //次の手番のプレイヤーを返す
-        internal Player GetNextActivePlayer()
-        {
-            //アクティブプレイヤーのIndexOf % 全プレイヤー人数
-            //IndexOf = 0+1 → 余り1
-            //IndexOf = 1+1 → 余り2
-            //IndexOf = 2+1 → 余り3
-            //IndexOf = 3+1 → 余り0
-            int playerIndex = GetPlayerIndex(_activePlayer);
-            int nextPlayerIndex = (playerIndex + 1) % _players.Count;
-            //次のプレイヤーが勝ち抜け状態のプレイヤーじゃなくなるまで繰り返す
-            while (_players[nextPlayerIndex].IsFinished)
-            {
-                nextPlayerIndex = (nextPlayerIndex + 1) % _players.Count();
-            }
-            return _players[nextPlayerIndex];
-        }
-
-        //プレイヤーが、カードを引く相手を返す
-        internal Player GetDrawTarget()
-        {
-            //((activeIndex+全プレイヤー人数)-1) % 全プレイヤー人数
-            //マイナスの数字にならないようにプレイヤー人数を足す
-            //activeIndex = 0 → targetIndex = 3
-            //activeIndex = 1 → targetIndex = 0
-            //activeIndex = 2 → targetIndex = 1
-            //activeIndex = 3 → targetIndex = 2
-            int playerIndex = GetPlayerIndex(_activePlayer);
-            int targetIndex = (playerIndex - 1 + _players.Count) % _players.Count();
-            //引く相手が勝ち抜け状態のプレイヤーじゃなくなるまで繰り返す
-            while (_players[targetIndex].IsFinished)
-            {
-                targetIndex = (playerIndex - 1 + _players.Count) % _players.Count();
-            }
-            return _players[targetIndex];
-        }
-
-        //CPUターンを進める
-        internal void ProcessCpuTurn()
+        //CPUがカードを引く　プレイヤー版はGameFormに所属
+        internal void CpuTurnCardDraw()
         {
             //ここにカードを引く処理
-            AdvanceTurn();
+            //CPUが引くカードを選択
+            int targetNum = _random.Next(_targetPlayer.HandCount - 1);
+            //カードを引く
+            Card card = _targetPlayer.RemoveCardAt(targetNum);
+            //引いたカードを手札に追加
+            _activePlayer.AddCard(card);
         }
+
+        //==========================
+        //補助メソッド
+        //==========================
+
+        //山札から全員にカードを配り切る
+        internal void DealCardsToPlayers()
+        {
+            while (_deck.RemainingCount > 0)
+            {
+
+                foreach (Player player in _players)
+                {
+                    player.AddCard(_deck.DrawCard());
+                    if (_deck.RemainingCount == 0)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        //手札チェック処理+振り分け
+        internal void CheckAndHandleFinishedPlayer(Player player)
+        {
+            if (player.HandCount == 0)
+            {
+                if (player.IsCpu)
+                {
+                    MarkCpuAsFinished(player);
+                }
+                else
+                {
+                    PlayerWin(player);
+                }
+            }
+            return;
+        }
+
 
         //ペア削除処理
         internal void RemovePairs(Player player)
@@ -222,75 +228,59 @@ namespace CardGames.Services
                 }
             }
         }
-
-        //メソッド名：
-        //CheckGameResult
-
-        //役割：
-        //現在のゲーム状態から、プレイヤーの勝利・敗北・継続中を判定する。
-
-        //処理内容：
-        //・手札がなくなった参加者を勝ち抜け扱いにする
-        //・人間プレイヤーが勝ち抜けした場合は勝利
-        //・人間プレイヤーが最後まで残った場合は敗北
-        //・それ以外はゲーム継続
-
-        //入力：
-        //なし
-
-        //出力：
-        //・ゲーム結果
-
-        //注意：
-        //MessageBoxの表示はGameManagerでは行わない。
-        //GameManagerは結果だけを返し、表示はGameForm側で行う。
-
-        //手札チェック処理+振り分け
-        internal void CheckAndHandleFinishedPlayer(Player player)
+        //次の手番のプレイヤーを返す
+        internal Player GetNextActivePlayer()
         {
-
-            if (player.HandCount==0)
+            //アクティブプレイヤーのIndexOf % 全プレイヤー人数
+            //IndexOf = 0+1 → 余り1
+            //IndexOf = 1+1 → 余り2
+            //IndexOf = 2+1 → 余り3
+            //IndexOf = 3+1 → 余り0
+            int playerIndex = GetPlayerIndex(_activePlayer);
+            int nextPlayerIndex = (playerIndex + 1) % _players.Count;
+            //次のプレイヤーが勝ち抜け状態のプレイヤーじゃなくなるまで繰り返す
+            while (_players[nextPlayerIndex].IsFinished)
             {
-                if (player.IsCpu)
-                {
-                    MarkCpuAsFinished(player);
-                }
-                else
-                {
-                    PlayerWin(player);
-                }
+                nextPlayerIndex = (nextPlayerIndex + 1) % _players.Count();
             }
-            return;
+            return _players[nextPlayerIndex];
         }
 
-
-        //山札から全員にカードを配り切る
-        internal void DealCardsToPlayers()
+        //プレイヤーが、カードを引く相手を返す
+        internal Player GetDrawTarget()
         {
-            while (_deck.RemainingCount > 0)
+            //((activeIndex+全プレイヤー人数)-1) % 全プレイヤー人数
+            //マイナスの数字にならないようにプレイヤー人数を足す
+            //activeIndex = 0 → targetIndex = 3
+            //activeIndex = 1 → targetIndex = 0
+            //activeIndex = 2 → targetIndex = 1
+            //activeIndex = 3 → targetIndex = 2
+            int playerIndex = GetPlayerIndex(_activePlayer);
+            int targetIndex = (playerIndex - 1 + _players.Count) % _players.Count();
+            //引く相手が勝ち抜け状態のプレイヤーじゃなくなるまで繰り返す
+            while (_players[targetIndex].IsFinished)
             {
-
-                foreach (Player player in _players)
-                {
-                    player.AddCard(_deck.DrawCard());
-                    if (_deck.RemainingCount == 0)
-                    {
-                        break;
-                    }
-                }
+                targetIndex = (playerIndex - 1 + _players.Count) % _players.Count();
             }
+            return _players[targetIndex];
         }
-
-
-        //==========================
-        //補助メソッド
-        //==========================
-
         //プレイヤーのindexナンバーを返す
         private int GetPlayerIndex(Player player)
         {
             int index = _players.IndexOf(player);
             return index;
+        }
+
+        //次の手番がプレイヤーかどうかチェック
+        internal bool IsPlayerTurn()
+        {
+            //CPU==false
+            if (_activePlayer.IsCpu)
+            {
+                return false;
+            }
+            //player==true
+            return true;
         }
 
         //手札0枚時の勝ち抜け処理(CPU)
@@ -300,14 +290,25 @@ namespace CardGames.Services
             cpu.MarkAsFinished();
         }
 
-        //0枚時勝利演出遷移
+        //ゲームを全部初期化
+
+
+        //=====================================
+        //ゲーム進行状態変更メソッド
+        //=====================================
+        //0枚時勝利状態へ遷移
         private void PlayerWin(Player player)
         {
             _currentPhase = GamePhase.GameWin;
-            //勝利演出メソッドへ
         }
-
-        //ゲーム進行状態を変更
+        private void PlayerLose()
+        {
+            _currentPhase = GamePhase.GameOver;
+        }
+        internal void SetPlayerSelecting()
+        {
+            _currentPhase = GamePhase.PlayerSelecting;
+        }
         internal void SetPlayerConfirming()
         {
             _currentPhase = GamePhase.PlayerConfirming;
