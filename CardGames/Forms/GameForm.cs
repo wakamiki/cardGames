@@ -272,17 +272,17 @@ namespace CardGames
         //======================================
 
         //勝敗判定などなど
-        internal void ShowGameResultIfNeeded()
+        internal async void ShowGameResultIfNeeded() // 20260611 工藤 async を追記
         {
             if (_gameManager.CurrentPhase == GamePhase.GameOver)
             {
-                ShowPlayerLoseResult();
+                await ShowPlayerLoseResult();　 // 20260611 工藤 await を追記
                 ShowMessegeBoxLose();
                 //画面変更メソッド
             }
             else if (_gameManager.CurrentPhase == GamePhase.GameWin)
             {
-                ShowPlayerWinResult();
+                await ShowPlayerWinResult(); // 20260611 工藤 await を追記
                 ShowMessegeBoxWin();
                 //画面変更メソッド
             }
@@ -481,22 +481,11 @@ namespace CardGames
 
         //カードを捨てる際の演出
 
-        //勝利時画面演出(工藤さん担当)
-        internal void ShowPlayerWinResult()
-        {
-
-        }
-
-        //敗北時画面演出(工藤さん担当)
-        internal void ShowPlayerLoseResult()
-        {
-
-        }
-
         // =================================================================
-        // #47_GameForm勝利時演出メソッド
+        // #47_GameForm勝利時演出メソッド // 20260611 工藤
         // =================================================================
         internal async Task ShowPlayerWinResult()
+        //internal void ShowPlayerWinResult()
         {
 
             /*効果音を使う場合 ※win_sound の準備が必要
@@ -517,9 +506,10 @@ namespace CardGames
         }
 
         // =================================================================
-        // #48_GameForm敗北時画面演出
+        // #48_GameForm敗北時画面演出 // 20260611 工藤 
         // =================================================================
         internal async Task ShowPlayerLoseResult()
+        //internal void ShowPlayerLoseResult()
         {
 
             /*効果音を使う場合 ※lose_sound の準備が必要
