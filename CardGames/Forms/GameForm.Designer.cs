@@ -44,6 +44,8 @@
             this.flpCpu2Hand = new System.Windows.Forms.FlowLayoutPanel();
             this.flpPlayerHand = new System.Windows.Forms.FlowLayoutPanel();
             this.flpCpu3Hand = new System.Windows.Forms.FlowLayoutPanel();
+            this.pictureBox_Result = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).BeginInit();
             this.SuspendLayout();
             // 
             // DateOfCUP1
@@ -206,11 +208,21 @@
             this.flpCpu3Hand.TabIndex = 14;
             this.flpCpu3Hand.WrapContents = false;
             // 
+            // pictureBox_Result
+            // 
+            this.pictureBox_Result.Location = new System.Drawing.Point(-5, 3);
+            this.pictureBox_Result.Name = "pictureBox_Result";
+            this.pictureBox_Result.Size = new System.Drawing.Size(969, 705);
+            this.pictureBox_Result.TabIndex = 15;
+            this.pictureBox_Result.TabStop = false;
+            this.pictureBox_Result.Visible = false;
+            // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(976, 705);
+            this.Controls.Add(this.pictureBox_Result);
             this.Controls.Add(this.flpCpu3Hand);
             this.Controls.Add(this.flpPlayerHand);
             this.Controls.Add(this.OPGuide);
@@ -230,6 +242,7 @@
             this.Name = "GameForm";
             this.Text = "ゲーム画面";
             this.Load += new System.EventHandler(this.GameForm_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -253,5 +266,6 @@
         private System.Windows.Forms.FlowLayoutPanel flpCpu2Hand;
         private System.Windows.Forms.FlowLayoutPanel flpPlayerHand;
         private System.Windows.Forms.FlowLayoutPanel flpCpu3Hand;
+        private System.Windows.Forms.PictureBox pictureBox_Result;
     }
 }
