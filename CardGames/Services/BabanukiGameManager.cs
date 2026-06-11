@@ -239,9 +239,16 @@ namespace CardGames.Services
             int playerIndex = GetPlayerIndex(_activePlayer);
             int nextPlayerIndex = (playerIndex + 1) % _players.Count;
             //次のプレイヤーが勝ち抜け状態のプレイヤーじゃなくなるまで繰り返す
-            while (_players[nextPlayerIndex].IsFinished)
+            for (int i = 0;i< _players.Count; i++)
             {
-                nextPlayerIndex = (nextPlayerIndex + 1) % _players.Count();
+                if (_players[nextPlayerIndex].IsFinished) 
+                {
+                    nextPlayerIndex = (nextPlayerIndex + 1) % _players.Count();
+                }
+                else
+                {
+                    break;
+                }
             }
             return _players[nextPlayerIndex];
         }
@@ -258,9 +265,16 @@ namespace CardGames.Services
             int playerIndex = GetPlayerIndex(_activePlayer);
             int targetIndex = (playerIndex - 1 + _players.Count) % _players.Count();
             //引く相手が勝ち抜け状態のプレイヤーじゃなくなるまで繰り返す
-            while (_players[targetIndex].IsFinished)
+            for (int i=0;i< _players.Count();i++)
             {
-                targetIndex = (playerIndex - 1 + _players.Count) % _players.Count();
+                if (_players[targetIndex].IsFinished)
+                {
+                    targetIndex = (playerIndex - 1 + _players.Count) % _players.Count();
+                }
+                else
+                {
+                    break;
+                }
             }
             return _players[targetIndex];
         }
