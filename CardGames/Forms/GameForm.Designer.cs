@@ -136,6 +136,7 @@
             this.btnBack.TabIndex = 8;
             this.btnBack.Text = "もどる";
             this.btnBack.UseVisualStyleBackColor = true;
+            this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
             // 
             // Operattion
             // 
@@ -227,7 +228,7 @@
             this.Controls.Add(this.DateOfCUP2);
             this.Controls.Add(this.DateOfCUP1);
             this.Name = "GameForm";
-            this.Text = "Form3";
+            this.Text = "ゲーム画面";
             this.Load += new System.EventHandler(this.GameForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
