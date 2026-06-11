@@ -35,12 +35,12 @@
             this.DateOfPlayer = new System.Windows.Forms.Label();
             this.OPGuide = new System.Windows.Forms.Label();
             this.GameLog = new System.Windows.Forms.Label();
-            this.btnStart = new System.Windows.Forms.Button();
+            this.btnMainAction = new System.Windows.Forms.Button();
             this.btnBack = new System.Windows.Forms.Button();
             this.Operattion = new System.Windows.Forms.TextBox();
             this.Logs = new System.Windows.Forms.TextBox();
             this.flpCpu1Hand = new System.Windows.Forms.FlowLayoutPanel();
-            this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.flpCpu2Hand = new System.Windows.Forms.FlowLayoutPanel();
             this.flpPlayerHand = new System.Windows.Forms.FlowLayoutPanel();
             this.flpCpu3Hand = new System.Windows.Forms.FlowLayoutPanel();
@@ -118,30 +118,31 @@
             this.GameLog.TabIndex = 6;
             this.GameLog.Text = "ゲームログ";
             // 
-            // btnStart
+            // btnMainAction
             // 
-            this.btnStart.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnStart.Location = new System.Drawing.Point(676, 603);
-            this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(82, 58);
-            this.btnStart.TabIndex = 7;
-            this.btnStart.Text = "かいし";
-            this.btnStart.UseVisualStyleBackColor = true;
-            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
+            this.btnMainAction.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnMainAction.Location = new System.Drawing.Point(695, 605);
+            this.btnMainAction.Name = "btnMainAction";
+            this.btnMainAction.Size = new System.Drawing.Size(82, 58);
+            this.btnMainAction.TabIndex = 7;
+            this.btnMainAction.Text = "かいし";
+            this.btnMainAction.UseVisualStyleBackColor = true;
+            this.btnMainAction.Click += new System.EventHandler(this.btnMainAction_Click);
             // 
             // btnBack
             // 
             this.btnBack.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnBack.Location = new System.Drawing.Point(773, 603);
+            this.btnBack.Location = new System.Drawing.Point(792, 605);
             this.btnBack.Name = "btnBack";
             this.btnBack.Size = new System.Drawing.Size(82, 58);
             this.btnBack.TabIndex = 8;
             this.btnBack.Text = "もどる";
             this.btnBack.UseVisualStyleBackColor = true;
+            this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
             // 
             // Operattion
             // 
-            this.Operattion.Location = new System.Drawing.Point(77, 443);
+            this.Operattion.Location = new System.Drawing.Point(70, 446);
             this.Operattion.Multiline = true;
             this.Operattion.Name = "Operattion";
             this.Operattion.ReadOnly = true;
@@ -154,7 +155,7 @@
             this.Logs.Multiline = true;
             this.Logs.Name = "Logs";
             this.Logs.ReadOnly = true;
-            this.Logs.Size = new System.Drawing.Size(804, 118);
+            this.Logs.Size = new System.Drawing.Size(600, 118);
             this.Logs.TabIndex = 10;
             // 
             // flpCpu1Hand
@@ -167,15 +168,15 @@
             this.flpCpu1Hand.TabIndex = 11;
             this.flpCpu1Hand.WrapContents = false;
             // 
-            // flowLayoutPanel2
+            // flowLayoutPanel1
             // 
-            this.flowLayoutPanel2.AutoScroll = true;
-            this.flowLayoutPanel2.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(338, 94);
-            this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(237, 160);
-            this.flowLayoutPanel2.TabIndex = 12;
-            this.flowLayoutPanel2.WrapContents = false;
+            this.flowLayoutPanel1.AutoScroll = true;
+            this.flowLayoutPanel1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(338, 94);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(237, 160);
+            this.flowLayoutPanel1.TabIndex = 12;
+            this.flowLayoutPanel1.WrapContents = false;
             // 
             // flpCpu2Hand
             // 
@@ -226,11 +227,11 @@
             this.Controls.Add(this.flpPlayerHand);
             this.Controls.Add(this.OPGuide);
             this.Controls.Add(this.flpCpu2Hand);
-            this.Controls.Add(this.flowLayoutPanel2);
+            this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.GameLog);
             this.Controls.Add(this.flpCpu1Hand);
             this.Controls.Add(this.btnBack);
-            this.Controls.Add(this.btnStart);
+            this.Controls.Add(this.btnMainAction);
             this.Controls.Add(this.Logs);
             this.Controls.Add(this.Operattion);
             this.Controls.Add(this.DateOfPlayer);
@@ -239,7 +240,7 @@
             this.Controls.Add(this.DateOfCUP2);
             this.Controls.Add(this.DateOfCUP1);
             this.Name = "GameForm";
-            this.Text = "GameForm";
+            this.Text = "ゲーム画面";
             this.Load += new System.EventHandler(this.GameForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).EndInit();
             this.ResumeLayout(false);
@@ -256,12 +257,12 @@
         private System.Windows.Forms.Label DateOfPlayer;
         private System.Windows.Forms.Label OPGuide;
         private System.Windows.Forms.Label GameLog;
-        private System.Windows.Forms.Button btnStart;
+        private System.Windows.Forms.Button btnMainAction;
         private System.Windows.Forms.Button btnBack;
         private System.Windows.Forms.TextBox Operattion;
         private System.Windows.Forms.TextBox Logs;
         private System.Windows.Forms.FlowLayoutPanel flpCpu1Hand;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.FlowLayoutPanel flpCpu2Hand;
         private System.Windows.Forms.FlowLayoutPanel flpPlayerHand;
         private System.Windows.Forms.FlowLayoutPanel flpCpu3Hand;

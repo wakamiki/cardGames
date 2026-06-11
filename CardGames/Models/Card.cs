@@ -13,10 +13,24 @@ namespace CardGames.Models
     // ジョーカーでは Suit / Rank を null、IsJoker を true として扱う。
     internal class Card
     {
-        internal Suit? Suit { get; set; }
-        internal Rank? Rank { get; set; }
-        internal bool IsJoker{ get; set; }
-        internal string DisplayName{ get; set; }
-        // TODO: 後でdeckクラス以外からは値を変更できなくする。
+        //========================================
+        //フィールド
+        //========================================
+        internal Suit? Suit { get; }
+        internal Rank? Rank { get; }
+        internal bool IsJoker { get; }
+        internal string DisplayName { get; }
+
+        //========================================
+        //コンストラクタ
+        //========================================
+
+        internal Card(Suit? suit, Rank? rank, bool isJoker, string displayName)
+        {
+            Suit = suit;
+            Rank = rank;
+            IsJoker = isJoker;
+            DisplayName = displayName;
+        }
     }
 }

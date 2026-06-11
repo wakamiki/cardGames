@@ -14,13 +14,14 @@ namespace CardGames.Models
     internal class Deck
     {
         private List<Card> _deck = new List<Card>();
+        internal IReadOnlyList<Card> ReadDeck => _deck;
         private Random _random = new Random();
 
         internal int RemainingCount => _deck.Count;
 
         //残り枚数を返す
 
-        internal List<Card> CreateDeck()
+        internal void CreateDeck()
         {
             //一旦初期化
             _deck.Clear();
@@ -30,58 +31,46 @@ namespace CardGames.Models
                 foreach (Rank rank in Enum.GetValues(typeof(Rank)))
                 {
                     //表示用文字組立
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append(GetSuitText(suit));
-                    sb.Append("-");
-                    sb.Append(GetRankText(rank));
+                    string displayName = GetSuitText(suit) + "-" + GetRankText(rank);
 
-                    Card card = new Card
-                    {
-                        Suit = suit,
-                        Rank = rank,
-                        IsJoker = false,
-                        DisplayName = sb.ToString(),
-                    };
+                    Card card = new Card(suit, rank,false,displayName);
                     _deck.Add(card);
                 }
                 //Console.WriteLine(decks.Count);//デバッグ用52枚になるはず
 
             }
-            Card joker = new Card
-            {
-                Suit = null,
-                Rank = null,
-                IsJoker = true,
-                DisplayName = "Joker",
-            };
+            Card joker = new Card(null,null,true,"Joker");
             _deck.Add(joker);
 
             //    通常カード 52枚
             //    ジョーカー 1枚
             //    合計 53枚
-            return _deck;
         }
 
 
-        internal List<Card> Shuffle()
+        internal void Shuffle()
         {
             //Fisher-Yates シャッフルを採用する。
             for (int i = _deck.Count-1; i > 0; i--)
             {
-                int Move = _random.Next(i + 1);
-                Card Tmp = _deck[i];
-                _deck[i] = _deck[Move];
-                _deck[Move] = Tmp;
+                int move = _random.Next(i + 1);
+                Card tmp = _deck[i];
+                _deck[i] = _deck[move];
+                _deck[move] = tmp;
             }
-            return _deck;
         }
 
+        //山札からカードを1枚渡す
         internal Card DrawCard()
         {
+            if (RemainingCount == 0)
+            {
+                throw new InvalidOperationException("山札にカードがありません。");
+            }
             //山札から1枚取り出す
-            Card TargetCard = _deck[0];
+            Card targetCard = _deck[0];
             _deck.RemoveAt(0);
-            return TargetCard;
+            return targetCard;
         }
 
 
@@ -92,13 +81,17 @@ namespace CardGames.Models
         //Rankを表示用文字記号に変換
         internal string GetRankText(Rank rank) 
         {
+            if (_deck.Count == 0)
+            {
+                throw new InvalidOperationException("山札が空です。");
+            }
             switch (rank)
             {
                 case Rank.Ace:
                     return "A";
 
                 case Rank.Jack:
-                    return"J";
+                    return "J";
 
                 case Rank.Queen:
                     return "Q";

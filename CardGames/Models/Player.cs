@@ -5,52 +5,75 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
-using CardGames.Models;
 
 namespace CardGames.Models
 {
     internal class Player
     {
 
-        //インスタンスを作成
-        Deck deck = new Deck();
+        //========================================
+        //フィールド
+        //========================================
 
         //・名前を持つ
         private string _name {  get; set; }
 
         //・手札を持つ
-        private List<Card> _handDeck {  get; set; }
+        private List<Card> _handDeck = new List<Card>();
+        internal IReadOnlyList<Card> HandDeck => _handDeck;
 
         //・プレイヤーかどうかを持つ
         private bool _isCpu {  get; set; }
+        internal bool IsCpu => _isCpu;
 
         //・勝ち抜け済みかどうかを持つ
         private bool _isFinished {  get; set; }
+        internal bool IsFinished => _isFinished;
 
-        private int _handCount => _handDeck.Count;
+        internal int HandCount => _handDeck.Count;
 
-        private bool _isHandEmpty {  get; set; }
+        //========================================
+        //コンストラクタ
+        //========================================
 
-
-        internal void AddCard()
+        internal Player(string name, bool isCpu)
         {
-            _handDeck.Add(deck.DrawCard());
+            _name = name;
+            _isCpu = isCpu;
+            _isFinished = false;
         }
 
+        //========================================
+        //基本メソッド
+        //========================================
+
+            //カード追加
+        internal void AddCard(Card card)
+        {
+            _handDeck.Add(card);
+        }
+
+        //カードの配列を指定して削除&渡す
         internal Card RemoveCardAt(int num)
         {
-            if (num>=_handCount|num<0)
+            if (num>=HandCount|num<0)
             {
                 throw new Exception("不正な数値が指定されました。");
             }
             Card card = _handDeck[num];
+            _handDeck.RemoveAt(num);
             return card;
         }
 
 
         //========================================
-        //補助メソッド
+        //専用メソッド
         //========================================
 
+        //勝ち抜けCPUの状態変更
+        internal void MarkAsFinished()
+        {
+            _isFinished = true;
+        }
     }
 }
