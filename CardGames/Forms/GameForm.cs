@@ -122,6 +122,13 @@ namespace CardGames
             }
         }
 
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            SettingForm frm3 = new SettingForm();
+            frm3.Show();
+            this.Close();
+        }
+
         //======================================
         //ロードイベント
         //======================================

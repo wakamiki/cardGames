@@ -31,12 +31,9 @@ namespace CardGames.Models
                 foreach (Rank rank in Enum.GetValues(typeof(Rank)))
                 {
                     //表示用文字組立
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append(GetSuitText(suit));
-                    sb.Append("-");
-                    sb.Append(GetRankText(rank));
+                    string displayName = GetSuitText(suit) + "-" + GetRankText(rank);
 
-                    Card card = new Card(suit, rank,false,sb.ToString());
+                    Card card = new Card(suit, rank,false,displayName);
                     _deck.Add(card);
                 }
                 //Console.WriteLine(decks.Count);//デバッグ用52枚になるはず
@@ -84,13 +81,17 @@ namespace CardGames.Models
         //Rankを表示用文字記号に変換
         internal string GetRankText(Rank rank) 
         {
+            if (_deck.Count == 0)
+            {
+                throw new InvalidOperationException("山札が空です。");
+            }
             switch (rank)
             {
                 case Rank.Ace:
                     return "A";
 
                 case Rank.Jack:
-                    return"J";
+                    return "J";
 
                 case Rank.Queen:
                     return "Q";
