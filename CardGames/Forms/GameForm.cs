@@ -325,6 +325,11 @@ namespace CardGames
                 pictureBox.Height = CardHeight;
                 pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
                 flpPlayerHand.Controls.Add(pictureBox);
+                // =================================================================
+                // #61_カードの選択状態が分かるような仕掛け実装(#49) // 20260612 工藤
+                // =================================================================
+                pictureBox.MouseEnter += Card_MouseEnter; // マウスが乗ったら浮く
+                pictureBox.MouseLeave += Card_MouseLeave; // マウスが離れたら戻る
             }
             
         }
@@ -361,6 +366,28 @@ namespace CardGames
                 }
             }
         }
+
+        // =================================================================
+        // #61_カードの選択状態が分かるような仕掛け実装(#49) // 20260612 工藤
+        // Card_MouseEnter(), Card_MouseLeave() を新規作成
+        // =================================================================
+        private void Card_MouseEnter(object sender, EventArgs e)
+        {
+            if (sender is PictureBox pictureBox)
+            {
+                pictureBox.Top -= 15; // 15ピクセル上に浮かせる
+            }
+        }
+
+        private void Card_MouseLeave(object sender, EventArgs e)
+        {
+            if (sender is PictureBox pictureBox)
+            {
+                pictureBox.Top += 15; // 元の位置に戻す
+            }
+        }
+
+
         //捨て札エリアを描き直す
         private void UpdateFlpDiscardPile()
         {
