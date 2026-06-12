@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CardGames.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,7 +13,7 @@ namespace CardGames
 {
     public partial class SettingForm : Form
     {
-        public SettingForm()
+        internal SettingForm()
         {
             InitializeComponent();
         }
@@ -107,9 +108,10 @@ namespace CardGames
             string _NameOfPlayer = InputName.Text; // 入力されたプレイヤー名
             int _playerCount = 1;                // プレイヤー数 (固定: 1)
             int _cpuCount = 3;                   // CPU数 (固定: 3)
+            GameSession gameSession = new GameSession();
 
-            // 次画面を作成、引数(プレイヤー名と人数)を渡す
-            GameForm gmForm = new GameForm(_NameOfPlayer, _playerCount, _cpuCount);
+            // 次画面を作成、引数(プレイヤー名と人数,プレイヤー勝敗数)を渡す
+            GameForm gmForm = new GameForm(_NameOfPlayer, _playerCount, _cpuCount,gameSession);
 
             // ゲーム画面を表示
             gmForm.Show();

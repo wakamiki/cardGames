@@ -12,7 +12,7 @@ namespace CardGames
 {
     public partial class StartForm : Form
     {
-        public StartForm()
+        internal StartForm()
         {
             InitializeComponent();
         }
