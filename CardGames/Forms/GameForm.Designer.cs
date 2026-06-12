@@ -192,6 +192,7 @@
             // 
             this.flpPlayerHand.AutoScroll = true;
             this.flpPlayerHand.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.flpPlayerHand.Cursor = System.Windows.Forms.Cursors.Hand;
             this.flpPlayerHand.Location = new System.Drawing.Point(28, 288);
             this.flpPlayerHand.Name = "flpPlayerHand";
             this.flpPlayerHand.Size = new System.Drawing.Size(237, 140);
@@ -210,7 +211,7 @@
             // 
             // pictureBox_Result
             // 
-            this.pictureBox_Result.Location = new System.Drawing.Point(-5, 3);
+            this.pictureBox_Result.Location = new System.Drawing.Point(12, 2);
             this.pictureBox_Result.Name = "pictureBox_Result";
             this.pictureBox_Result.Size = new System.Drawing.Size(969, 705);
             this.pictureBox_Result.TabIndex = 15;
