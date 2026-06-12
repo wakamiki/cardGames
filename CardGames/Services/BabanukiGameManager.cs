@@ -107,16 +107,9 @@ namespace CardGames.Services
 
         }
 
-        //勝敗後にリスタート
-        internal void ReStart()
-        {
-
-        }
-
         //ターンを進める処理
         internal void AdvanceTurn(Card drawCard)
         {
-
             //ペアを捨てる
             HandleDrawnCard(drawCard);
             //勝ち抜けがいないかチェック
@@ -140,7 +133,7 @@ namespace CardGames.Services
         {
             //ここにカードを引く処理
             //CPUが引くカードを選択
-            int CardIndex = _random.Next(_targetPlayer.HandCount - 1);
+            int CardIndex = _random.Next(_targetPlayer.HandCount);
             //カードを引く
             return _targetPlayer.RemoveCardAt(CardIndex);  
         }
@@ -160,14 +153,13 @@ namespace CardGames.Services
         {
             while (_deck.RemainingCount > 0)
             {
-
                 foreach (Player player in _players)
                 {
-                    player.AddCard(_deck.DrawCard());
                     if (_deck.RemainingCount == 0)
                     {
                         break;
                     }
+                    player.AddCard(_deck.DrawCard());
                 }
             }
         }
@@ -249,7 +241,7 @@ namespace CardGames.Services
             {
                 if (_players[nextPlayerIndex].IsFinished) 
                 {
-                    nextPlayerIndex = (nextPlayerIndex + 1) % _players.Count();
+                    nextPlayerIndex = (nextPlayerIndex + 1) % _players.Count;
                 }
                 else
                 {
@@ -269,13 +261,13 @@ namespace CardGames.Services
             //activeIndex = 2 → targetIndex = 1
             //activeIndex = 3 → targetIndex = 2
             int playerIndex = GetPlayerIndex(_activePlayer);
-            int targetIndex = (playerIndex - 1 + _players.Count) % _players.Count();
+            int targetIndex = (playerIndex - 1 + _players.Count) % _players.Count;
             //引く相手が勝ち抜け状態のプレイヤーじゃなくなるまで繰り返す
             for (int i=0;i< _players.Count();i++)
             {
                 if (_players[targetIndex].IsFinished)
                 {
-                    targetIndex = (playerIndex - 1 + _players.Count) % _players.Count();
+                    targetIndex = (targetIndex - 1 + _players.Count) % _players.Count;
                 }
                 else
                 {

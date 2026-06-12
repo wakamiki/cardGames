@@ -9,6 +9,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,6 +22,7 @@ namespace CardGames
         private string _playerName;
         private int _playerCount;
         private int _cpuCount;
+        private GameSession _gameSession;
         //プレイヤーとフローレイアウトパネルの紐づけ辞書
         private Dictionary<Player, FlowLayoutPanel> _playerHandPanels = new Dictionary<Player, FlowLayoutPanel>();
         private BabanukiGameManager _gameManager;
@@ -38,12 +40,13 @@ namespace CardGames
         //======================================
         //イベントメソッド
         //======================================
-        public GameForm(string playerName,int playerCount,int cpuCount)
+        internal GameForm(string playerName,int playerCount,int cpuCount,GameSession gameSession)
         {
             InitializeComponent();
             _playerName = playerName;
             _playerCount = playerCount;
             _cpuCount = cpuCount;
+            _gameSession = gameSession;
             _gameManager = new BabanukiGameManager();
             _gameManager.GameSettings(_playerName,_playerCount,_cpuCount);
         }
@@ -117,12 +120,14 @@ namespace CardGames
 
                 case GamePhase.GameOver:
                     // 敗北時演出　タイトルへ戻る、または再スタート
-                    _gameManager.ReStart();
+                    _gameSession.AddPlayerLose();
+                    ReStart();
                     break;
 
                 case GamePhase.GameWin:
                     //　勝利時演出 タイトルへ戻る、または再スタート
-                    _gameManager.ReStart();
+                    _gameSession.AddPlayerWin();
+                    ReStart();
                     break;
             }
         }
@@ -210,6 +215,7 @@ namespace CardGames
             {
                 if (control is PictureBox pictureBox)
                 {
+                    pictureBox.Click -= SelectableCardPictureBox_Click;
                     pictureBox.Click += SelectableCardPictureBox_Click;
                     pictureBox.Cursor = Cursors.Hand;
                 }
@@ -268,7 +274,6 @@ namespace CardGames
         //======================================
         //GamePhase.GameOver
         //======================================
-
         //======================================
         //GamePhase.GameWin
         //======================================
@@ -288,6 +293,15 @@ namespace CardGames
                 ShowMessegeBoxWin();
                 //画面変更メソッド
             }
+        }
+
+        //リスタート処理
+        private void ReStart()
+        {
+            GameForm nextForm = new GameForm(_playerName,_playerCount,_cpuCount, _gameSession);
+            nextForm.Show();
+
+            this.Close();
         }
 
 
