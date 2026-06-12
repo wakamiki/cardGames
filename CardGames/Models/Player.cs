@@ -16,21 +16,19 @@ namespace CardGames.Models
         //========================================
 
         //・名前を持つ
-        private string _name {  get; set; }
+        internal string Name { get; }
 
         //・手札を持つ
         private List<Card> _handDeck = new List<Card>();
         internal IReadOnlyList<Card> HandDeck => _handDeck;
+        internal int HandCount => _handDeck.Count;
 
         //・プレイヤーかどうかを持つ
-        private bool _isCpu {  get; set; }
-        internal bool IsCpu => _isCpu;
+        internal bool IsCpu { get; }
 
         //・勝ち抜け済みかどうかを持つ
-        private bool _isFinished {  get; set; }
-        internal bool IsFinished => _isFinished;
+        internal bool IsFinished { get; set; }
 
-        internal int HandCount => _handDeck.Count;
 
         //========================================
         //コンストラクタ
@@ -38,9 +36,9 @@ namespace CardGames.Models
 
         internal Player(string name, bool isCpu)
         {
-            _name = name;
-            _isCpu = isCpu;
-            _isFinished = false;
+            Name = name;
+            IsCpu = isCpu;
+            IsFinished = false;
         }
 
         //========================================
@@ -73,7 +71,7 @@ namespace CardGames.Models
         //勝ち抜けCPUの状態変更
         internal void MarkAsFinished()
         {
-            _isFinished = true;
+            IsFinished = true;
         }
     }
 }
