@@ -56,7 +56,7 @@ namespace CardGames.Models
         //カードの配列を指定して削除&渡す
         internal Card RemoveCardAt(int num)
         {
-            if (num>=HandCount|num<0)
+            if (num>=HandCount||num<0)
             {
                 throw new Exception("不正な数値が指定されました。");
             }

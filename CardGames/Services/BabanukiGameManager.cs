@@ -86,7 +86,7 @@ namespace CardGames.Services
             //ペアのカードを捨て札エリアに捨てる
             foreach (Player player in _players)
             {
-                RemovePairs(player);
+                RemoveAllPairs(player);
             }
             //勝ち抜け参加者がいないかチェック
             foreach (var player in _players)
@@ -114,10 +114,11 @@ namespace CardGames.Services
         }
 
         //ターンを進める処理
-        internal void AdvanceTurn()
+        internal void AdvanceTurn(Card drawCard)
         {
+
             //ペアを捨てる
-            RemovePairs(_activePlayer);
+            HandleDrawnCard(drawCard);
             //勝ち抜けがいないかチェック
             CheckAndHandleFinishedPlayer(_activePlayer);
             CheckAndHandleFinishedPlayer(_targetPlayer);
@@ -134,16 +135,20 @@ namespace CardGames.Services
             }
         }
 
-        //CPUがカードを引く　プレイヤー版はGameFormに所属
-        internal void CpuTurnCardDraw()
+        //CPUがカードを引く
+        internal Card CpuTurnCardDraw()
         {
             //ここにカードを引く処理
             //CPUが引くカードを選択
-            int targetNum = _random.Next(_targetPlayer.HandCount - 1);
+            int CardIndex = _random.Next(_targetPlayer.HandCount - 1);
             //カードを引く
-            Card card = _targetPlayer.RemoveCardAt(targetNum);
-            //引いたカードを手札に追加
-            _activePlayer.AddCard(card);
+            return _targetPlayer.RemoveCardAt(CardIndex);  
+        }
+
+        //プレイヤーがカードを引く
+        internal Card PlayerTurnCardDraw(int CardIndex)
+        {
+            return _targetPlayer.RemoveCardAt(CardIndex);
         }
 
         //==========================
@@ -184,50 +189,51 @@ namespace CardGames.Services
             return;
         }
 
-
-        //ペア削除処理
-        internal void RemovePairs(Player player)
+        //ペア削除処理 全ペア確認
+        internal void RemoveAllPairs(Player player)
         {
-            bool pairFound = true;
-            while (pairFound)
+            //手札の手前からカード1枚とる。(配列最後のカードはとらない)
+            for (int i = 0; i < player.HandCount-1; i++)
             {
-
-                pairFound = false;
-
-                //手札の手前からカード1枚とる。
-                for (int i = 0; i < player.HandDeck.Count; i++)
+                //残りのカードとランクが同じものが無いか探す
+                for (int j = i+1; j < player.HandCount; j++)
                 {
-                    //残りのカードとランクが同じものが無いか探す
-                    for (int j = i + 1; j < player.HandDeck.Count; j++)
+                    if (player.HandDeck[i].IsPairWith(player.HandDeck[j]))
                     {
-                        //ジョーカーは除外
-                        if (player.HandDeck[i].IsJoker || player.HandDeck[j].IsJoker)
-                        {
-                            continue;
-                        }
                         //同じペアが見つかった場合の処理
-                        if (player.HandDeck[i].Rank == player.HandDeck[j].Rank)
-                        {
-                            //カードを捨て札エリアに追加
-                            _discardPile.Add(player.HandDeck[j]);
-                            _discardPile.Add(player.HandDeck[i]);
-                            //jが指している配列番号が変わらないよう
-                            //必ず配列の後ろから削除して行く。
-                            player.RemoveCardAt(j);
-                            player.RemoveCardAt(i);
-                            //whileからやり直す
-                            pairFound = true;
-                            break;
-                        }
-                    }
-                    // ペアを削除した場合、外側のforも抜けてwhileの先頭に戻る
-                    if (pairFound)
-                    {
+                        //カードを捨て札エリアに追加
+                        _discardPile.Add(player.HandDeck[j]);
+                        _discardPile.Add(player.HandDeck[i]);
+                        //jが指している配列番号が変わらないよう
+                        //必ず配列の後ろから削除して行く。
+                        player.RemoveCardAt(j);
+                        player.RemoveCardAt(i);
+                        i--;
                         break;
                     }
-                }
+                }  
             }
         }
+
+        //ペア削除処理とドローカードを手札に加える　引いたカードと手札確認　
+        internal void HandleDrawnCard(Card drawCard)
+        {
+            //手札の手前からカード1枚とる。(配列最後のカードはとらない)
+            for (int i = 0; i < _activePlayer.HandCount-1; i++)
+            {
+                if (drawCard.IsPairWith(_activePlayer.HandDeck[i]))
+                {
+                    //同じペアが見つかった場合の処理
+                    //カードを捨て札エリアに追加
+                    _discardPile.Add(_activePlayer.HandDeck[i]);
+                    _discardPile.Add(drawCard);
+                    _activePlayer.RemoveCardAt(i);
+                    return;
+                }
+            }
+            _activePlayer.AddCard(drawCard);
+        }
+
         //次の手番のプレイヤーを返す
         internal Player GetNextActivePlayer()
         {

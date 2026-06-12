@@ -32,5 +32,22 @@ namespace CardGames.Models
             IsJoker = isJoker;
             DisplayName = displayName;
         }
+
+        //========================================
+        //メソッド
+        //========================================
+
+        /// <summary>
+        /// 引数で渡されたカードと、自分が「ババ抜きのペア」になれるか判定
+        /// </summary>
+        internal bool IsPairWith(Card other)
+        {
+            // どちらかがnull、またはどちらかがジョーカーならペアにはならない
+            if (this == null || other == null || this.IsJoker || other.IsJoker) return false;
+
+            // 数字（Rank）が一致していればペア！
+            return this.Rank == other.Rank;
+        }
+
     }
 }

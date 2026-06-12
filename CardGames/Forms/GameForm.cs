@@ -88,19 +88,23 @@ namespace CardGames
 
                 // プレイヤーターン:カードを引く
                 case GamePhase.PlayerConfirming:
-                    // 選択済みカードを確定して引く
-                    ConfirmSelectedCardDraw();
+                    //カード配列番号取得
+                    int cardIndex = TakeSelectedCardIndex();
+                    //カードドロー
+                    Card drawCard = _gameManager.PlayerTurnCardDraw(cardIndex);
                     //ターン進行
-                    _gameManager.AdvanceTurn();
+                    _gameManager.AdvanceTurn(drawCard);
+                    //ゲーム進行状態更新
+                    _gameManager.SetCpuTurn();
                     UpdateDisplay();
                     break;
 
                 // CPUターンスタート
                 case GamePhase.CpuTurn:
                     // CPUがカードを引く
-                    _gameManager.CpuTurnCardDraw();
+                    Card cpuDrawCard = _gameManager.CpuTurnCardDraw();
                     //ターン進行
-                    _gameManager.AdvanceTurn();
+                    _gameManager.AdvanceTurn(cpuDrawCard);
                     UpdateDisplay();
                     //次の手番がプレイヤー時の遷移処理
                     if (_gameManager.IsPlayerTurn())
@@ -243,19 +247,17 @@ namespace CardGames
         //======================================
         //GamePhase.PlayerConfirming
         //======================================
-        //ピクチャボックスを操作するためGameFormメソッドに所属
-        private void ConfirmSelectedCardDraw()
+
+        //ピクチャボックスからカード配列番号を返しカード選択状態を解除
+        private int TakeSelectedCardIndex()
         {
-            //カードを引く
-            Card card = _gameManager.TargetPlayer.RemoveCardAt((int)_selectedPictureBox.Tag);
-            //カードを手札に加える
-            _gameManager.ActivePlayer.AddCard(card);
+            if (!int.TryParse(_selectedPictureBox.Tag.ToString(), out int cardIndex))
+            {
+                throw new InvalidOperationException("カードが選択されていません。");
+            }
             //_selectedPictureBoxをnullにする(選択状態を解除)
             _selectedPictureBox = null;
-            //勝ち抜けチェック
-            _gameManager.CheckAndHandleFinishedPlayer(_gameManager.TargetPlayer);
-            //ゲーム進行状態を変更(CPUTurn)
-            _gameManager.SetCpuTurn();
+            return cardIndex;
         }
 
 

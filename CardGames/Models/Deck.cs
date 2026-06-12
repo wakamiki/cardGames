@@ -81,10 +81,6 @@ namespace CardGames.Models
         //Rankを表示用文字記号に変換
         internal string GetRankText(Rank rank) 
         {
-            if (_deck.Count == 0)
-            {
-                throw new InvalidOperationException("山札が空です。");
-            }
             switch (rank)
             {
                 case Rank.Ace:
