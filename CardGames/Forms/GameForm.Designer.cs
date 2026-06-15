@@ -50,7 +50,9 @@
             this.pnl_Active_CPU3 = new System.Windows.Forms.Panel();
             this.pictureBox_Result = new System.Windows.Forms.PictureBox();
             this.pnl_Shadow = new System.Windows.Forms.Panel();
+            this.lblResults = new System.Windows.Forms.Label();
             this.flpCpu1Hand.SuspendLayout();
+            this.pnl_Active_CPU1.SuspendLayout();
             this.flpCpu2Hand.SuspendLayout();
             this.flpPlayerHand.SuspendLayout();
             this.flpCpu3Hand.SuspendLayout();
@@ -190,6 +192,7 @@
             // pnl_Active_CPU1
             // 
             this.pnl_Active_CPU1.BackColor = System.Drawing.Color.Gold;
+            this.pnl_Active_CPU1.Controls.Add(this.pictureBox_Result);
             this.pnl_Active_CPU1.Location = new System.Drawing.Point(3, 3);
             this.pnl_Active_CPU1.Name = "pnl_Active_CPU1";
             this.pnl_Active_CPU1.Size = new System.Drawing.Size(250, 150);
@@ -270,9 +273,9 @@
             // pictureBox_Result
             // 
             this.pictureBox_Result.BackColor = System.Drawing.SystemColors.Highlight;
-            this.pictureBox_Result.Location = new System.Drawing.Point(900, 22);
+            this.pictureBox_Result.Location = new System.Drawing.Point(-13, -47);
             this.pictureBox_Result.Name = "pictureBox_Result";
-            this.pictureBox_Result.Size = new System.Drawing.Size(729, 476);
+            this.pictureBox_Result.Size = new System.Drawing.Size(952, 672);
             this.pictureBox_Result.TabIndex = 15;
             this.pictureBox_Result.TabStop = false;
             this.pictureBox_Result.Visible = false;
@@ -289,12 +292,22 @@
             this.pnl_Shadow.Size = new System.Drawing.Size(882, 248);
             this.pnl_Shadow.TabIndex = 16;
             // 
+            // lblResults
+            // 
+            this.lblResults.AutoSize = true;
+            this.lblResults.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lblResults.Location = new System.Drawing.Point(385, 376);
+            this.lblResults.Name = "lblResults";
+            this.lblResults.Size = new System.Drawing.Size(116, 23);
+            this.lblResults.TabIndex = 17;
+            this.lblResults.Text = " しょう　はい";
+            // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(976, 696);
-            this.Controls.Add(this.pictureBox_Result);
+            this.Controls.Add(this.lblResults);
             this.Controls.Add(this.flpCpu3Hand);
             this.Controls.Add(this.btnBack);
             this.Controls.Add(this.flpPlayerHand);
@@ -312,6 +325,7 @@
             this.Text = "ゲーム画面";
             this.Load += new System.EventHandler(this.GameForm_Load);
             this.flpCpu1Hand.ResumeLayout(false);
+            this.pnl_Active_CPU1.ResumeLayout(false);
             this.flpCpu2Hand.ResumeLayout(false);
             this.flpPlayerHand.ResumeLayout(false);
             this.flpCpu3Hand.ResumeLayout(false);
@@ -347,5 +361,6 @@
         private System.Windows.Forms.Panel pnl_Active_CPU3;
         private System.Windows.Forms.Panel pnl_Active_User;
         private System.Windows.Forms.Panel pnl_Shadow;
+        private System.Windows.Forms.Label lblResults;
     }
 }
