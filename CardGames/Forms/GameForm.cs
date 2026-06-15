@@ -528,7 +528,6 @@ namespace CardGames
         // #47_GameForm勝利時演出メソッド // 20260611 工藤
         // =================================================================
         internal async Task ShowPlayerWinResult()
-        //internal void ShowPlayerWinResult()
         {
 
             /*効果音を使う場合 ※win_sound の準備が必要
@@ -552,7 +551,6 @@ namespace CardGames
         // #48_GameForm敗北時画面演出 // 20260611 工藤 
         // =================================================================
         internal async Task ShowPlayerLoseResult()
-        //internal void ShowPlayerLoseResult()
         {
 
             /*効果音を使う場合 ※lose_sound の準備が必要
