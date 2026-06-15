@@ -266,6 +266,12 @@ namespace CardGames
             {
                 _activeIndicatorPanels[_gameManager.ActivePlayer].Visible = true;
             }
+
+            // #60 リスタート実装  // 20260615 工藤 による追加分
+            // ●勝●敗の表示
+            lblResults.Text = $"{_playerName}さんの戦績：" +
+                $"{_gameSession.PlayerWins}勝 {_gameSession.PlayerLoses}敗";
+
         }
 
 
