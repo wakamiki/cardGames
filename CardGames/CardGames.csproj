@@ -69,6 +69,7 @@
     <Compile Include="Models\Enums\GamePhase.cs" />
     <Compile Include="Models\Enums\Rank.cs" />
     <Compile Include="Models\Enums\Suit.cs" />
+    <Compile Include="Models\GameSession.cs" />
     <Compile Include="Models\Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
