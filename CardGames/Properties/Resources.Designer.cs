@@ -81,6 +81,16 @@ namespace CardGames.Properties {
         }
         
         /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap btn_default {
+            get {
+                object obj = ResourceManager.GetObject("btn_default", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///    に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string String1 {
