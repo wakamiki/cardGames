@@ -41,22 +41,22 @@
             this.Logs = new System.Windows.Forms.TextBox();
             this.flpCpu1Hand = new System.Windows.Forms.FlowLayoutPanel();
             this.pnl_Active_CPU1 = new System.Windows.Forms.Panel();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.pictureBox_Result = new System.Windows.Forms.PictureBox();
+            this.flpThrown = new System.Windows.Forms.FlowLayoutPanel();
             this.flpCpu2Hand = new System.Windows.Forms.FlowLayoutPanel();
             this.pnl_Active_CPU2 = new System.Windows.Forms.Panel();
             this.flpPlayerHand = new System.Windows.Forms.FlowLayoutPanel();
             this.pnl_Active_User = new System.Windows.Forms.Panel();
             this.flpCpu3Hand = new System.Windows.Forms.FlowLayoutPanel();
             this.pnl_Active_CPU3 = new System.Windows.Forms.Panel();
-            this.pictureBox_Result = new System.Windows.Forms.PictureBox();
             this.pnl_Shadow = new System.Windows.Forms.Panel();
             this.lblResults = new System.Windows.Forms.Label();
             this.flpCpu1Hand.SuspendLayout();
             this.pnl_Active_CPU1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).BeginInit();
             this.flpCpu2Hand.SuspendLayout();
             this.flpPlayerHand.SuspendLayout();
             this.flpCpu3Hand.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).BeginInit();
             this.pnl_Shadow.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -199,15 +199,25 @@
             this.pnl_Active_CPU1.TabIndex = 15;
             this.pnl_Active_CPU1.Visible = false;
             // 
-            // flowLayoutPanel1
+            // pictureBox_Result
             // 
-            this.flowLayoutPanel1.AutoScroll = true;
-            this.flowLayoutPanel1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(344, 160);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(237, 160);
-            this.flowLayoutPanel1.TabIndex = 12;
-            this.flowLayoutPanel1.WrapContents = false;
+            this.pictureBox_Result.BackColor = System.Drawing.SystemColors.Highlight;
+            this.pictureBox_Result.Location = new System.Drawing.Point(-13, -47);
+            this.pictureBox_Result.Name = "pictureBox_Result";
+            this.pictureBox_Result.Size = new System.Drawing.Size(952, 672);
+            this.pictureBox_Result.TabIndex = 15;
+            this.pictureBox_Result.TabStop = false;
+            this.pictureBox_Result.Visible = false;
+            // 
+            // flpThrown
+            // 
+            this.flpThrown.AutoScroll = true;
+            this.flpThrown.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.flpThrown.Location = new System.Drawing.Point(344, 160);
+            this.flpThrown.Name = "flpThrown";
+            this.flpThrown.Size = new System.Drawing.Size(237, 160);
+            this.flpThrown.TabIndex = 12;
+            this.flpThrown.WrapContents = false;
             // 
             // flpCpu2Hand
             // 
@@ -270,16 +280,6 @@
             this.pnl_Active_CPU3.TabIndex = 17;
             this.pnl_Active_CPU3.Visible = false;
             // 
-            // pictureBox_Result
-            // 
-            this.pictureBox_Result.BackColor = System.Drawing.SystemColors.Highlight;
-            this.pictureBox_Result.Location = new System.Drawing.Point(-13, -47);
-            this.pictureBox_Result.Name = "pictureBox_Result";
-            this.pictureBox_Result.Size = new System.Drawing.Size(952, 672);
-            this.pictureBox_Result.TabIndex = 15;
-            this.pictureBox_Result.TabStop = false;
-            this.pictureBox_Result.Visible = false;
-            // 
             // pnl_Shadow
             // 
             this.pnl_Shadow.BackColor = System.Drawing.SystemColors.ScrollBar;
@@ -313,7 +313,7 @@
             this.Controls.Add(this.flpPlayerHand);
             this.Controls.Add(this.btnMainAction);
             this.Controls.Add(this.flpCpu2Hand);
-            this.Controls.Add(this.flowLayoutPanel1);
+            this.Controls.Add(this.flpThrown);
             this.Controls.Add(this.flpCpu1Hand);
             this.Controls.Add(this.DateOfPlayer);
             this.Controls.Add(this.AreaOfThrownCards);
@@ -326,10 +326,10 @@
             this.Load += new System.EventHandler(this.GameForm_Load);
             this.flpCpu1Hand.ResumeLayout(false);
             this.pnl_Active_CPU1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).EndInit();
             this.flpCpu2Hand.ResumeLayout(false);
             this.flpPlayerHand.ResumeLayout(false);
             this.flpCpu3Hand.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).EndInit();
             this.pnl_Shadow.ResumeLayout(false);
             this.pnl_Shadow.PerformLayout();
             this.ResumeLayout(false);
@@ -351,7 +351,7 @@
         private System.Windows.Forms.TextBox Operattion;
         private System.Windows.Forms.TextBox Logs;
         private System.Windows.Forms.FlowLayoutPanel flpCpu1Hand;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.FlowLayoutPanel flpThrown;
         private System.Windows.Forms.FlowLayoutPanel flpCpu2Hand;
         private System.Windows.Forms.FlowLayoutPanel flpPlayerHand;
         private System.Windows.Forms.FlowLayoutPanel flpCpu3Hand;

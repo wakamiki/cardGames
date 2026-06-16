@@ -69,6 +69,45 @@ namespace CardGames
         }
 
         /// <summary>
+        /// 「ゲーム開始」ボタン押下時
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnGameStart_Click(object sender, EventArgs e)
+        {
+            // 次画面にプレイヤー名と人数を渡す
+            string _NameOfPlayer = InputName.Text; // 入力されたプレイヤー名
+            int _playerCount = 1;                // プレイヤー数 (固定: 1)
+            int _cpuCount = 3;                   // CPU数 (固定: 3)
+            GameSession gameSession = new GameSession();
+
+            // 次画面を作成、引数(プレイヤー名と人数,プレイヤー勝敗数)を渡す
+            GameForm gmForm = new GameForm(_NameOfPlayer, _playerCount, _cpuCount,gameSession);
+
+            // ゲーム画面を表示
+            gmForm.Show();
+
+            // 現在の画面を閉じる
+            this.Close();
+
+        }
+
+        /// <summary>
+        /// 「戻る」ボタン押下時
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            // スタート画面を再表示
+            Application.OpenForms["StartForm"]?.Show();
+
+            // 現在の画面を閉じる
+            this.Close(); 
+        }
+
+
+        /// <summary>
         /// 「登録」ボタン押下時
         /// </summary>
         /// <param name="sender"></param>
@@ -95,44 +134,6 @@ namespace CardGames
             // ユーザーに完了を通知
             MessageBox.Show($"プレイヤー名を「{inputName}」で登録しました！",
                 "登録完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        /// <summary>
-        /// 「ゲーム開始」ボタン押下時
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnGameStart_Click(object sender, EventArgs e)
-        {
-            // 次画面にプレイヤー名と人数を渡す
-            string _NameOfPlayer = InputName.Text; // 入力されたプレイヤー名
-            int _playerCount = 1;                // プレイヤー数 (固定: 1)
-            int _cpuCount = 3;                   // CPU数 (固定: 3)
-            GameSession gameSession = new GameSession();
-
-            // 次画面を作成、引数(プレイヤー名と人数,プレイヤー勝敗数)を渡す
-            GameForm gmForm = new GameForm(_NameOfPlayer, _playerCount, _cpuCount,gameSession);
-
-            // ゲーム画面を表示
-            gmForm.Show();
-
-            // 現在の画面をを閉じる
-            this.Close();
-
-        }
-
-        /// <summary>
-        /// 「戻る」ボタン押下時
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnGameEnd_Click(object sender, EventArgs e)
-        {
-            // スタート画面を再表示
-            Application.OpenForms["StartForm"]?.Show();
-
-            // 現在の画面を閉じる
-            this.Close(); 
         }
     }
 }

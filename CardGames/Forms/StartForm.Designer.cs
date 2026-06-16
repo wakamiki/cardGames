@@ -28,21 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
+            this.title = new System.Windows.Forms.Label();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnEnd = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // label1
+            // title
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("MS UI Gothic", 19.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label1.Location = new System.Drawing.Point(288, 48);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(174, 33);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "CardGames";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.title.AutoSize = true;
+            this.title.Font = new System.Drawing.Font("MS UI Gothic", 19.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.title.Location = new System.Drawing.Point(288, 48);
+            this.title.Name = "title";
+            this.title.Size = new System.Drawing.Size(174, 33);
+            this.title.TabIndex = 0;
+            this.title.Text = "CardGames";
+            this.title.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             // 
             // btnStart
             // 
@@ -75,7 +75,7 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.btnEnd);
             this.Controls.Add(this.btnStart);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.title);
             this.Name = "StartForm";
             this.Text = "スタート画面";
             this.ResumeLayout(false);
@@ -85,7 +85,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label title;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnEnd;
     }

@@ -35,7 +35,7 @@
             this.InputName = new System.Windows.Forms.TextBox();
             this.labelCPU = new System.Windows.Forms.Label();
             this.btnGameStart = new System.Windows.Forms.Button();
-            this.btnGameEnd = new System.Windows.Forms.Button();
+            this.btnBack = new System.Windows.Forms.Button();
             this.btnRegist = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -118,17 +118,17 @@
             this.btnGameStart.UseVisualStyleBackColor = false;
             this.btnGameStart.Click += new System.EventHandler(this.btnGameStart_Click);
             // 
-            // btnGameEnd
+            // btnBack
             // 
-            this.btnGameEnd.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.btnGameEnd.Font = new System.Drawing.Font("MS UI Gothic", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnGameEnd.Location = new System.Drawing.Point(358, 307);
-            this.btnGameEnd.Name = "btnGameEnd";
-            this.btnGameEnd.Size = new System.Drawing.Size(166, 76);
-            this.btnGameEnd.TabIndex = 8;
-            this.btnGameEnd.Text = "戻る";
-            this.btnGameEnd.UseVisualStyleBackColor = false;
-            this.btnGameEnd.Click += new System.EventHandler(this.btnGameEnd_Click);
+            this.btnBack.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnBack.Font = new System.Drawing.Font("MS UI Gothic", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnBack.Location = new System.Drawing.Point(358, 307);
+            this.btnBack.Name = "btnBack";
+            this.btnBack.Size = new System.Drawing.Size(166, 76);
+            this.btnBack.TabIndex = 8;
+            this.btnBack.Text = "戻る";
+            this.btnBack.UseVisualStyleBackColor = false;
+            this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
             // 
             // btnRegist
             // 
@@ -146,9 +146,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(680, 450);
             this.Controls.Add(this.btnRegist);
-            this.Controls.Add(this.btnGameEnd);
+            this.Controls.Add(this.btnBack);
             this.Controls.Add(this.btnGameStart);
             this.Controls.Add(this.labelCPU);
             this.Controls.Add(this.InputName);
@@ -173,7 +173,7 @@
         private System.Windows.Forms.TextBox InputName;
         private System.Windows.Forms.Label labelCPU;
         private System.Windows.Forms.Button btnGameStart;
-        private System.Windows.Forms.Button btnGameEnd;
+        private System.Windows.Forms.Button btnBack;
         private System.Windows.Forms.Button btnRegist;
     }
 }
