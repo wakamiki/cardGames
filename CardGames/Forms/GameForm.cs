@@ -270,7 +270,7 @@ namespace CardGames
             // #60 リスタート実装  // 20260615 工藤 による追加分
             // ●勝●敗の表示
             lblResults.Text = $"{_playerName}さんの戦績：" +
-                $"{_gameSession.PlayerWins}勝 {_gameSession.PlayerLoses}敗";
+                $"{_gameSession.PlayerResult[0]}勝 {_gameSession.PlayerResult[1]}敗";
 
         }
 
@@ -589,7 +589,6 @@ namespace CardGames
         // #47_GameForm勝利時演出メソッド // 20260611 工藤
         // =================================================================
         internal async Task ShowPlayerWinResult()
-        //internal void ShowPlayerWinResult()
         {
 
             /*効果音を使う場合 ※win_sound の準備が必要
@@ -613,7 +612,6 @@ namespace CardGames
         // #48_GameForm敗北時画面演出 // 20260611 工藤 
         // =================================================================
         internal async Task ShowPlayerLoseResult()
-        //internal void ShowPlayerLoseResult()
         {
 
             /*効果音を使う場合 ※lose_sound の準備が必要
@@ -622,9 +620,9 @@ namespace CardGames
             */
 
             // 1. 敗北画像をセットして、画面にバーンと表示する
-            pictureBox_Result.Image = Properties.Resources._08_youLose; 
-            pictureBox_Result.Visible = true; 
-            pictureBox_Result.BringToFront(); 
+            pictureBox_Result.Image = Properties.Resources._08_youLose;
+            pictureBox_Result.Visible = true;
+            pictureBox_Result.BringToFront();
 
             // 2. 2秒間（2000ミリ秒）、画面をそのまま静止
             await Task.Delay(2000);
