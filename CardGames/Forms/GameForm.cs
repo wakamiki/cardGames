@@ -10,6 +10,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -81,6 +82,48 @@ namespace CardGames
             InitializeCpuHandPanelMap();
             //表示用カード画像準備
             LoadCardImages();
+
+            // 20260616 工藤 不具合対応 ここから
+
+            // 1. 勝敗画像の設定（最前面へ）
+            this.Controls.Add(pictureBox_Result);
+            pictureBox_Result.Parent = this;
+            pictureBox_Result.Location = new Point(0, 0);
+            pictureBox_Result.Size = this.ClientSize;
+            pictureBox_Result.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox_Result.Visible = false;
+            pictureBox_Result.BringToFront();
+
+            // 2. 背景パネルを一度フォームのコントロールに追加
+            this.Controls.Add(pnl_Active_User);
+            this.Controls.Add(pnl_Active_CPU1);
+            this.Controls.Add(pnl_Active_CPU2);
+            this.Controls.Add(pnl_Active_CPU3);
+
+            //  3. 手札パネルの位置とサイズを背景パネルと完全に一致させる
+            pnl_Active_User.Location = flpPlayerHand.Location;
+            pnl_Active_User.Size = flpPlayerHand.Size;
+            pnl_Active_CPU1.Location = flpCpu1Hand.Location;
+            pnl_Active_CPU1.Size = flpCpu1Hand.Size;
+            pnl_Active_CPU2.Location = flpCpu2Hand.Location;
+            pnl_Active_CPU2.Size = flpCpu2Hand.Size;
+            pnl_Active_CPU3.Location = flpCpu3Hand.Location;
+            pnl_Active_CPU3.Size = flpCpu3Hand.Size;
+
+            //  🌟 4. 【修正！】重ね順を「手札が手前、黄色が後ろ」に完全固定！
+            // BringToFrontを一度すべてやめて、手札を「手前に引き上げる」命令だけに絞ります
+            flpPlayerHand.BringToFront();
+            flpCpu1Hand.BringToFront();
+            flpCpu2Hand.BringToFront();
+            flpCpu3Hand.BringToFront();
+
+            // 🌟 5. 大理石の壁紙よりも手前に黄色パネルを置くため、壁紙（Form本体）を最背面へ
+            this.SendToBack();
+
+            // 6. 勝敗画像はさらにその手前にしたいので、最後に再度 BringToFront
+            pictureBox_Result.BringToFront();
+
+            // 20260616 工藤 不具合対応 ここまで
         }
 
         //ボタンイベント
@@ -113,6 +156,12 @@ namespace CardGames
                     _gameManager.AdvanceTurn(drawCard);
                     //ゲーム進行状態更新
                     _gameManager.SetCpuTurn();
+
+                    // #55：ゲームログ表示内容実装
+                    // 20260616 工藤 メソッド新規作成
+                    UpdateGameOperation(); 
+                    UpdateGameLog($"{_playerName} がカードを1枚引きました。"); 
+
                     UpdateDisplay();
                     break;
 
@@ -123,13 +172,24 @@ namespace CardGames
                     //ターン進行
                     _gameManager.AdvanceTurn(cpuDrawCard);
                     UpdateDisplay();
+
                     //次の手番がプレイヤー時の遷移処理
                     if (_gameManager.IsPlayerTurn())
                     {
                         _gameManager.SetPlayerSelecting();
-                        UpdateButtons();
-                        EnableTargetPlayerCardSelection();
+                        // UpdateButtons(); // 20260616 工藤　不具合対応
+                        // EnableTargetPlayerCardSelection();　// 20260616 工藤　不具合対応
                     }
+
+                    // 画面全体を更新
+                    UpdateDisplay();
+                    UpdateButtons();
+
+                    if (_gameManager.CurrentPhase == GamePhase.PlayerSelecting)　// 20260616 工藤　不具合対応
+                    {
+                        EnableTargetPlayerCardSelection();　// 20260616 工藤　不具合対応
+                    }
+
                     break;
 
                 case GamePhase.GameOver:
@@ -227,7 +287,29 @@ namespace CardGames
             _activeIndicatorPanels.Add(_gameManager.Players[0], pnl_Active_User); 
             _activeIndicatorPanels.Add(_gameManager.Players[1], pnl_Active_CPU1); 
             _activeIndicatorPanels.Add(_gameManager.Players[2], pnl_Active_CPU2); 
-            _activeIndicatorPanels.Add(_gameManager.Players[3], pnl_Active_CPU3); 
+            _activeIndicatorPanels.Add(_gameManager.Players[3], pnl_Active_CPU3);
+
+
+            // 背景パネル位置固定　
+            // 20260615 工藤　#41不具合対応
+            pnl_Active_User.Location = flpPlayerHand.Location;
+            pnl_Active_User.Size = flpPlayerHand.Size;
+
+            pnl_Active_CPU1.Location = flpCpu1Hand.Location;
+            pnl_Active_CPU1.Size = flpCpu1Hand.Size;
+
+            pnl_Active_CPU2.Location = flpCpu2Hand.Location;
+            pnl_Active_CPU2.Size = flpCpu2Hand.Size;
+
+            pnl_Active_CPU3.Location = flpCpu3Hand.Location;
+            pnl_Active_CPU3.Size = flpCpu3Hand.Size;
+
+            // 初期化：最初は全員の手番背景を「透明」にしておく
+            // 20260615 工藤　#41不具合対応
+            foreach (var panel in _activeIndicatorPanels.Values)
+            {
+                panel.BackColor = Color.Transparent;
+            }
 
         }
 
@@ -248,6 +330,7 @@ namespace CardGames
             }
         }
 
+/* 不要
         // =================================================================
         // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
         // 手番プレーヤーに背景色を付ける演出　を追加 
@@ -269,11 +352,11 @@ namespace CardGames
 
             // #60 リスタート実装  // 20260615 工藤 による追加分
             // ●勝●敗の表示
-            lblResults.Text = $"{_playerName}さんの戦績：" +
-                $"{_gameSession.PlayerWins}勝 {_gameSession.PlayerLoses}敗";
+//            lblResults.Text = $"{_playerName}さんの戦績：" +
+//                $"{_gameSession.PlayerWins}勝 {_gameSession.PlayerLoses}敗";
 
         }
-
+*/
 
 
         //======================================
@@ -289,7 +372,7 @@ namespace CardGames
             // 手番プレーヤーに背景色を付ける演出　を追加 
             // 手番インジケータを更新
             // =================================================================
-            UpdateActivePlayerIndicator();
+            //UpdateActivePlayerIndicator();
 
             //押されたカードの見た目変更
             // 前に選択していたカードの見た目を戻す
@@ -351,7 +434,7 @@ namespace CardGames
             else if (_gameManager.CurrentPhase == GamePhase.GameWin)
             {
                 await ShowPlayerWinResult(); // 20260611 工藤 await を追記
-                ShowMessegeBoxWin();
+                // ShowMessegeBoxWin();  // 20260616 工藤 移動 
                 //画面変更メソッド
             }
         }
@@ -380,9 +463,25 @@ namespace CardGames
             UpdateFlpDiscardPile();
             //・残り枚数を更新する
             UpdateTurnGuide();
-            //・そうさガイドを更新する
-            //・ゲームログを更新する
-            UpdateGameLog();//未完成
+            //・そうさガイドを更新する 
+            UpdateGameOperation();  // #55：ゲームログ表示内容実装 // 20260616 工藤　
+
+            // 20260616 工藤 #41対応漏れ　ここから
+            // すべてのアクティブインジケータ（Panel）の色を、一旦全部「透明」にリセットする
+            foreach (var panel in _activeIndicatorPanels.Values)
+            {
+                panel.BackColor = Color.Transparent; // 一度全員を透明に
+            }
+
+            if (_gameManager.ActivePlayer != null && _activeIndicatorPanels.ContainsKey(_gameManager.ActivePlayer))
+            {
+                // 現在の手番の人だけを「黄色」に染める！
+                _activeIndicatorPanels[_gameManager.ActivePlayer].BackColor = Color.Yellow;
+            }
+            // 20260616 工藤 #41対応漏れ　ここまで
+
+            //・ゲームログを更新する 
+            // UpdateGameLog();
             //・ボタンを更新する
             UpdateButtons();
             //・勝敗状態ならモーダルやMessageBoxを出す
@@ -502,33 +601,68 @@ namespace CardGames
                 }
             }
         }
-        //・そうさガイドを更新する
-        //・ゲームログを更新する
-        private void UpdateGameLog()
+
+        private void UpdateGameOperation()
         {
-            //未完成
-            switch (_gameManager.CurrentPhase)
+            // =================================================================
+            // #51：UpdateGameLog() ゲームログ・操作ログメソッド実装
+            // #55：ゲームログ表示内容実装
+            // #56：操作ガイド表示内容実装
+            // 20260616 工藤
+            // =================================================================
+
+            // クリア（上書きモード）
+            Operattion.Clear();
+
+            // 現在のフェーズを取得
+            GamePhase phase = _gameManager.CurrentPhase;
+            string message = "";
+
+            switch (phase)
             {
                 case GamePhase.BeforeStart:
-
+                    message = "▶「ゲーム開始」ボタンを押してください。"; // #56
                     break;
                 case GamePhase.PlayerSelecting:
-
+                    message = "▶あなたのターンです。引くカードを1枚選んでください。"; // #56
                     break;
                 case GamePhase.PlayerConfirming:
-
+                    message = "▶カードが選ばれました。「決定」ボタンを押してください。"; // #56
                     break;
                 case GamePhase.CpuTurn:
-
+                    message = "▶ライバルのターンです。「すすむ」ボタンを押してください。";// #56
                     break;
                 case GamePhase.GameOver:
-
+                    message = "あなたの負けです。"; // #56
+                    message = "終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「かいし」ボタンを押してください。"; // #56
                     break;
                 case GamePhase.GameWin:
-
+                    message = "あなたの勝ちです！";  // #56
+                    message = "終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「かいし」ボタンを押してください。"; // #56
                     break;
             }
+
+            if (!string.IsNullOrEmpty(message)) // #56
+            {
+                Operattion.Text = message;
+            }
         }
+
+        // =================================================================
+        // #51：UpdateGameLog() ゲームログ・操作ログメソッド実装
+        // #55：ゲームログ表示内容実装
+        // 20260616 工藤 メソッド新規作成
+        // =================================================================
+        private void UpdateGameLog(string message)
+        {
+            if (!string.IsNullOrEmpty(message))
+            {
+                Logs.AppendText(message + Environment.NewLine);
+            }
+        }
+
+
+
         //・ボタンを更新する
         private void UpdateButtons()
         {
@@ -579,6 +713,7 @@ namespace CardGames
             MessageBox.Show("あなたの負けです。", "敗北", MessageBoxButtons.OK, MessageBoxIcon.None);
         }
 
+
         //勝ち抜けCPUの画面表示(アクティブじゃないのが分かるように)
 
         //カードを引く際の演出
@@ -602,11 +737,15 @@ namespace CardGames
             pictureBox_Result.Visible = true;
             pictureBox_Result.BringToFront(); // 一番手前に持ってくる
 
-            // 2. 2秒間（2000ミリ秒）、画面をそのまま静止（余韻の演出）
+            // 4. 2秒間（2000ミリ秒）、画面をそのまま静止（余韻の演出）
             await Task.Delay(2000);
 
-            // 3. 画像を消して、通常の画面に戻す
+            // 5. 画像を消して、通常の画面に戻す
             pictureBox_Result.Visible = false;
+
+            // 2. 画像が出た状態で、お祝いメッセージボックスを出す
+            ShowMessegeBoxWin();　 // 20260616 工藤 移動 
+
         }
 
         // =================================================================
@@ -624,21 +763,18 @@ namespace CardGames
             // 1. 敗北画像をセットして、画面にバーンと表示する
             pictureBox_Result.Image = Properties.Resources._08_youLose; 
             pictureBox_Result.Visible = true; 
-            pictureBox_Result.BringToFront(); 
+            pictureBox_Result.BringToFront();
 
-            // 2. 2秒間（2000ミリ秒）、画面をそのまま静止
+
+            // 2. 画像が出た状態で、敗北メッセージボックスを出す
+            ShowMessegeBoxLose();  // 20260616 工藤 移動 
+
+            // 3. 2秒間（2000ミリ秒）、画面をそのまま静止
             await Task.Delay(2000);
 
-            // 3. 画像を消して、通常の画面に戻す
+            // 4. 画像を消して、通常の画面に戻す
             pictureBox_Result.Visible = false;
         }
     }
-
-
-
-
-
-
-
 
 }
