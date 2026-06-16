@@ -37,6 +37,12 @@ namespace CardGames
         private const int CardWidth = 50;
         private const int CardHeight = 70;
 
+        // =================================================================
+        // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
+        //  手番プレーヤーに背景色を付ける演出
+        // =================================================================
+        private Dictionary<Player, Panel> _activeIndicatorPanels = new Dictionary<Player, Panel>();
+
         //======================================
         //イベントメソッド
         //======================================
@@ -53,6 +59,14 @@ namespace CardGames
 
         private void GameForm_Load(object sender, EventArgs e)
         {
+
+            // =================================================================
+            // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
+            // フォーム全体の背景に壁紙画像をセットする
+            // =================================================================
+            this.BackgroundImage = Image.FromFile(Path.Combine("images", "素材ズ", "04_wallpaper.png"));
+            this.BackgroundImageLayout = ImageLayout.Stretch; // 背景画像サイズの自動調整[Stretch]
+
             //各種初期化
             InitializeGameDisplay();
             //操作ガイド初期文を入力
@@ -199,10 +213,22 @@ namespace CardGames
         //フローレイアウトパネルとプレイヤーの対応辞書用意
         private void InitializeCpuHandPanelMap()
         {
+            // パネルとプレイヤーの紐づけ
             _playerHandPanels.Add(_gameManager.Players[0], flpPlayerHand);
             _playerHandPanels.Add(_gameManager.Players[1],flpCpu1Hand);
             _playerHandPanels.Add(_gameManager.Players[2],flpCpu2Hand);
             _playerHandPanels.Add(_gameManager.Players[3],flpCpu3Hand);
+
+            // =================================================================
+            // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
+            // 手番プレーヤーに背景色を付ける演出　を追加 
+            // プレイヤーと手番インジケータ[pnl_Active]の紐づけ
+            // =================================================================
+            _activeIndicatorPanels.Add(_gameManager.Players[0], pnl_Active_User); 
+            _activeIndicatorPanels.Add(_gameManager.Players[1], pnl_Active_CPU1); 
+            _activeIndicatorPanels.Add(_gameManager.Players[2], pnl_Active_CPU2); 
+            _activeIndicatorPanels.Add(_gameManager.Players[3], pnl_Active_CPU3); 
+
         }
 
         //======================================
@@ -222,6 +248,34 @@ namespace CardGames
             }
         }
 
+        // =================================================================
+        // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
+        // 手番プレーヤーに背景色を付ける演出　を追加 
+        // プレイヤーと手番インジケータ[pnl_Active]の紐づけ
+        // =================================================================
+        private void UpdateActivePlayerIndicator()
+        {
+            // 一度全員のインジケータを非表示にする
+            foreach (var panel in _activeIndicatorPanels.Values)
+            {
+                panel.Visible = false;
+            }
+
+            // 現在の手番プレイヤーのインジケータを表示する
+            if (_activeIndicatorPanels.ContainsKey(_gameManager.ActivePlayer))
+            {
+                _activeIndicatorPanels[_gameManager.ActivePlayer].Visible = true;
+            }
+
+            // #60 リスタート実装  // 20260615 工藤 による追加分
+            // ●勝●敗の表示
+            lblResults.Text = $"{_playerName}さんの戦績：" +
+                $"{_gameSession.PlayerWins}勝 {_gameSession.PlayerLoses}敗";
+
+        }
+
+
+
         //======================================
         //GamePhase.PlayerSelecting
         //======================================
@@ -229,6 +283,13 @@ namespace CardGames
         private void SelectableCardPictureBox_Click(object sender, EventArgs e)
         {
             PictureBox clickedPictureBox = (PictureBox)sender;
+
+            // =================================================================
+            // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
+            // 手番プレーヤーに背景色を付ける演出　を追加 
+            // 手番インジケータを更新
+            // =================================================================
+            UpdateActivePlayerIndicator();
 
             //押されたカードの見た目変更
             // 前に選択していたカードの見た目を戻す
