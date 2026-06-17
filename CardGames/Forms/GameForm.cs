@@ -156,12 +156,7 @@ namespace CardGames
                     _gameManager.AdvanceTurn(drawCard);
                     //ゲーム進行状態更新
                     _gameManager.SetCpuTurn();
-
-                    // #55：ゲームログ表示内容実装
-                    // 20260616 工藤 メソッド新規作成
-                    UpdateGameOperation(); 
-                    //UpdateGameLog($"{_playerName} がカードを1枚引きました。"); 
-
+                    //画面更新
                     UpdateDisplay();
                     break;
 
@@ -171,8 +166,6 @@ namespace CardGames
                     Card cpuDrawCard = _gameManager.CpuTurnCardDraw();
                     //ターン進行
                     _gameManager.AdvanceTurn(cpuDrawCard);
-                    UpdateDisplay();
-
                     //次の手番がプレイヤー時の遷移処理
                     if (_gameManager.IsPlayerTurn())
                     {
@@ -180,16 +173,12 @@ namespace CardGames
                         // UpdateButtons(); // 20260616 工藤　不具合対応
                         // EnableTargetPlayerCardSelection();　// 20260616 工藤　不具合対応
                     }
-
                     // 画面全体を更新
                     UpdateDisplay();
-                    UpdateButtons();
-
                     if (_gameManager.CurrentPhase == GamePhase.PlayerSelecting)　// 20260616 工藤　不具合対応
                     {
                         EnableTargetPlayerCardSelection();　// 20260616 工藤　不具合対応
                     }
-
                     break;
 
                 case GamePhase.GameOver:
@@ -262,13 +251,13 @@ namespace CardGames
             DateOfCUP3.Text = "CPU３のてふだ　のこり０まい";
             DateOfPlayer.Text = _playerName + "のてふだ　のこり０まい";
         }
-        internal string SetInitialOperationGuide()
+        internal void SetInitialOperationGuide()
         {
-            return "▶「ゲーム開始」ボタンを押してください。";
+           Operattion.Text = "▶「ゲーム開始」ボタンを押してください。";
         }
-        internal string SetLogs()
+        internal void SetLogs()
         {
-            return "";
+           Logs.Text = "";
         }
         //フローレイアウトパネルとプレイヤーの対応辞書用意
         private void InitializeCpuHandPanelMap()
@@ -621,10 +610,10 @@ namespace CardGames
             switch (phase)
             {
                 case GamePhase.PlayerSelecting:
-                    message = "▶あなたのターンです。引くカードを1枚選んでください。"; // #56
+                    message = $"▶あなたのターンです。{_gameManager.TargetPlayer.Name}からカードを1枚選んでください。"; // #56
                     break;
                 case GamePhase.PlayerConfirming:
-                    message = "▶カードが選ばれました。「決定」ボタンを押してください。"; // #56
+                    message = $"▶{_gameManager.ActivePlayer.Name}のターンです。「すすむ」ボタンを押してください。"; // #56
                     break;
                 case GamePhase.CpuTurn:
                     message = $"▶{_gameManager.ActivePlayer.Name}のターンです。「すすむ」ボタンを押してください。";// #56
