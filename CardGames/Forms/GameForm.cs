@@ -438,12 +438,11 @@ namespace CardGames
             else if (_gameManager.CurrentPhase == GamePhase.GameWin)
             {
                 await ShowPlayerWinResult(); // 20260611 工藤 await を追記
-<<<<<<< HEAD
+
                 ShowResultActionButtons();
                 ShowMessegeBoxWin();
-=======
+
                 // ShowMessegeBoxWin();  // 20260616 工藤 移動 
->>>>>>> b5923e9ce6d2906834e69597d6918e04d3443964
                 //画面変更メソッド
             }
         }
@@ -768,13 +767,9 @@ namespace CardGames
             */
 
             // 1. 敗北画像をセットして、画面にバーンと表示する
-<<<<<<< HEAD
+
             pictureBox_Result.Image = Properties.Resources._08_youLose;
             pictureBox_Result.Visible = true;
-=======
-            pictureBox_Result.Image = Properties.Resources._08_youLose; 
-            pictureBox_Result.Visible = true; 
->>>>>>> b5923e9ce6d2906834e69597d6918e04d3443964
             pictureBox_Result.BringToFront();
 
 
