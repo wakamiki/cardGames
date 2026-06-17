@@ -235,6 +235,10 @@ namespace CardGames.Services
                 }
             }
             _activePlayer.AddCard(drawCard);
+            if (_activePlayer.IsCpu)
+            {
+                return log = "カードを手札に加えました。";
+            }
             return log = $"{drawCard.DisplayName}を手札に加えました。";
         }
 
