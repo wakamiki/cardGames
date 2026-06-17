@@ -652,28 +652,27 @@ namespace CardGames
         // =================================================================
         private void UpdateGameLog()
         {
-            // 現在のフェーズを取得
-            GamePhase phase = _gameManager.CurrentPhase;
             string message = "";
 
-            switch (phase)
+            switch (_gameManager.CurrentPhase)
             {
+                case GamePhase.BeforeStart:
+                    message = "ゲームが開始されました。";
+                    break;
                 case GamePhase.PlayerSelecting:
-                    message = "▶あなたのターンです。引くカードを1枚選んでください。"; // #56
+                    message = $"{_gameManager.ActivePlayer.Name}のターン";
                     break;
                 case GamePhase.PlayerConfirming:
-                    message = "▶カードが選ばれました。「決定」ボタンを押してください。"; // #56
+                    message = "カードを選択しました。"; 
                     break;
                 case GamePhase.CpuTurn:
-                    message = $"▶{_gameManager.ActivePlayer.Name}のターンです。「すすむ」ボタンを押してください。";// #56
+                    message = $"{_gameManager.ActivePlayer.Name}のターン";
                     break;
                 case GamePhase.GameOver:
-                    message = "あなたの負けです。"; // #56
-                    message = "終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「リスタート」ボタンを押してください。"; // #56
+                    message = "Your Lose"; 
                     break;
                 case GamePhase.GameWin:
-                    message = "あなたの勝ちです！";  // #56
-                    message = "終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「リスタート」ボタンを押してください。"; // #56
+                    message = "Game Win";
                     break;
             }
             if (!string.IsNullOrEmpty(message))
