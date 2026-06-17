@@ -133,6 +133,8 @@ namespace CardGames
             {
                 // ゲームスタート
                 case GamePhase.BeforeStart:
+                    //ゲームログ更新
+                    UpdateGameLog();
                     // ゲーム開始処理
                     _gameManager.StartGame();
                     //画面再取得
@@ -152,8 +154,12 @@ namespace CardGames
                     int cardIndex = TakeSelectedCardIndex();
                     //カードドロー
                     Card drawCard = _gameManager.PlayerTurnCardDraw(cardIndex);
+                    //ゲームログ更新
+                    AddCardDrawLog(drawCard);
                     //ターン進行
-                    _gameManager.AdvanceTurn(drawCard);
+                    List<string> logs = _gameManager.AdvanceTurn(drawCard);
+                    //ゲームログ更新
+                    UpdateAdvanceTurnLogs(logs);
                     //ゲーム進行状態更新
                     _gameManager.SetCpuTurn();
                     //画面更新
@@ -164,8 +170,12 @@ namespace CardGames
                 case GamePhase.CpuTurn:
                     // CPUがカードを引く
                     Card cpuDrawCard = _gameManager.CpuTurnCardDraw();
+                    //ゲームログ更新
+                    AddCardDrawLog(cpuDrawCard);
                     //ターン進行
-                    _gameManager.AdvanceTurn(cpuDrawCard);
+                    List<string> cpuLogs = _gameManager.AdvanceTurn(cpuDrawCard);
+                    //ゲームログ更新
+                    UpdateAdvanceTurnLogs(cpuLogs);
                     //次の手番がプレイヤー時の遷移処理
                     if (_gameManager.IsPlayerTurn())
                     {
@@ -610,7 +620,7 @@ namespace CardGames
             switch (phase)
             {
                 case GamePhase.PlayerSelecting:
-                    message = $"▶あなたのターンです。{_gameManager.TargetPlayer.Name}からカードを1枚選んでください。"; // #56
+                    message = $"▶あなたのターンです。{_gameManager.TargetPlayer.Name}からカードを1枚選んで「けってい」ボタンを押してください。"; // #56
                     break;
                 case GamePhase.PlayerConfirming:
                     message = $"▶{_gameManager.ActivePlayer.Name}のターンです。「すすむ」ボタンを押してください。"; // #56
@@ -668,6 +678,32 @@ namespace CardGames
             {
                 Logs.AppendText(message + Environment.NewLine);
 
+            }
+        }
+
+        //カードドロー時ゲームログ更新
+        private void AddCardDrawLog(Card drawCard)
+        {
+            string message = "";
+            if (_gameManager.ActivePlayer.IsCpu)
+            {
+                message = $"{_gameManager.ActivePlayer.Name}がカードを1枚引きました。";
+                Logs.AppendText(message+Environment.NewLine);
+                return;
+            }
+            else
+            {
+                message = $"{_gameManager.ActivePlayer.Name}が{drawCard.DisplayName}のカードを1枚引きました。";
+                Logs.AppendText(message + Environment.NewLine);
+            }
+        }
+
+        //ゲームログ更新(ターン進行後)
+        private void UpdateAdvanceTurnLogs(List<string> logs)
+        {
+            foreach (string log in logs)
+            {
+                Logs.AppendText(log + Environment.NewLine);
             }
         }
 

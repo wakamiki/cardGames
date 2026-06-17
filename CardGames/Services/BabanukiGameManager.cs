@@ -6,6 +6,7 @@ using System.Data.SqlTypes;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -107,18 +108,23 @@ namespace CardGames.Services
 
         }
 
-        //ターンを進める処理
-        internal void AdvanceTurn(Card drawCard)
+        //ターンを進める処理(返り値ゲームログ)
+        internal List<string> AdvanceTurn(Card drawCard)
         {
+            List<string> logs = new List<string>();
             //ペアを捨てる
-            HandleDrawnCard(drawCard);
+            logs.Add(HandleDrawnCard(drawCard));
             //勝ち抜けがいないかチェック
-            CheckAndHandleFinishedPlayer(_activePlayer);
-            CheckAndHandleFinishedPlayer(_targetPlayer);
-
-            //【重要】必ずアクティブプレイヤー更新→ターゲットプレイヤー更新の順で処理すること
-            //現在ターンを次の有効なプレイヤーへ進める
-            _activePlayer = GetNextActivePlayer();
+            if (CheckAndHandleFinishedPlayer(_activePlayer))
+            {
+                logs.Add($"{_activePlayer.Name}の手札がなくなりました。");
+            }else if(CheckAndHandleFinishedPlayer(_targetPlayer))
+            {
+                logs.Add($"{_targetPlayer.Name}の手札がなくなりました。");
+            }
+                //【重要】必ずアクティブプレイヤー更新→ターゲットプレイヤー更新の順で処理すること
+                //現在ターンを次の有効なプレイヤーへ進める
+                _activePlayer = GetNextActivePlayer();
             //ターゲットプレイヤーも更新する
             _targetPlayer = GetDrawTarget();
             //ターゲットプレイヤーとアクティブプレイヤーが同じ時プレイヤー敗北
@@ -126,6 +132,7 @@ namespace CardGames.Services
             {
                 PlayerLose();
             }
+            return logs;
         }
 
         //CPUがカードを引く
@@ -165,20 +172,22 @@ namespace CardGames.Services
         }
 
         //手札チェック処理+振り分け
-        internal void CheckAndHandleFinishedPlayer(Player player)
+        internal bool CheckAndHandleFinishedPlayer(Player player)
         {
             if (player.HandCount == 0)
             {
                 if (player.IsCpu)
                 {
                     MarkCpuAsFinished(player);
+                    return true;
                 }
                 else
                 {
                     PlayerWin(player);
+                    return false;
                 }
             }
-            return;
+            return false;
         }
 
         //ペア削除処理 全ペア確認
@@ -208,8 +217,9 @@ namespace CardGames.Services
         }
 
         //ペア削除処理とドローカードを手札に加える　引いたカードと手札確認　
-        internal void HandleDrawnCard(Card drawCard)
+        internal string HandleDrawnCard(Card drawCard)
         {
+            string log;
             //手札の手前からカード1枚とる。(配列最後のカードはとらない)
             for (int i = 0; i < _activePlayer.HandCount-1; i++)
             {
@@ -220,10 +230,12 @@ namespace CardGames.Services
                     _discardPile.Add(_activePlayer.HandDeck[i]);
                     _discardPile.Add(drawCard);
                     _activePlayer.RemoveCardAt(i);
-                    return;
+
+                    return log = $"{drawCard.Rank}のペアを捨てました。";
                 }
             }
             _activePlayer.AddCard(drawCard);
+            return log = $"{drawCard.DisplayName}を手札に加えました。";
         }
 
         //次の手番のプレイヤーを返す
