@@ -160,7 +160,7 @@ namespace CardGames
                     // #55：ゲームログ表示内容実装
                     // 20260616 工藤 メソッド新規作成
                     UpdateGameOperation(); 
-                    UpdateGameLog($"{_playerName} がカードを1枚引きました。"); 
+                    //UpdateGameLog($"{_playerName} がカードを1枚引きました。"); 
 
                     UpdateDisplay();
                     break;
@@ -264,11 +264,11 @@ namespace CardGames
         }
         internal string SetInitialOperationGuide()
         {
-            return "操作ガイド初期文";
+            return "▶「ゲーム開始」ボタンを押してください。";
         }
         internal string SetLogs()
         {
-            return "操作ログ初期文";
+            return "";
         }
         //フローレイアウトパネルとプレイヤーの対応辞書用意
         private void InitializeCpuHandPanelMap()
@@ -481,7 +481,7 @@ namespace CardGames
             // 20260616 工藤 #41対応漏れ　ここまで
 
             //・ゲームログを更新する 
-            // UpdateGameLog();
+            UpdateGameLog();
             //・ボタンを更新する
             UpdateButtons();
             //・勝敗状態ならモーダルやMessageBoxを出す
@@ -620,9 +620,6 @@ namespace CardGames
 
             switch (phase)
             {
-                case GamePhase.BeforeStart:
-                    message = "▶「ゲーム開始」ボタンを押してください。"; // #56
-                    break;
                 case GamePhase.PlayerSelecting:
                     message = "▶あなたのターンです。引くカードを1枚選んでください。"; // #56
                     break;
@@ -630,15 +627,15 @@ namespace CardGames
                     message = "▶カードが選ばれました。「決定」ボタンを押してください。"; // #56
                     break;
                 case GamePhase.CpuTurn:
-                    message = "▶ライバルのターンです。「すすむ」ボタンを押してください。";// #56
+                    message = $"▶{_gameManager.ActivePlayer.Name}のターンです。「すすむ」ボタンを押してください。";// #56
                     break;
                 case GamePhase.GameOver:
                     message = "あなたの負けです。"; // #56
-                    message = "終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「かいし」ボタンを押してください。"; // #56
+                    message = "終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「リスタート」ボタンを押してください。"; // #56
                     break;
                 case GamePhase.GameWin:
                     message = "あなたの勝ちです！";  // #56
-                    message = "終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「かいし」ボタンを押してください。"; // #56
+                    message = "終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「リスタート」ボタンを押してください。"; // #56
                     break;
             }
 
@@ -653,11 +650,36 @@ namespace CardGames
         // #55：ゲームログ表示内容実装
         // 20260616 工藤 メソッド新規作成
         // =================================================================
-        private void UpdateGameLog(string message)
+        private void UpdateGameLog()
         {
+            // 現在のフェーズを取得
+            GamePhase phase = _gameManager.CurrentPhase;
+            string message = "";
+
+            switch (phase)
+            {
+                case GamePhase.PlayerSelecting:
+                    message = "▶あなたのターンです。引くカードを1枚選んでください。"; // #56
+                    break;
+                case GamePhase.PlayerConfirming:
+                    message = "▶カードが選ばれました。「決定」ボタンを押してください。"; // #56
+                    break;
+                case GamePhase.CpuTurn:
+                    message = $"▶{_gameManager.ActivePlayer.Name}のターンです。「すすむ」ボタンを押してください。";// #56
+                    break;
+                case GamePhase.GameOver:
+                    message = "あなたの負けです。"; // #56
+                    message = "終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「リスタート」ボタンを押してください。"; // #56
+                    break;
+                case GamePhase.GameWin:
+                    message = "あなたの勝ちです！";  // #56
+                    message = "終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「リスタート」ボタンを押してください。"; // #56
+                    break;
+            }
             if (!string.IsNullOrEmpty(message))
             {
                 Logs.AppendText(message + Environment.NewLine);
+
             }
         }
 
@@ -695,7 +717,7 @@ namespace CardGames
         private void ShowResultActionButtons()
         {
             btnMainAction.Enabled = true;
-            btnMainAction.Text = "もう一度あそぶ";
+            btnMainAction.Text = "リスタート";
         }
 
         //======================================

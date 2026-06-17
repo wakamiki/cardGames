@@ -38,23 +38,23 @@
             this.Operattion = new System.Windows.Forms.TextBox();
             this.Logs = new System.Windows.Forms.TextBox();
             this.flpCpu1Hand = new System.Windows.Forms.FlowLayoutPanel();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.flpCpu2Hand = new System.Windows.Forms.FlowLayoutPanel();
-            this.flpPlayerHand = new System.Windows.Forms.FlowLayoutPanel();
-            this.flpCpu3Hand = new System.Windows.Forms.FlowLayoutPanel();
-            this.pnl_Shadow = new System.Windows.Forms.Panel();
-            this.lblResults = new System.Windows.Forms.Label();
             this.pictureBox_Result = new System.Windows.Forms.PictureBox();
             this.pnl_Active_CPU1 = new System.Windows.Forms.Panel();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.flpCpu2Hand = new System.Windows.Forms.FlowLayoutPanel();
             this.pnl_Active_CPU2 = new System.Windows.Forms.Panel();
-            this.pnl_Active_CPU3 = new System.Windows.Forms.Panel();
+            this.flpPlayerHand = new System.Windows.Forms.FlowLayoutPanel();
             this.pnl_Active_User = new System.Windows.Forms.Panel();
+            this.flpCpu3Hand = new System.Windows.Forms.FlowLayoutPanel();
+            this.pnl_Active_CPU3 = new System.Windows.Forms.Panel();
+            this.pnl_Shadow = new System.Windows.Forms.Panel();
+            this.lblResults = new System.Windows.Forms.Label();
             this.flpCpu1Hand.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).BeginInit();
             this.flpCpu2Hand.SuspendLayout();
             this.flpPlayerHand.SuspendLayout();
             this.flpCpu3Hand.SuspendLayout();
             this.pnl_Shadow.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).BeginInit();
             this.SuspendLayout();
             // 
             // DateOfCUP1
@@ -152,6 +152,7 @@
             this.Logs.Multiline = true;
             this.Logs.Name = "Logs";
             this.Logs.ReadOnly = true;
+            this.Logs.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.Logs.Size = new System.Drawing.Size(875, 118);
             this.Logs.TabIndex = 10;
             // 
@@ -166,6 +167,25 @@
             this.flpCpu1Hand.Size = new System.Drawing.Size(237, 140);
             this.flpCpu1Hand.TabIndex = 11;
             this.flpCpu1Hand.WrapContents = false;
+            // 
+            // pictureBox_Result
+            // 
+            this.pictureBox_Result.BackColor = System.Drawing.SystemColors.Highlight;
+            this.pictureBox_Result.Location = new System.Drawing.Point(3, 3);
+            this.pictureBox_Result.Name = "pictureBox_Result";
+            this.pictureBox_Result.Size = new System.Drawing.Size(852, 568);
+            this.pictureBox_Result.TabIndex = 18;
+            this.pictureBox_Result.TabStop = false;
+            this.pictureBox_Result.Visible = false;
+            // 
+            // pnl_Active_CPU1
+            // 
+            this.pnl_Active_CPU1.BackColor = System.Drawing.Color.Gold;
+            this.pnl_Active_CPU1.Location = new System.Drawing.Point(861, 3);
+            this.pnl_Active_CPU1.Name = "pnl_Active_CPU1";
+            this.pnl_Active_CPU1.Size = new System.Drawing.Size(234, 137);
+            this.pnl_Active_CPU1.TabIndex = 16;
+            this.pnl_Active_CPU1.Visible = false;
             // 
             // flowLayoutPanel1
             // 
@@ -188,6 +208,15 @@
             this.flpCpu2Hand.TabIndex = 13;
             this.flpCpu2Hand.WrapContents = false;
             // 
+            // pnl_Active_CPU2
+            // 
+            this.pnl_Active_CPU2.BackColor = System.Drawing.Color.Gold;
+            this.pnl_Active_CPU2.Location = new System.Drawing.Point(3, 3);
+            this.pnl_Active_CPU2.Name = "pnl_Active_CPU2";
+            this.pnl_Active_CPU2.Size = new System.Drawing.Size(234, 137);
+            this.pnl_Active_CPU2.TabIndex = 17;
+            this.pnl_Active_CPU2.Visible = false;
+            // 
             // flpPlayerHand
             // 
             this.flpPlayerHand.AutoScroll = true;
@@ -200,6 +229,15 @@
             this.flpPlayerHand.TabIndex = 13;
             this.flpPlayerHand.WrapContents = false;
             // 
+            // pnl_Active_User
+            // 
+            this.pnl_Active_User.BackColor = System.Drawing.Color.Gold;
+            this.pnl_Active_User.Location = new System.Drawing.Point(3, 3);
+            this.pnl_Active_User.Name = "pnl_Active_User";
+            this.pnl_Active_User.Size = new System.Drawing.Size(241, 137);
+            this.pnl_Active_User.TabIndex = 19;
+            this.pnl_Active_User.Visible = false;
+            // 
             // flpCpu3Hand
             // 
             this.flpCpu3Hand.AutoScroll = true;
@@ -210,6 +248,15 @@
             this.flpCpu3Hand.Size = new System.Drawing.Size(237, 140);
             this.flpCpu3Hand.TabIndex = 14;
             this.flpCpu3Hand.WrapContents = false;
+            // 
+            // pnl_Active_CPU3
+            // 
+            this.pnl_Active_CPU3.BackColor = System.Drawing.Color.Gold;
+            this.pnl_Active_CPU3.Location = new System.Drawing.Point(3, 3);
+            this.pnl_Active_CPU3.Name = "pnl_Active_CPU3";
+            this.pnl_Active_CPU3.Size = new System.Drawing.Size(234, 137);
+            this.pnl_Active_CPU3.TabIndex = 18;
+            this.pnl_Active_CPU3.Visible = false;
             // 
             // pnl_Shadow
             // 
@@ -230,52 +277,6 @@
             this.lblResults.Size = new System.Drawing.Size(116, 23);
             this.lblResults.TabIndex = 17;
             this.lblResults.Text = " しょう　はい";
-            // 
-            // pictureBox_Result
-            // 
-            this.pictureBox_Result.BackColor = System.Drawing.SystemColors.Highlight;
-            this.pictureBox_Result.Location = new System.Drawing.Point(3, 3);
-            this.pictureBox_Result.Name = "pictureBox_Result";
-            this.pictureBox_Result.Size = new System.Drawing.Size(852, 568);
-            this.pictureBox_Result.TabIndex = 18;
-            this.pictureBox_Result.TabStop = false;
-            this.pictureBox_Result.Visible = false;
-            // 
-            // pnl_Active_CPU1
-            // 
-            this.pnl_Active_CPU1.BackColor = System.Drawing.Color.Gold;
-            this.pnl_Active_CPU1.Location = new System.Drawing.Point(861, 3);
-            this.pnl_Active_CPU1.Name = "pnl_Active_CPU1";
-            this.pnl_Active_CPU1.Size = new System.Drawing.Size(234, 137);
-            this.pnl_Active_CPU1.TabIndex = 16;
-            this.pnl_Active_CPU1.Visible = false;
-            // 
-            // pnl_Active_CPU2
-            // 
-            this.pnl_Active_CPU2.BackColor = System.Drawing.Color.Gold;
-            this.pnl_Active_CPU2.Location = new System.Drawing.Point(3, 3);
-            this.pnl_Active_CPU2.Name = "pnl_Active_CPU2";
-            this.pnl_Active_CPU2.Size = new System.Drawing.Size(234, 137);
-            this.pnl_Active_CPU2.TabIndex = 17;
-            this.pnl_Active_CPU2.Visible = false;
-            // 
-            // pnl_Active_CPU3
-            // 
-            this.pnl_Active_CPU3.BackColor = System.Drawing.Color.Gold;
-            this.pnl_Active_CPU3.Location = new System.Drawing.Point(3, 3);
-            this.pnl_Active_CPU3.Name = "pnl_Active_CPU3";
-            this.pnl_Active_CPU3.Size = new System.Drawing.Size(234, 137);
-            this.pnl_Active_CPU3.TabIndex = 18;
-            this.pnl_Active_CPU3.Visible = false;
-            // 
-            // pnl_Active_User
-            // 
-            this.pnl_Active_User.BackColor = System.Drawing.Color.Gold;
-            this.pnl_Active_User.Location = new System.Drawing.Point(3, 3);
-            this.pnl_Active_User.Name = "pnl_Active_User";
-            this.pnl_Active_User.Size = new System.Drawing.Size(241, 137);
-            this.pnl_Active_User.TabIndex = 19;
-            this.pnl_Active_User.Visible = false;
             // 
             // GameForm
             // 
@@ -300,12 +301,12 @@
             this.Text = "ゲーム画面";
             this.Load += new System.EventHandler(this.GameForm_Load);
             this.flpCpu1Hand.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).EndInit();
             this.flpCpu2Hand.ResumeLayout(false);
             this.flpPlayerHand.ResumeLayout(false);
             this.flpCpu3Hand.ResumeLayout(false);
             this.pnl_Shadow.ResumeLayout(false);
             this.pnl_Shadow.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
