@@ -60,9 +60,9 @@ namespace CardGames.Services
         {
             //プレイヤーを準備
             Player player1 = new Player(_nameOfPlayer, false);
-            Player cpu1 = new Player("cpu1",true);
-            Player cpu2 = new Player("cpu2",true);
-            Player cpu3 = new Player("cpu3",true);
+            Player cpu1 = new Player("CPU1",true);
+            Player cpu2 = new Player("CPU2",true);
+            Player cpu3 = new Player("CPU3",true);
 
             //プレイヤーをリストに追加
             _players.Add(player1);
