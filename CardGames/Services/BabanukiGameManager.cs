@@ -184,7 +184,7 @@ namespace CardGames.Services
                 }
                 else
                 {
-                    PlayerWin(player);
+                    PlayerWin();
                     return false;
                 }
             }
@@ -324,11 +324,11 @@ namespace CardGames.Services
         //ゲーム進行状態変更メソッド
         //=====================================
         //0枚時勝利状態へ遷移
-        private void PlayerWin(Player player)
+        internal void PlayerWin()
         {
             _currentPhase = GamePhase.GameWin;
         }
-        private void PlayerLose()
+        internal void PlayerLose()
         {
             _currentPhase = GamePhase.GameOver;
         }
@@ -343,6 +343,10 @@ namespace CardGames.Services
         internal void SetCpuTurn()
         {
             _currentPhase = GamePhase.CpuTurn;
+        }
+        internal void SetBeforeStart()
+        {
+            _currentPhase = GamePhase.BeforeStart;
         }
     }
 }

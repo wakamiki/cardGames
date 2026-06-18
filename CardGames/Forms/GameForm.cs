@@ -51,8 +51,7 @@ namespace CardGames
     Keys.Left,
     Keys.Right,
     Keys.Left,
-    Keys.Right,
-    Keys.Enter
+    Keys.Right
 };
 
         private int _debugCommandIndex = 0;
@@ -857,15 +856,15 @@ namespace CardGames
         //=========================================================
 
         //キー入力イベント
-        private void GameForm_KeyDown(object sender, KeyEventArgs e)
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (IsDebugCommandCompleted(e.KeyCode))
+            if (IsDebugCommandCompleted(keyData))
             {
                 ShowDebugForm();
-
-                e.Handled = true;
-                e.SuppressKeyPress = true;
+                return true;
             }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         //デバックコマンド判定
@@ -911,13 +910,21 @@ namespace CardGames
         //ゲームリセットメソッド
         private void ResetGameToBeforeStart()
         {
-            ReStart();
+            _gameManager.SetBeforeStart();
+            _gameManager.InitializeGame();
+
+            _selectedPictureBox = null;
+            pictureBox_Result.Visible = false;
+
+            ClearCardDisplayAreas();
+            InitializeGameDisplay();
+            UpdateDisplay();
         }
 
         //勝利時演出確認メソッド
         private async void ShowDebugWinResult()
         {
-            ReStart();
+            ResetGameToBeforeStart();
             //通常ゲームスタート
             //ゲームログ更新
             UpdateGameLog();
@@ -927,6 +934,7 @@ namespace CardGames
             UpdateDisplay();
 
             //即勝利判定へ
+            _gameManager.PlayerWin();
             await ShowPlayerWinResult();
             ShowResultActionButtons();
 
@@ -935,7 +943,7 @@ namespace CardGames
         //敗北時演出確認メソッド
         private async void ShowDebugLoseResult()
         {
-            ReStart();
+            ResetGameToBeforeStart();
             //通常ゲームスタート
             //ゲームログ更新
             UpdateGameLog();
@@ -945,8 +953,8 @@ namespace CardGames
             UpdateDisplay();
 
             //即敗北判定へ
+            _gameManager.PlayerLose();
             await ShowPlayerLoseResult();
-            ShowMessegeBoxLose();
             ShowResultActionButtons();
         }
     }
