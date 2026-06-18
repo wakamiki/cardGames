@@ -219,13 +219,13 @@ namespace CardGames
                     break;
 
                 case GamePhase.GameOver:
-                    // 敗北時演出　タイトルへ戻る、または再スタート
+                    // 敗北時　敗北数記録　タイトルへ戻る、または再スタート
                     _gameSession.AddPlayerLose();
                     ReStart();
                     break;
 
                 case GamePhase.GameWin:
-                    //　勝利時演出 タイトルへ戻る、または再スタート
+                    //　勝利時　勝利数記録 タイトルへ戻る、または再スタート
                     _gameSession.AddPlayerWin();
                     ReStart();
                     break;
@@ -850,6 +850,104 @@ namespace CardGames
 
             // 4. 画像を消して、通常の画面に戻す
             pictureBox_Result.Visible = false;
+        }
+
+        //=========================================================
+        // デバック画面関係
+        //=========================================================
+
+        //キー入力イベント
+        private void GameForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (IsDebugCommandCompleted(e.KeyCode))
+            {
+                ShowDebugForm();
+
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        //デバックコマンド判定
+        private bool IsDebugCommandCompleted(Keys keyCode)
+        {
+            if (keyCode == _debugCommand[_debugCommandIndex])
+            {
+                _debugCommandIndex++;
+
+                if (_debugCommandIndex >= _debugCommand.Length)
+                {
+                    _debugCommandIndex = 0;
+                    return true;
+                }
+
+                return false;
+            }
+
+            _debugCommandIndex = 0;
+            return false;
+        }
+
+        //デバックフォーム表示
+        private void ShowDebugForm()
+        {
+            //デバック画面が複数開かないよう判定
+            if (_debugForm == null || _debugForm.IsDisposed)
+            {
+                _debugForm = new DebugForm(
+                    ResetGameToBeforeStart,
+                    ShowDebugWinResult,
+                    ShowDebugLoseResult
+                );
+
+                _debugForm.Show(this);
+            }
+            else
+            {
+                _debugForm.Activate();
+            }
+        }
+
+        //ゲームリセットメソッド
+        private void ResetGameToBeforeStart()
+        {
+            ReStart();
+        }
+
+        //勝利時演出確認メソッド
+        private async void ShowDebugWinResult()
+        {
+            ReStart();
+            //通常ゲームスタート
+            //ゲームログ更新
+            UpdateGameLog();
+            // ゲーム開始処理
+            _gameManager.StartGame();
+            //画面再取得
+            UpdateDisplay();
+
+            //即勝利判定へ
+            await ShowPlayerWinResult();
+            ShowResultActionButtons();
+
+        }
+
+        //敗北時演出確認メソッド
+        private async void ShowDebugLoseResult()
+        {
+            ReStart();
+            //通常ゲームスタート
+            //ゲームログ更新
+            UpdateGameLog();
+            // ゲーム開始処理
+            _gameManager.StartGame();
+            //画面再取得
+            UpdateDisplay();
+
+            //即敗北判定へ
+            await ShowPlayerLoseResult();
+            ShowMessegeBoxLose();
+            ShowResultActionButtons();
         }
     }
 

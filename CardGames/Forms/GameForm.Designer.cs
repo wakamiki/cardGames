@@ -301,6 +301,7 @@
             this.Name = "GameForm";
             this.Text = "ゲーム画面";
             this.Load += new System.EventHandler(this.GameForm_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameForm_KeyDown);
             this.flpCpu1Hand.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).EndInit();
             this.flpCpu2Hand.ResumeLayout(false);
