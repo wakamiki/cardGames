@@ -83,6 +83,12 @@ namespace CardGames
             //表示用カード画像準備
             LoadCardImages();
 
+            // #60 リスタート実装  // 20260617 工藤 指摘対応
+            // ●勝●敗の表示
+            lblResults.Text = $"{_playerName}さんの戦績：" +
+                $"{_gameSession.PlayerResult[0]}勝 {_gameSession.PlayerResult[1]}敗";
+
+
             // 20260616 工藤 不具合対応 ここから
 
             // 1. 勝敗画像の設定（最前面へ）
@@ -90,7 +96,9 @@ namespace CardGames
             pictureBox_Result.Parent = this;
             pictureBox_Result.Location = new Point(0, 0);
             pictureBox_Result.Size = this.ClientSize;
-            pictureBox_Result.SizeMode = PictureBoxSizeMode.Zoom;
+            // 20260617 工藤 指摘対応　Zoom ⇒StretchImage　
+            // pictureBox_Result.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox_Result.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox_Result.Visible = false;
             pictureBox_Result.BringToFront();
 
@@ -499,12 +507,14 @@ namespace CardGames
                 pictureBox.Width = CardWidth;
                 pictureBox.Height = CardHeight;
                 pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                flpPlayerHand.Controls.Add(pictureBox);
+                // 20260617 工藤 指摘対応　マウス操作の後に移動しました
+                // flpPlayerHand.Controls.Add(pictureBox);
                 // =================================================================
                 // #61_カードの選択状態が分かるような仕掛け実装(#49) // 20260612 工藤
                 // =================================================================
                 pictureBox.MouseEnter += Card_MouseEnter; // マウスが乗ったら浮く
                 pictureBox.MouseLeave += Card_MouseLeave; // マウスが離れたら戻る
+                flpPlayerHand.Controls.Add(pictureBox);
             }
             
         }
@@ -779,7 +789,8 @@ namespace CardGames
             player.Play();
             */
 
-            // 1. 勝利画像をセットして、画面にバーンと表示する（操作をロック）
+            // 20260617 工藤 指摘対応　コメントの修正　「（操作をロック）」を削除
+            // 1. 勝利画像をセットして、画面にバーンと表示する
             pictureBox_Result.Image = Properties.Resources._08_youWin;
             pictureBox_Result.Visible = true;
             pictureBox_Result.BringToFront(); // 一番手前に持ってくる
