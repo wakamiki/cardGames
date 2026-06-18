@@ -271,7 +271,7 @@ namespace CardGames
             flpCpu2Hand.Controls.Clear();
             flpCpu3Hand.Controls.Clear();
             flpPlayerHand.Controls.Clear();
-            flowLayoutPanel1.Controls.Clear();
+            flpThrown.Controls.Clear();
         }
         //ログテキストをクリア
         internal void InitializeMessageAreas()
@@ -594,7 +594,7 @@ namespace CardGames
         //捨て札エリアを描き直す
         private void UpdateFlpDiscardPile()
         {
-            flowLayoutPanel1.Controls.Clear();
+            flpThrown.Controls.Clear();
             foreach (Card card in _gameManager.DiscardPile)
             {
                 PictureBox pictureBox = new PictureBox();
@@ -602,7 +602,7 @@ namespace CardGames
                 pictureBox.Width = CardWidth;
                 pictureBox.Height = CardHeight;
                 pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                flowLayoutPanel1.Controls.Add(pictureBox);
+                flpThrown.Controls.Add(pictureBox);
             }
         }
         //・残り枚数を更新する
