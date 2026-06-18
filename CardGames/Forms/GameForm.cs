@@ -1,4 +1,5 @@
-﻿using CardGames.Models;
+﻿using CardGames.Forms;
+using CardGames.Models;
 using CardGames.Models.Enums;
 using CardGames.Properties;
 using CardGames.Services;
@@ -37,6 +38,24 @@ namespace CardGames
         //カードサイズ
         private const int CardWidth = 50;
         private const int CardHeight = 70;
+
+        //デバック用
+        private DebugForm _debugForm;
+
+        private readonly Keys[] _debugCommand =
+{
+    Keys.Up,
+    Keys.Up,
+    Keys.Down,
+    Keys.Down,
+    Keys.Left,
+    Keys.Right,
+    Keys.Left,
+    Keys.Right,
+    Keys.Enter
+};
+
+        private int _debugCommandIndex = 0;
 
         // =================================================================
         // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤

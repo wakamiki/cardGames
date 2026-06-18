@@ -297,6 +297,7 @@
             this.Controls.Add(this.DateOfCUP2);
             this.Controls.Add(this.DateOfCUP1);
             this.Controls.Add(this.pnl_Shadow);
+            this.KeyPreview = true;
             this.Name = "GameForm";
             this.Text = "ゲーム画面";
             this.Load += new System.EventHandler(this.GameForm_Load);
