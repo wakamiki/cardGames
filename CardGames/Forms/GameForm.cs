@@ -681,7 +681,7 @@ namespace CardGames
             }
         }
 
-        //カードドロー時ゲームログ更新
+        //ゲームログ更新(カードドロー時)
         private void AddCardDrawLog(Card drawCard)
         {
             string message = "";

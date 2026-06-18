@@ -118,7 +118,8 @@ namespace CardGames.Services
             if (CheckAndHandleFinishedPlayer(_activePlayer))
             {
                 logs.Add($"{_activePlayer.Name}の手札がなくなりました。");
-            }else if(CheckAndHandleFinishedPlayer(_targetPlayer))
+            }
+            if(CheckAndHandleFinishedPlayer(_targetPlayer))
             {
                 logs.Add($"{_targetPlayer.Name}の手札がなくなりました。");
             }
@@ -317,8 +318,6 @@ namespace CardGames.Services
             //CPUのプレイヤー情報を書き替える
             cpu.MarkAsFinished();
         }
-
-        //ゲームを全部初期化
 
 
         //=====================================
