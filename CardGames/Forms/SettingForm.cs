@@ -104,6 +104,9 @@ namespace CardGames
         /// <param name="e"></param>
         private void btnGameStart_Click(object sender, EventArgs e)
         {
+            // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする
+            _isBacking = true;
+
             // 次画面にプレイヤー名と人数を渡す
             string _NameOfPlayer = InputName.Text; // 入力されたプレイヤー名
             int _playerCount = 1;                // プレイヤー数 (固定: 1)
@@ -113,6 +116,9 @@ namespace CardGames
             // 次画面を作成、引数(プレイヤー名と人数,プレイヤー勝敗数)を渡す
             GameForm gmForm = new GameForm(_NameOfPlayer, _playerCount, _cpuCount,gameSession);
 
+            // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする 
+            this.Hide();
+
             // ゲーム画面を表示
             gmForm.Show();
 
@@ -121,6 +127,25 @@ namespace CardGames
 
         }
 
+        // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする
+        private bool _isBacking = false;
+
+        // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする　メソッド追加
+        private void Form_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
+            if (_isBacking) return;
+
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                // ×ボタン本来の「アプリを消し去る動き」を一旦キャンセル
+                e.Cancel = true;
+                // 「戻るボタン」押下時と同じ挙動にする
+                btnGameEnd_Click(sender, e);
+            }
+        }
+
+
         /// <summary>
         /// 「戻る」ボタン押下時
         /// </summary>
@@ -128,6 +153,9 @@ namespace CardGames
         /// <param name="e"></param>
         private void btnGameEnd_Click(object sender, EventArgs e)
         {
+            // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする
+            _isBacking = true; 
+
             // スタート画面を再表示
             Application.OpenForms["StartForm"]?.Show();
 
