@@ -158,6 +158,7 @@
             this.Controls.Add(this.NameOfGame);
             this.Name = "SettingForm";
             this.Text = "設定画面";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_FormClosing);
             this.Load += new System.EventHandler(this.SettingForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -56,6 +56,11 @@ namespace CardGames
 
         private int _debugCommandIndex = 0;
 
+
+        // 20260619 工藤*UI改善* プレイヤーと対応する名前ラベルを結びつける辞書
+        private Dictionary<Player, Label> _playerLabels = new Dictionary<Player, Label>();
+
+
         // =================================================================
         // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
         //  手番プレーヤーに背景色を付ける演出
@@ -120,21 +125,23 @@ namespace CardGames
             pictureBox_Result.Visible = false;
             pictureBox_Result.BringToFront();
 
-            // 2. 背景パネルを一度フォームのコントロールに追加
-            this.Controls.Add(pnl_Active_User);
-            this.Controls.Add(pnl_Active_CPU1);
-            this.Controls.Add(pnl_Active_CPU2);
-            this.Controls.Add(pnl_Active_CPU3);
+            /* 20260619 工藤*UI改善 不要部品を削除 START
+                //// 2. 背景パネルを一度フォームのコントロールに追加
+                //this.Controls.Add(pnl_Active_User);
+                //this.Controls.Add(pnl_Active_CPU1);
+                //this.Controls.Add(pnl_Active_CPU2);
+                //this.Controls.Add(pnl_Active_CPU3);
+                ////  3. 手札パネルの位置とサイズを背景パネルと完全に一致させる
+                //pnl_Active_User.Location = flpPlayerHand.Location;
+                //pnl_Active_User.Size = flpPlayerHand.Size;
+                //pnl_Active_CPU1.Location = flpCpu1Hand.Location;
+                //pnl_Active_CPU1.Size = flpCpu1Hand.Size;
+                //pnl_Active_CPU2.Location = flpCpu2Hand.Location;
+                //pnl_Active_CPU2.Size = flpCpu2Hand.Size;
+                //pnl_Active_CPU3.Location = flpCpu3Hand.Location;
+                //pnl_Active_CPU3.Size = flpCpu3Hand.Size;
+             20260619 工藤*UI改善 不要部品を削除 END */
 
-            //  3. 手札パネルの位置とサイズを背景パネルと完全に一致させる
-            pnl_Active_User.Location = flpPlayerHand.Location;
-            pnl_Active_User.Size = flpPlayerHand.Size;
-            pnl_Active_CPU1.Location = flpCpu1Hand.Location;
-            pnl_Active_CPU1.Size = flpCpu1Hand.Size;
-            pnl_Active_CPU2.Location = flpCpu2Hand.Location;
-            pnl_Active_CPU2.Size = flpCpu2Hand.Size;
-            pnl_Active_CPU3.Location = flpCpu3Hand.Location;
-            pnl_Active_CPU3.Size = flpCpu3Hand.Size;
 
             //  🌟 4. 【修正！】重ね順を「手札が手前、黄色が後ろ」に完全固定！
             // BringToFrontを一度すべてやめて、手札を「手前に引き上げる」命令だけに絞ります
@@ -143,13 +150,18 @@ namespace CardGames
             flpCpu2Hand.BringToFront();
             flpCpu3Hand.BringToFront();
 
-            // 🌟 5. 大理石の壁紙よりも手前に黄色パネルを置くため、壁紙（Form本体）を最背面へ
-            this.SendToBack();
+            // 20260619 工藤*UI改善 不要部品を削除
+            //削除// 🌟 5. 大理石の壁紙よりも手前に黄色パネルを置くため、壁紙（Form本体）を最背面へ
+            //削除//this.SendToBack();
 
             // 6. 勝敗画像はさらにその手前にしたいので、最後に再度 BringToFront
             pictureBox_Result.BringToFront();
 
             // 20260616 工藤 不具合対応 ここまで
+
+            // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする 
+            this.Activate();
+
         }
 
         //ボタンイベント
@@ -231,8 +243,27 @@ namespace CardGames
             }
         }
 
+        // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする
+        private bool _isBacking = false;
+
+        // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする　メソッド追加
+        private void Form_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
+            if (_isBacking) return;
+
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                // ×ボタン本来の「アプリを消し去る動き」を一旦キャンセル
+                e.Cancel = true;
+                // 「戻るボタン」押下時と同じ挙動にする
+                btnBack_Click(sender, e);
+            }
+        }
+
         private void btnBack_Click(object sender, EventArgs e)
         {
+            _isBacking = true; // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする
             SettingForm frm3 = new SettingForm();
             frm3.Show();
             this.Close();
@@ -276,7 +307,7 @@ namespace CardGames
         //ログテキストをクリア
         internal void InitializeMessageAreas()
         {
-            Operattion.Text = string.Empty;
+            Operation.Text = string.Empty;
             Logs.Text = string.Empty;
         }
         //手札枚数表示を0に
@@ -289,7 +320,7 @@ namespace CardGames
         }
         internal void SetInitialOperationGuide()
         {
-           Operattion.Text = "▶「ゲーム開始」ボタンを押してください。";
+            Operation.Text = "▶「ゲーム開始」ボタンを押してください。";
         }
         internal void SetLogs()
         {
@@ -306,28 +337,33 @@ namespace CardGames
 
             // =================================================================
             // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
-            // 手番プレーヤーに背景色を付ける演出　を追加 
-            // プレイヤーと手番インジケータ[pnl_Active]の紐づけ
+            //削除//20260619 工藤*UI改善*不要コメント 手番プレーヤーに背景色を付ける演出　を追加 
+            //削除// 工藤*UI改善*不要コメントプレイヤーと手番インジケータ[pnl_Active]の紐づけ
             // =================================================================
-            _activeIndicatorPanels.Add(_gameManager.Players[0], pnl_Active_User); 
-            _activeIndicatorPanels.Add(_gameManager.Players[1], pnl_Active_CPU1); 
-            _activeIndicatorPanels.Add(_gameManager.Players[2], pnl_Active_CPU2); 
-            _activeIndicatorPanels.Add(_gameManager.Players[3], pnl_Active_CPU3);
 
+                //削除// 20260619 工藤*UI改善 不要部品を削除
+                //削除//_activeIndicatorPanels.Add(_gameManager.Players[0], pnl_Active_User); 
+                //削除//_activeIndicatorPanels.Add(_gameManager.Players[1], pnl_Active_CPU1); 
+                //削除//_activeIndicatorPanels.Add(_gameManager.Players[2], pnl_Active_CPU2); 
+                //削除//_activeIndicatorPanels.Add(_gameManager.Players[3], pnl_Active_CPU3);
 
-            // 背景パネル位置固定　
-            // 20260615 工藤　#41不具合対応
-            pnl_Active_User.Location = flpPlayerHand.Location;
-            pnl_Active_User.Size = flpPlayerHand.Size;
+            // 20260619 工藤*UI改善* InitializeCpuHandPanelMap()　プレイヤーとラベルの紐づけを登録
+            _playerLabels.Add(_gameManager.Players[0], DateOfPlayer);
+            _playerLabels.Add(_gameManager.Players[1], DateOfCUP1);
+            _playerLabels.Add(_gameManager.Players[2], DateOfCUP2);
+            _playerLabels.Add(_gameManager.Players[3], DateOfCUP3);
 
-            pnl_Active_CPU1.Location = flpCpu1Hand.Location;
-            pnl_Active_CPU1.Size = flpCpu1Hand.Size;
-
-            pnl_Active_CPU2.Location = flpCpu2Hand.Location;
-            pnl_Active_CPU2.Size = flpCpu2Hand.Size;
-
-            pnl_Active_CPU3.Location = flpCpu3Hand.Location;
-            pnl_Active_CPU3.Size = flpCpu3Hand.Size;
+                //削除// 20260619 工藤*UI改善 不要部品を削除
+                //削除//// 背景パネル位置固定　
+                //削除/// 20260615 工藤　#41不具合対応
+                //削除////pnl_Active_User.Location = flpPlayerHand.Location;
+                //削除////pnl_Active_User.Size = flpPlayerHand.Size;
+                //削除// //pnl_Active_CPU1.Location = flpCpu1Hand.Location;
+                //削除////pnl_Active_CPU1.Size = flpCpu1Hand.Size;
+                //削除////pnl_Active_CPU2.Location = flpCpu2Hand.Location;
+                //削除////pnl_Active_CPU2.Size = flpCpu2Hand.Size;
+                //削除///pnl_Active_CPU3.Location = flpCpu3Hand.Location;
+                //削除////pnl_Active_CPU3.Size = flpCpu3Hand.Size;
 
             // 初期化：最初は全員の手番背景を「透明」にしておく
             // 20260615 工藤　#41不具合対応
@@ -351,37 +387,44 @@ namespace CardGames
                     pictureBox.Click -= SelectableCardPictureBox_Click;
                     pictureBox.Click += SelectableCardPictureBox_Click;
                     pictureBox.Cursor = Cursors.Hand;
+
+                    //20260619 工藤*UI改善* CPUエリアのカード選択時の演出
+                    pictureBox.MouseEnter -= Card_MouseEnter;
+                    pictureBox.MouseEnter += Card_MouseEnter;
+                    pictureBox.MouseEnter -= Card_MouseLeave;
+                    pictureBox.MouseEnter += Card_MouseLeave;
+
                 }
             }
         }
 
-/* 不要
-        // =================================================================
-        // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
-        // 手番プレーヤーに背景色を付ける演出　を追加 
-        // プレイヤーと手番インジケータ[pnl_Active]の紐づけ
-        // =================================================================
-        private void UpdateActivePlayerIndicator()
-        {
-            // 一度全員のインジケータを非表示にする
-            foreach (var panel in _activeIndicatorPanels.Values)
-            {
-                panel.Visible = false;
-            }
+                //削除///* 20260619 工藤*UI改善 不要部品を削除 START
+                //// =================================================================
+                //// #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
+                //// 手番プレーヤーに背景色を付ける演出　を追加 
+                //// プレイヤーと手番インジケータ[pnl_Active]の紐づけ
+                //// =================================================================
+                //private void UpdateActivePlayerIndicator()
+                //{
+                //  // 一度全員のインジケータを非表示にする
+                //foreach (var panel in _activeIndicatorPanels.Values)
+                //{
+                //    panel.Visible = false;
+                //}
 
-            // 現在の手番プレイヤーのインジケータを表示する
-            if (_activeIndicatorPanels.ContainsKey(_gameManager.ActivePlayer))
-            {
-                _activeIndicatorPanels[_gameManager.ActivePlayer].Visible = true;
-            }
+                //// 現在の手番プレイヤーのインジケータを表示する
+                //if (_activeIndicatorPanels.ContainsKey(_gameManager.ActivePlayer))
+                //{
+                //    _activeIndicatorPanels[_gameManager.ActivePlayer].Visible = true;
+                //}
 
-            // #60 リスタート実装  // 20260615 工藤 による追加分
-            // ●勝●敗の表示
-            lblResults.Text = $"{_playerName}さんの戦績：" +
-                $"{_gameSession.PlayerResult[0]}勝 {_gameSession.PlayerResult[1]}敗";
+                //// #60 リスタート実装  // 20260615 工藤 による追加分
+                //// ●勝●敗の表示
+                //lblResults.Text = $"{_playerName}さんの戦績：" +
+                //  $"{_gameSession.PlayerResult[0]}勝 {_gameSession.PlayerResult[1]}敗";
 
-        }
-*/
+                //}
+                //削除//    20260619 工藤*UI改善 不要部品を削除 END
 
 
         //======================================
@@ -491,12 +534,13 @@ namespace CardGames
             //・そうさガイドを更新する 
             UpdateGameOperation();  // #55：ゲームログ表示内容実装 // 20260616 工藤　
 
+            /*
             // 20260616 工藤 #41対応漏れ　ここから
             // すべてのアクティブインジケータ（Panel）の色を、一旦全部「透明」にリセットする
             foreach (var panel in _activeIndicatorPanels.Values)
             {
                 panel.BackColor = Color.Transparent; // 一度全員を透明に
-            }
+            }   
 
             if (_gameManager.ActivePlayer != null && _activeIndicatorPanels.ContainsKey(_gameManager.ActivePlayer))
             {
@@ -504,6 +548,23 @@ namespace CardGames
                 _activeIndicatorPanels[_gameManager.ActivePlayer].BackColor = Color.Yellow;
             }
             // 20260616 工藤 #41対応漏れ　ここまで
+            */
+
+            // 20260619 工藤*UI改善* プレーヤーのラベル表示の演出
+            //一度全員のラベルの色をデフォルトの「白（Color.White）」にリセット
+
+            foreach (var label in _playerLabels.Values)
+            {
+                label.ForeColor = Color.White;
+            }
+
+            // 20260619 工藤*UI改善* プレーヤーのラベル表示の演出
+            // 現在の手番プレイヤー（ActivePlayer）の文字色だけを「ゴールド（Color.Gold）」にする！
+            if (_gameManager.ActivePlayer != null && _playerLabels.ContainsKey(_gameManager.ActivePlayer))
+            {
+                _playerLabels[_gameManager.ActivePlayer].ForeColor = Color.Gold; // または Color.Yellow
+            }
+
 
             //・ゲームログを更新する 
             UpdateGameLog();
@@ -629,7 +690,9 @@ namespace CardGames
             }
         }
 
-        private void UpdateGameOperation()
+        // 20260619 工藤*UI改善* メソッドの頭に async を追加
+        private async void UpdateGameOperation()
+        //削除// private void UpdateGameOperation()
         {
             // =================================================================
             // #51：UpdateGameLog() ゲームログ・操作ログメソッド実装
@@ -639,7 +702,8 @@ namespace CardGames
             // =================================================================
 
             // クリア（上書きモード）
-            Operattion.Clear();
+            // Operation.Clear();
+            Operation.Text = string.Empty;
 
             // 現在のフェーズを取得
             GamePhase phase = _gameManager.CurrentPhase;
@@ -668,7 +732,35 @@ namespace CardGames
 
             if (!string.IsNullOrEmpty(message)) // #56
             {
-                Operattion.Text = message;
+                // 20260619 工藤*UI改善* 直接代入する代わりに、演出メソッドを await で呼び出す
+                await TypewriterEffectAsync(message);
+                // Operation.Text = message;
+
+            }
+        }
+
+        //20260619 工藤*UI改善* 
+        /// <summary>
+        /// 操作ガイドを一文字ずつ「ポポポ」と表示する演出
+        /// </summary>
+        private async Task TypewriterEffectAsync(string targetMessage)
+        {
+            // 1. まずはテキストボックスを空っぽにする
+            Operation.Text = string.Empty;
+
+            // 2. 文字列を1文字ずつバラしてループで回す
+            foreach (char ch in targetMessage)
+            {
+                // ラベルの末尾に1文字結合する
+                Operation.Text += ch.ToString();
+
+                // 3. 「ポッ」という効果音を鳴らす！
+                // (※効果音ファイルをResourcesに登録している場合)
+                // System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.pop_sound);
+                // player.Play();
+
+                // 4. 次の文字を表示するまでの「待ち時間」（ミリ秒）
+                await Task.Delay(50);
             }
         }
 
@@ -704,8 +796,12 @@ namespace CardGames
             }
             if (!string.IsNullOrEmpty(message))
             {
-                Logs.AppendText(message + Environment.NewLine);
 
+                // 20260619 工藤*UI改善*　新しいメッセージを「前側」に結合
+                Logs.Text = message + Environment.NewLine + Logs.Text;
+
+                // 20260619 工藤*UI改善*　古い行を削る
+                LimitLogLines();
             }
         }
 
@@ -716,25 +812,55 @@ namespace CardGames
             if (_gameManager.ActivePlayer.IsCpu)
             {
                 message = $"{_gameManager.ActivePlayer.Name}がカードを1枚引きました。";
-                Logs.AppendText(message+Environment.NewLine);
+
+                // Logs.AppendText(message+Environment.NewLine); // 20260619 工藤*UI改善 
+                Logs.Text = message + Environment.NewLine + Logs.Text; // 20260619 工藤*UI改善
+                LimitLogLines(); // 20260619 工藤*UI改善
                 return;
             }
             else
             {
                 message = $"{_gameManager.ActivePlayer.Name}が{drawCard.DisplayName}のカードを1枚引きました。";
-                Logs.AppendText(message + Environment.NewLine);
+                // Logs.AppendText(message + Environment.NewLine); // 20260619 工藤*UI改善
+                Logs.Text = message + Environment.NewLine + Logs.Text; // 20260619 工藤*UI改善
+                LimitLogLines(); // 20260619 工藤*UI改善
             }
         }
 
         //ゲームログ更新(ターン進行後)
         private void UpdateAdvanceTurnLogs(List<string> logs)
         {
-            foreach (string log in logs)
+
+            // 20260619 工藤*UI改善*　 1. 今回届いた複数のログを、あらかじめ「改行」で1つの塊に合体させます
+            string combinedLog = string.Join(Environment.NewLine, logs);
+
+            if (!string.IsNullOrEmpty(combinedLog))
             {
-                Logs.AppendText(log + Environment.NewLine);
+                // 20260619 工藤*UI改善*　 2. 塊ごと、現在のログの【一番前（上）】にガツンとドッキング！
+                Logs.Text = combinedLog + Environment.NewLine + Logs.Text;
             }
+
+            // 20260619 工藤*UI改善*　 3. ループの外側で、最後に「1回だけ」スマートに行数を制限する
+            LimitLogLines();
+
         }
 
+        // 20260619 工藤*UI改善* メソッド追加　
+        /// <summary>
+        /// ゲームログを最新の4行のみに制限する
+        /// </summary>
+        private void LimitLogLines()
+        {
+            //  1. 現在のテキストを「改行コード」で区切って、1行ずつの配列（名簿）に分解
+            string[] lines = Logs.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+            //  2. もし全体の行数が「4行」を超えていたら、古い行を切り捨て
+            if (lines.Length > 4)
+            {
+                // 最新の4行だけを残す
+                Logs.Text = string.Join(Environment.NewLine, lines.Take(4));
+            }
+        }
 
 
         //・ボタンを更新する
