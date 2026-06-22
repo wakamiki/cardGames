@@ -39,6 +39,13 @@ namespace CardGames
         private const int CardWidth = 50;
         private const int CardHeight = 70;
 
+        // 20260622 工藤 レビュー指摘対応 №8
+        // ×ボタンで「戻る」と同じ動きにする
+        private bool _isBacking = false;
+
+        // 20260622 工藤 レビュー指摘対応 No.10 ゲームログを管理するリスト
+        private List<string> _gameLogs = new List<string>();
+
         //デバック用
         private DebugForm _debugForm;
 
@@ -159,8 +166,8 @@ namespace CardGames
 
             // 20260616 工藤 不具合対応 ここまで
 
-            // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする 
-            this.Activate();
+            //削除 // 20260622 工藤 レビュー指摘対応 №7/20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする 
+            //削除 // 20260622 工藤 レビュー指摘対応 №7//this.Activate();
 
         }
 
@@ -243,8 +250,8 @@ namespace CardGames
             }
         }
 
-        // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする
-        private bool _isBacking = false;
+        //削除// 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする
+        //削除// private bool _isBacking = false;
 
         // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする　メソッド追加
         private void Form_FormClosing(object sender, FormClosingEventArgs e)
@@ -324,7 +331,13 @@ namespace CardGames
         }
         internal void SetLogs()
         {
-           Logs.Text = "";
+
+            // // 20260622 工藤 レビュー指摘対応 No.10 初期化時もリストと画面をきれいにクリアする
+            //削除//Logs.Text = "";
+            _gameLogs.Clear();
+            Logs.Text = string.Empty;
+
+
         }
         //フローレイアウトパネルとプレイヤーの対応辞書用意
         private void InitializeCpuHandPanelMap()
@@ -391,8 +404,12 @@ namespace CardGames
                     //20260619 工藤*UI改善* CPUエリアのカード選択時の演出
                     pictureBox.MouseEnter -= Card_MouseEnter;
                     pictureBox.MouseEnter += Card_MouseEnter;
-                    pictureBox.MouseEnter -= Card_MouseLeave;
-                    pictureBox.MouseEnter += Card_MouseLeave;
+
+                    // 20260622 工藤 レビュー指摘対応 No.9 カーソル演出に伴いGeminiよりtypo指摘
+                    //削除// pictureBox.MouseEnter -= Card_MouseLeave;
+                    //削除// pictureBox.MouseEnter += Card_MouseLeave;
+                    pictureBox.MouseLeave -= Card_MouseLeave; // MouseLeave に修正
+                    pictureBox.MouseLeave += Card_MouseLeave; // MouseLeave に修正
 
                 }
             }
@@ -510,6 +527,9 @@ namespace CardGames
         //リスタート処理
         private void ReStart()
         {
+            // 20260622 工藤 レビュー指摘対応 №6 余計なフォームが開くのを抑制
+            _isBacking = true;
+
             GameForm nextForm = new GameForm(_playerName,_playerCount,_cpuCount, _gameSession);
             nextForm.Show();
 
@@ -639,7 +659,9 @@ namespace CardGames
         {
             if (sender is PictureBox pictureBox)
             {
-                pictureBox.Top -= 15; // 15ピクセル上に浮かせる
+                // 20260622 工藤 レビュー指摘対応 No.9 演出の変更
+                //削除// pictureBox.Top -= 15; // 15ピクセル上に浮かせる
+                pictureBox.BorderStyle = BorderStyle.FixedSingle;
             }
         }
 
@@ -647,7 +669,10 @@ namespace CardGames
         {
             if (sender is PictureBox pictureBox)
             {
-                pictureBox.Top += 15; // 元の位置に戻す
+
+                // 20260622 工藤 レビュー指摘対応 No.9 演出の変更
+                //削除// pictureBox.Top += 15; // 元の位置に戻す
+                pictureBox.BorderStyle = BorderStyle.None;
             }
         }
 
@@ -690,52 +715,72 @@ namespace CardGames
             }
         }
 
-        // 20260619 工藤*UI改善* メソッドの頭に async を追加
-        private async void UpdateGameOperation()
-        //削除// private void UpdateGameOperation()
-        {
-            // =================================================================
-            // #51：UpdateGameLog() ゲームログ・操作ログメソッド実装
-            // #55：ゲームログ表示内容実装
-            // #56：操作ガイド表示内容実装
-            // 20260616 工藤
-            // =================================================================
 
-            // クリア（上書きモード）
-            // Operation.Clear();
+
+        // 20260622 工藤 レビュー指摘対応 No.11 スキップ対応版の操作ガイド更新
+            //削除// private void UpdateGameOperation()  // 20260619 工藤*UI改善* メソッドの頭に async を追加
+        // =================================================================
+        // #51：UpdateGameLog() ゲームログ・操作ログメソッド実装
+        // #55：ゲームログ表示内容実装
+        // #56：操作ガイド表示内容実装
+        // 20260616 工藤
+        // =================================================================
+
+        private async void UpdateGameOperation()
+        {
+            // 進行中の文字送りがあれば、安全にキャンセルして破棄する
+            if (_cts != null)
+            {
+                _cts.Cancel();
+                _cts.Dispose();
+                _cts = null;
+            }
+
             Operation.Text = string.Empty;
 
-            // 現在のフェーズを取得
             GamePhase phase = _gameManager.CurrentPhase;
             string message = "";
 
             switch (phase)
             {
                 case GamePhase.PlayerSelecting:
-                    message = $"▶あなたのターンです。{_gameManager.TargetPlayer.Name}からカードを1枚選んで「けってい」ボタンを押してください。"; // #56
+                    // 🌟 途中で綺麗に改行されるように、明示的に Environment.NewLine を仕込みます
+                    message = $"▶あなたのターンです。{Environment.NewLine}{_gameManager.TargetPlayer.Name}からカードを1枚選んで「けってい」ボタンを押してください。";
                     break;
                 case GamePhase.PlayerConfirming:
-                    message = $"▶{_gameManager.ActivePlayer.Name}のターンです。「すすむ」ボタンを押してください。"; // #56
+                    message = $"▶{_gameManager.ActivePlayer.Name}のターンです。{Environment.NewLine}「すすむ」ボタンを押してください。";
                     break;
                 case GamePhase.CpuTurn:
-                    message = $"▶{_gameManager.ActivePlayer.Name}のターンです。「すすむ」ボタンを押してください。";// #56
+                    message = $"▶{_gameManager.ActivePlayer.Name}のターンです。{Environment.NewLine}「すすむ」ボタンを押してください。";
                     break;
                 case GamePhase.GameOver:
-                    message = "あなたの負けです。"; // #56
-                    message = "終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「リスタート」ボタンを押してください。"; // #56
+                    message = $"あなたの負けです。{Environment.NewLine}終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「リスタート」ボタンを押してください。";
                     break;
                 case GamePhase.GameWin:
-                    message = "あなたの勝ちです！";  // #56
-                    message = "終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「リスタート」ボタンを押してください。"; // #56
+                    message = $"あなたの勝ちです！{Environment.NewLine}終了する場合は「もどる」ボタンを、もう一度遊ぶ場合は「リスタート」ボタンを押してください。";
                     break;
             }
 
-            if (!string.IsNullOrEmpty(message)) // #56
+            if (!string.IsNullOrEmpty(message))
             {
-                // 20260619 工藤*UI改善* 直接代入する代わりに、演出メソッドを await で呼び出す
-                await TypewriterEffectAsync(message);
-                // Operation.Text = message;
+                _currentFullMessage = message; // 全文を記憶
+                _cts = new System.Threading.CancellationTokenSource();
 
+                try
+                {
+                    // キャンセルトークンを渡して文字送りを実行
+                    await TypewriterEffectAsync(message, _cts.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    // 🌟 スキップされたら一気に全文を表示！
+                    Operation.Text = _currentFullMessage;
+                }
+                finally
+                {
+                    _cts?.Dispose();
+                    _cts = null;
+                }
             }
         }
 
@@ -743,7 +788,10 @@ namespace CardGames
         /// <summary>
         /// 操作ガイドを一文字ずつ「ポポポ」と表示する演出
         /// </summary>
-        private async Task TypewriterEffectAsync(string targetMessage)
+
+        // 20260622 工藤 レビュー指摘対応 No.11 キャンセル対応の演出
+        private async Task TypewriterEffectAsync(string targetMessage, System.Threading.CancellationToken token)
+            //削除//private async Task TypewriterEffectAsync(string targetMessage)
         {
             // 1. まずはテキストボックスを空っぽにする
             Operation.Text = string.Empty;
@@ -751,6 +799,10 @@ namespace CardGames
             // 2. 文字列を1文字ずつバラしてループで回す
             foreach (char ch in targetMessage)
             {
+                // 20260622 工藤 レビュー指摘対応 No.11 キャンセル対応の演出
+                // 毎文字の処理前に、キャンセル命令が飛んできていないかチェックする
+                token.ThrowIfCancellationRequested();　
+
                 // ラベルの末尾に1文字結合する
                 Operation.Text += ch.ToString();
 
@@ -760,7 +812,10 @@ namespace CardGames
                 // player.Play();
 
                 // 4. 次の文字を表示するまでの「待ち時間」（ミリ秒）
-                await Task.Delay(50);
+                // 20260622 工藤 レビュー指摘対応 No.11 キャンセル対応の演出
+                // 引数に token を渡すことで、待機中（Delay中）のキャンセルにも即座に対応できる
+                await Task.Delay(50, token);
+                // await Task.Delay(50);
             }
         }
 
@@ -800,8 +855,10 @@ namespace CardGames
                 // 20260619 工藤*UI改善*　新しいメッセージを「前側」に結合
                 Logs.Text = message + Environment.NewLine + Logs.Text;
 
-                // 20260619 工藤*UI改善*　古い行を削る
-                LimitLogLines();
+                // 20260622 工藤 レビュー指摘対応 No.10 メソッド差し替え
+                //削除// // 20260619 工藤*UI改善*　古い行を削る
+                //削除// LimitLogLines();
+                AddAndLimitLog(message);
             }
         }
 
@@ -813,17 +870,22 @@ namespace CardGames
             {
                 message = $"{_gameManager.ActivePlayer.Name}がカードを1枚引きました。";
 
-                // Logs.AppendText(message+Environment.NewLine); // 20260619 工藤*UI改善 
-                Logs.Text = message + Environment.NewLine + Logs.Text; // 20260619 工藤*UI改善
-                LimitLogLines(); // 20260619 工藤*UI改善
+                // 20260622 工藤 レビュー指摘対応 No.10 メソッド差し替え
+                //削除// // Logs.AppendText(message+Environment.NewLine); // 20260619 工藤*UI改善 
+                //削除//Logs.Text = message + Environment.NewLine + Logs.Text; // 20260619 工藤*UI改善
+                //削除//LimitLogLines(); // 20260619 工藤*UI改善
+                AddAndLimitLog(message); // 20260622 工藤 レビュー指摘対応 No.10 新メソッド
                 return;
             }
             else
             {
                 message = $"{_gameManager.ActivePlayer.Name}が{drawCard.DisplayName}のカードを1枚引きました。";
-                // Logs.AppendText(message + Environment.NewLine); // 20260619 工藤*UI改善
-                Logs.Text = message + Environment.NewLine + Logs.Text; // 20260619 工藤*UI改善
-                LimitLogLines(); // 20260619 工藤*UI改善
+
+                // 20260622 工藤 レビュー指摘対応 No.10 メソッド差し替え
+                //削除// // Logs.AppendText(message + Environment.NewLine); // 20260619 工藤*UI改善
+                //削除// Logs.Text = message + Environment.NewLine + Logs.Text; // 20260619 工藤*UI改善
+                //削除// LimitLogLines(); // 20260619 工藤*UI改善
+                AddAndLimitLog(message);  // 20260622 工藤 レビュー指摘対応 No.10 新メソッド
             }
         }
 
@@ -831,36 +893,67 @@ namespace CardGames
         private void UpdateAdvanceTurnLogs(List<string> logs)
         {
 
-            // 20260619 工藤*UI改善*　 1. 今回届いた複数のログを、あらかじめ「改行」で1つの塊に合体させます
-            string combinedLog = string.Join(Environment.NewLine, logs);
+            // 20260622 工藤 レビュー指摘対応 No.10 
+                    /* 不要な処理削除　ここから
+                            // 20260619 工藤*UI改善*　 1. 今回届いた複数のログを、あらかじめ「改行」で1つの塊に合体させます
+                            string combinedLog = string.Join(Environment.NewLine, logs);
 
-            if (!string.IsNullOrEmpty(combinedLog))
+                            if (!string.IsNullOrEmpty(combinedLog))
+                            {
+                                // 20260619 工藤*UI改善*　 2. 塊ごと、現在のログの【一番前（上）】にガツンとドッキング！
+                                Logs.Text = combinedLog + Environment.NewLine + Logs.Text;
+                            }
+
+                            // 20260619 工藤*UI改善*　 3. ループの外側で、最後に「1回だけ」スマートに行数を制限する
+                            LimitLogLines();
+                   不要な処理削除　ここまで */
+            // 順番が逆にならないよう、古い順（届いた順）にリストに入れる
+            foreach (string log in logs)
             {
-                // 20260619 工藤*UI改善*　 2. 塊ごと、現在のログの【一番前（上）】にガツンとドッキング！
-                Logs.Text = combinedLog + Environment.NewLine + Logs.Text;
+                AddAndLimitLog(log);
             }
-
-            // 20260619 工藤*UI改善*　 3. ループの外側で、最後に「1回だけ」スマートに行数を制限する
-            LimitLogLines();
 
         }
 
-        // 20260619 工藤*UI改善* メソッド追加　
-        /// <summary>
-        /// ゲームログを最新の4行のみに制限する
-        /// </summary>
-        private void LimitLogLines()
+        // 20260622 工藤 レビュー指摘対応 No.10 ログ更新と4行制限のロジック刷新 AddAndLimitLog() 新規追加
+        /* 不要なメソッド削除　ここから
+            // 20260619 工藤*UI改善* メソッド追加　
+            /// <summary>
+            /// ゲームログを最新の4行のみに制限する
+            /// </summary>
+            private void LimitLogLines()
+            {
+                //  1. 現在のテキストを「改行コード」で区切って、1行ずつの配列（名簿）に分解
+                string[] lines = Logs.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+                //  2. もし全体の行数が「4行」を超えていたら、古い行を切り捨て
+                if (lines.Length > 4)
+                {
+                    // 最新の4行だけを残す
+                    Logs.Text = string.Join(Environment.NewLine, lines.Take(4));
+                }
+            }
+        不要なメソッド削除　ここまで */
+        private void AddAndLimitLog(string newMessage)
         {
-            //  1. 現在のテキストを「改行コード」で区切って、1行ずつの配列（名簿）に分解
-            string[] lines = Logs.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            if (string.IsNullOrEmpty(newMessage)) return;
 
-            //  2. もし全体の行数が「4行」を超えていたら、古い行を切り捨て
-            if (lines.Length > 4)
+            // 1. リリストの【先頭（一番上）】に新しいログを割り込ませる
+            _gameLogs.Insert(0, newMessage);
+
+            // 2. もし4行を超えていたら、一番後ろ（一番古いログ）を削除する
+            while (_gameLogs.Count > 4)
             {
-                // 最新の4行だけを残す
-                Logs.Text = string.Join(Environment.NewLine, lines.Take(4));
+                _gameLogs.RemoveAt(_gameLogs.Count - 1);
             }
+
+            // 3. リストの中身を改行で合体させて、画面のテキストボックスにドン！と代入する
+            Logs.Text = string.Join(Environment.NewLine, _gameLogs);
         }
+
+        // 20260622 工藤 レビュー指摘対応 No.11 操作ガイド演出制御用の変数
+        private System.Threading.CancellationTokenSource _cts;
+        private string _currentFullMessage = "";
 
 
         //・ボタンを更新する
@@ -1083,6 +1176,18 @@ namespace CardGames
             await ShowPlayerLoseResult();
             ShowResultActionButtons();
         }
+
+        // 20260622 工藤 レビュー指摘対応 No.11 操作ガイドクリック時のスキップ処理
+        private void Operation_Click(object sender, EventArgs e)
+        {
+            // 文字送り実行中（_ctsが存在する）であれば、キャンセルを発動する
+            if (_cts != null)
+            {
+                _cts.Cancel();
+            }
+        }
     }
+
+
 
 }

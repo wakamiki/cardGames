@@ -216,9 +216,10 @@
             this.Operation.ForeColor = System.Drawing.Color.Gold;
             this.Operation.Location = new System.Drawing.Point(59, 455);
             this.Operation.Name = "Operation";
-            this.Operation.Size = new System.Drawing.Size(876, 52);
+            this.Operation.Size = new System.Drawing.Size(531, 52);
             this.Operation.TabIndex = 18;
             this.Operation.Text = "操作ガイド";
+            this.Operation.Click += new System.EventHandler(this.Operation_Click);
             // 
             // Logs
             // 
@@ -256,6 +257,7 @@
             this.Text = "ゲーム画面";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_FormClosing);
             this.Load += new System.EventHandler(this.GameForm_Load);
+            this.Click += new System.EventHandler(this.Operation_Click);
             this.flpCpu1Hand.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).EndInit();
             this.ResumeLayout(false);
