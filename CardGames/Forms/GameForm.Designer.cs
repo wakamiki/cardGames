@@ -216,7 +216,7 @@
             this.Operation.ForeColor = System.Drawing.Color.Gold;
             this.Operation.Location = new System.Drawing.Point(59, 455);
             this.Operation.Name = "Operation";
-            this.Operation.Size = new System.Drawing.Size(531, 52);
+            this.Operation.Size = new System.Drawing.Size(531, 78);
             this.Operation.TabIndex = 18;
             this.Operation.Text = "操作ガイド";
             this.Operation.Click += new System.EventHandler(this.Operation_Click);
@@ -226,7 +226,7 @@
             this.Logs.BackColor = System.Drawing.Color.Transparent;
             this.Logs.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.Logs.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.Logs.Location = new System.Drawing.Point(60, 537);
+            this.Logs.Location = new System.Drawing.Point(59, 546);
             this.Logs.Name = "Logs";
             this.Logs.Size = new System.Drawing.Size(876, 113);
             this.Logs.TabIndex = 19;
