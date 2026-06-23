@@ -181,7 +181,9 @@ namespace CardGames.Services
                 else
                 {
                     PlayerWin();
-                    return false;
+                    // 20260623 工藤 ラスト1人取り残されバグの修正
+                    //削除// return false;
+                    return true;
                 }
             }
             return false;
