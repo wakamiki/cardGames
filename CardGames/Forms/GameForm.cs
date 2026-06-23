@@ -141,12 +141,13 @@ namespace CardGames
             pictureBox_Result.BringToFront();
         }
 
-        //ボタンイベント
+        //進行ボタンクリックイベント
         private void btnMainAction_Click(object sender, EventArgs e)
         {
+            //ゲーム進行状態によって変化
             switch (_gameManager.CurrentPhase)
             {
-                // ゲームスタート
+                // 【ゲームスタート】
                 case GamePhase.BeforeStart:
                     //ゲームログ更新
                     UpdateGameLog();
@@ -158,12 +159,12 @@ namespace CardGames
                     EnableTargetPlayerCardSelection();
                     break;
 
-                // プレイヤーターンスタート
+                // 【プレイヤーターン:カード選択前】
                 case GamePhase.PlayerSelecting:
                     // カード未選択なので基本は何もしない
                     break;
 
-                // プレイヤーターン:カードを引く
+                // 【プレイヤーターン:カード選択済み】
                 case GamePhase.PlayerConfirming:
                     //カード配列番号取得
                     int cardIndex = TakeSelectedCardIndex();
@@ -181,7 +182,7 @@ namespace CardGames
                     UpdateDisplay();
                     break;
 
-                // CPUターンスタート
+                // 【CPUターンスタート】
                 case GamePhase.CpuTurn:
                     // CPUがカードを引く
                     Card cpuDrawCard = _gameManager.CpuTurnCardDraw();
@@ -206,12 +207,14 @@ namespace CardGames
                     }
                     break;
 
+                //　【ゲームオーバー】
                 case GamePhase.GameOver:
                     // 敗北時 敗北数記録 タイトルへ戻る、または再スタート
                     _gameSession.AddPlayerLose();
                     ReStart();
                     break;
-
+                
+                //　【ゲーム勝利】
                 case GamePhase.GameWin:
                     // 勝利時 勝利数記録 タイトルへ戻る、または再スタート
                     _gameSession.AddPlayerWin();
