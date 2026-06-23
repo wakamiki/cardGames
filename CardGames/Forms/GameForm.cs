@@ -15,44 +15,55 @@ using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-//using System.Media; //効果音を使う場合
 
 namespace CardGames
 {
     public partial class GameForm : Form
     {
+
+        //======================================
+        //フィールド
+        //======================================
+        //初期
         private string _playerName;
         private int _playerCount;
         private int _cpuCount;
-        private GameSession _gameSession;
-        //プレイヤーとフローレイアウトパネルの紐づけ辞書
-        private Dictionary<Player, FlowLayoutPanel> _playerHandPanels = new Dictionary<Player, FlowLayoutPanel>();
-        private BabanukiGameManager _gameManager;
-        //カード画像読み込み
-        private Dictionary<string, Image> _cardImages = new Dictionary<string, Image>();
-        //裏面カード画像
-        private Image _cardBackImage;
-        //選択カード
-        private PictureBox _selectedPictureBox;
 
-        //カードサイズ
+        //カードサイズ定数
         private const int CardWidth = 50;
         private const int CardHeight = 70;
 
-        // 20260622 工藤 レビュー指摘対応 №8
-        // ×ボタンで「戻る」と同じ動きにする
-        private bool _isBacking = false;
+        //専用ゲームマネージャー保存
+        private BabanukiGameManager _gameManager;
+        //勝敗記録用クラス保存
+        private GameSession _gameSession;
 
-        // 20260622 工藤 レビュー指摘対応 No.10 ゲームログを管理するリスト
+        //カード画像保存
+        private Dictionary<string, Image> _cardImages = new Dictionary<string, Image>();
+        //裏面カード画像保存
+        private Image _cardBackImage;
+
+        //選択カード保存
+        private PictureBox _selectedPictureBox;
+
+        // ゲームログを管理するリスト
         private List<string> _gameLogs = new List<string>();
-
-        // 20260622 工藤 レビュー指摘対応 No.10-2  文字重なり防止用のバージョン管理
-        // 🌟追加：操作ガイドの文字送りが古い処理かどうかを判定する世代番号
+        // 文字重なり防止用のバージョン管理
+        // 操作ガイドの文字送りが古い処理かどうかを判定する世代番号
         private int _operationGuideVersion = 0;
 
-        //デバック用
+        //プレイヤーとフローレイアウトパネルの紐づけ辞書
+        private Dictionary<Player, FlowLayoutPanel> _playerHandPanels = new Dictionary<Player, FlowLayoutPanel>();
+        // プレイヤーと対応する名前ラベルを結びつける辞書
+        private Dictionary<Player, Label> _playerLabels = new Dictionary<Player, Label>();
+
+        //  trueで×ボタンで「戻る」と同じ動きにする
+        private bool _isBacking = false;
+
+        //デバック用Form
         private DebugForm _debugForm;
 
+        //デバック画面起動コード
         private readonly Keys[] _debugCommand =
 {
     Keys.Up,
@@ -64,41 +75,32 @@ namespace CardGames
     Keys.Left,
     Keys.Right
 };
-
+        //デバック画面起動コード判定用
         private int _debugCommandIndex = 0;
-
-
-        // 20260619 工藤*UI改善* プレイヤーと対応する名前ラベルを結びつける辞書
-        private Dictionary<Player, Label> _playerLabels = new Dictionary<Player, Label>();
-
-
-        // =================================================================
-        // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
-        //  手番プレーヤーに背景色を付ける演出
-        // =================================================================
-        private Dictionary<Player, Panel> _activeIndicatorPanels = new Dictionary<Player, Panel>();
 
         //======================================
         //イベントメソッド
         //======================================
         internal GameForm(string playerName,int playerCount,int cpuCount,GameSession gameSession)
         {
+            //ゲームフォーム作成
             InitializeComponent();
+            //プレイヤーネーム設定
             _playerName = playerName;
+            //参加人数内訳設定
             _playerCount = playerCount;
             _cpuCount = cpuCount;
+            //勝敗記録用クラス設定
             _gameSession = gameSession;
+            //ゲームマネージャー作成、設定
             _gameManager = new BabanukiGameManager();
+            //ゲームマネージャーにプレイヤーネーム、参加人数内訳共有
             _gameManager.GameSettings(_playerName,_playerCount,_cpuCount);
         }
 
         private void GameForm_Load(object sender, EventArgs e)
         {
-
-            // =================================================================
-            // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
-            // フォーム全体の背景に壁紙画像をセットする
-            // =================================================================
+            // フォーム全体の背景に背景画像をセット
             this.BackgroundImage = Image.FromFile(Path.Combine("images", "素材ズ", "04_wallpaper.png"));
             this.BackgroundImageLayout = ImageLayout.Stretch; // 背景画像サイズの自動調整[Stretch]
 
@@ -108,71 +110,35 @@ namespace CardGames
             SetInitialOperationGuide();
             //ゲームログ初期文を入力
             SetLogs();
-            //決定ボタン=かいし
+            //進行ボタンテキスト=かいし
             btnMainAction.Text = "かいし";
             //デッキ、プレイヤー、プレイヤーリスト準備
             _gameManager.InitializeGame();
-            //フローレイアウトパネルとプレイヤーの対応辞書用意
-            InitializeCpuHandPanelMap();
+            //フローレイアウトパネルとプレイヤーの紐づけ辞書・ラベルとプレイヤーの紐づけ辞書作成
+            InitializePlayerViewMaps();
             //表示用カード画像準備
             LoadCardImages();
-
-            // #60 リスタート実装  // 20260617 工藤 指摘対応
-            // ●勝●敗の表示
+            // 勝敗表示　配列[0]が勝ち数、配列[1]が負け数
             lblResults.Text = $"{_playerName}さんの戦績：" +
                 $"{_gameSession.PlayerResult[0]}勝 {_gameSession.PlayerResult[1]}敗";
-
-
-            // 20260616 工藤 不具合対応 ここから
-
-            // 1. 勝敗画像の設定（最前面へ）
+            // 勝敗画像の設定
             this.Controls.Add(pictureBox_Result);
             pictureBox_Result.Parent = this;
+            //表示場所設定
             pictureBox_Result.Location = new Point(0, 0);
+            //サイズ設定
             pictureBox_Result.Size = this.ClientSize;
-            // 20260617 工藤 指摘対応 Zoom ⇒StretchImage 
-            // pictureBox_Result.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox_Result.SizeMode = PictureBoxSizeMode.StretchImage;
+            //通常時は隠す
             pictureBox_Result.Visible = false;
-            pictureBox_Result.BringToFront();
 
-            /* 20260619 工藤*UI改善 不要部品を削除 START
-                //// 2. 背景パネルを一度フォームのコントロールに追加
-                //this.Controls.Add(pnl_Active_User);
-                //this.Controls.Add(pnl_Active_CPU1);
-                //this.Controls.Add(pnl_Active_CPU2);
-                //this.Controls.Add(pnl_Active_CPU3);
-                ////  3. 手札パネルの位置とサイズを背景パネルと完全に一致させる
-                //pnl_Active_User.Location = flpPlayerHand.Location;
-                //pnl_Active_User.Size = flpPlayerHand.Size;
-                //pnl_Active_CPU1.Location = flpCpu1Hand.Location;
-                //pnl_Active_CPU1.Size = flpCpu1Hand.Size;
-                //pnl_Active_CPU2.Location = flpCpu2Hand.Location;
-                //pnl_Active_CPU2.Size = flpCpu2Hand.Size;
-                //pnl_Active_CPU3.Location = flpCpu3Hand.Location;
-                //pnl_Active_CPU3.Size = flpCpu3Hand.Size;
-             20260619 工藤*UI改善 不要部品を削除 END */
-
-
-            //  🌟 4. 【修正！】重ね順を「手札が手前、黄色が後ろ」に完全固定！
-            // BringToFrontを一度すべてやめて、手札を「手前に引き上げる」命令だけに絞ります
+            // 重ね順を「手札が手前、黄色が後ろ」に設定
             flpPlayerHand.BringToFront();
             flpCpu1Hand.BringToFront();
             flpCpu2Hand.BringToFront();
             flpCpu3Hand.BringToFront();
-
-            // 20260619 工藤*UI改善 不要部品を削除
-            //削除// 🌟 5. 大理石の壁紙よりも手前に黄色パネルを置くため、壁紙（Form本体）を最背面へ
-            //削除//this.SendToBack();
-
-            // 6. 勝敗画像はさらにその手前にしたいので、最後に再度 BringToFront
+            //勝敗画面を最前面に設定
             pictureBox_Result.BringToFront();
-
-            // 20260616 工藤 不具合対応 ここまで
-
-            //削除 // 20260622 工藤 レビュー指摘対応 №7/20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする 
-            //削除 // 20260622 工藤 レビュー指摘対応 №7//this.Activate();
-
         }
 
         //ボタンイベント
@@ -286,6 +252,7 @@ namespace CardGames
         //カード画像全読み込み
         internal void LoadCardImages()
         {
+            //カード表示エリア初期化
             ClearCardDisplayAreas();
             //カード画像を辞書に追加(key==DisplayName)
             foreach (Card card in _gameManager.Deck)
@@ -293,17 +260,22 @@ namespace CardGames
                 string key = card.DisplayName;
                 //Path.Combineは記号間違いでパスが壊れるのを防ぐため採用
                 string imagePaths = Path.Combine("images", "素材ズ", "07_トランプ表", key + ".png");
+                //キーと画像を対応させて辞書に追加
                 _cardImages.Add(key, Image.FromFile(imagePaths));
             }
             //裏面画像追加
             string imagePath = Path.Combine("images", "素材ズ", "05_Back.png");
             _cardBackImage = Image.FromFile(imagePath);
         }
+
         //初期化メソッド
         internal void InitializeGameDisplay()
         {
+            //カード表示エリア初期化
             ClearCardDisplayAreas();
+            //操作ガイド・ゲームログ初期化
             InitializeMessageAreas();
+            //手札残数表示ラベル初期化
             InitializeHandCountLabels();
         }
         //flpを初期化
@@ -315,7 +287,7 @@ namespace CardGames
             flpPlayerHand.Controls.Clear();
             flpThrown.Controls.Clear();
         }
-        //ログテキストをクリア
+        //操作ガイド・ゲームログテキストをクリア
         internal void InitializeMessageAreas()
         {
             Operation.Text = string.Empty;
@@ -343,8 +315,8 @@ namespace CardGames
 
 
         }
-        //フローレイアウトパネルとプレイヤーの対応辞書用意
-        private void InitializeCpuHandPanelMap()
+        //フローレイアウトパネルとプレイヤーの紐づけ辞書・ラベルとプレイヤーの紐づけ辞書作成
+        private void InitializePlayerViewMaps()
         {
             // パネルとプレイヤーの紐づけ
             _playerHandPanels.Add(_gameManager.Players[0], flpPlayerHand);
@@ -352,43 +324,11 @@ namespace CardGames
             _playerHandPanels.Add(_gameManager.Players[2],flpCpu2Hand);
             _playerHandPanels.Add(_gameManager.Players[3],flpCpu3Hand);
 
-            // =================================================================
-            // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
-            //削除//20260619 工藤*UI改善*不要コメント 手番プレーヤーに背景色を付ける演出 を追加 
-            //削除// 工藤*UI改善*不要コメントプレイヤーと手番インジケータ[pnl_Active]の紐づけ
-            // =================================================================
-
-                //削除// 20260619 工藤*UI改善 不要部品を削除
-                //削除//_activeIndicatorPanels.Add(_gameManager.Players[0], pnl_Active_User); 
-                //削除//_activeIndicatorPanels.Add(_gameManager.Players[1], pnl_Active_CPU1); 
-                //削除//_activeIndicatorPanels.Add(_gameManager.Players[2], pnl_Active_CPU2); 
-                //削除//_activeIndicatorPanels.Add(_gameManager.Players[3], pnl_Active_CPU3);
-
-            // 20260619 工藤*UI改善* InitializeCpuHandPanelMap() プレイヤーとラベルの紐づけを登録
+            // プレイヤーとラベルの紐づけを登録
             _playerLabels.Add(_gameManager.Players[0], DateOfPlayer);
             _playerLabels.Add(_gameManager.Players[1], DateOfCUP1);
             _playerLabels.Add(_gameManager.Players[2], DateOfCUP2);
             _playerLabels.Add(_gameManager.Players[3], DateOfCUP3);
-
-                //削除// 20260619 工藤*UI改善 不要部品を削除
-                //削除//// 背景パネル位置固定 
-                //削除/// 20260615 工藤 #41不具合対応
-                //削除////pnl_Active_User.Location = flpPlayerHand.Location;
-                //削除////pnl_Active_User.Size = flpPlayerHand.Size;
-                //削除// //pnl_Active_CPU1.Location = flpCpu1Hand.Location;
-                //削除////pnl_Active_CPU1.Size = flpCpu1Hand.Size;
-                //削除////pnl_Active_CPU2.Location = flpCpu2Hand.Location;
-                //削除////pnl_Active_CPU2.Size = flpCpu2Hand.Size;
-                //削除///pnl_Active_CPU3.Location = flpCpu3Hand.Location;
-                //削除////pnl_Active_CPU3.Size = flpCpu3Hand.Size;
-
-            // 初期化：最初は全員の手番背景を「透明」にしておく
-            // 20260615 工藤 #41不具合対応
-            foreach (var panel in _activeIndicatorPanels.Values)
-            {
-                panel.BackColor = Color.Transparent;
-            }
-
         }
 
         //======================================

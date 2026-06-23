@@ -26,8 +26,6 @@ namespace CardGames.Services
 
         private List<Player> _players = new List<Player>();
         internal IReadOnlyList<Player> Players => _players;
-        //現在のターン数
-        private int _turnIndex=0;
         //誰の手番か
         private Player _activePlayer;
         internal Player ActivePlayer => _activePlayer;
@@ -101,8 +99,6 @@ namespace CardGames.Services
             //引く相手を指定
             _targetPlayer = GetDrawTarget();
 
-            //最初のターンを設定する
-            _turnIndex = 1;
             //ゲーム進行状態を変更
             _currentPhase = GamePhase.PlayerSelecting;
 
