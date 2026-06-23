@@ -308,6 +308,7 @@ namespace CardGames
         {
             //カード表示エリア初期化
             ClearCardDisplayAreas();
+            flpThrown.Controls.Clear();
 
             //カード画像を辞書に追加(key==DisplayName)
             foreach (Card card in _gameManager.Deck)
@@ -330,6 +331,7 @@ namespace CardGames
         {
             //カード表示エリア初期化
             ClearCardDisplayAreas();
+            flpThrown.Controls.Clear();
 
             //操作ガイド・ゲームログ初期化
             InitializeMessageAreas();
@@ -338,14 +340,13 @@ namespace CardGames
             InitializeHandCountLabels();
         }
 
-        //フローレイアウトパネルを初期化
+        //フローレイアウトパネル(プレイヤー手札)を初期化
         internal void ClearCardDisplayAreas()
         {
             flpCpu1Hand.Controls.Clear();
             flpCpu2Hand.Controls.Clear();
             flpCpu3Hand.Controls.Clear();
             flpPlayerHand.Controls.Clear();
-            flpThrown.Controls.Clear();
         }
 
         //操作ガイド・ゲームログテキストを初期化
@@ -524,11 +525,9 @@ namespace CardGames
         //======================================
         private void UpdateDisplay()
         {
-            //・プレイヤー手札を描き直す
-            UpdatePlayerHand(_gameManager.Players[0]);
 
-            //・CPU手札を描き直す
-            UpdateCpuHands();
+            //参加者の手札を描き直す
+            UpdatePlayersHand();
 
             //捨て札エリアを描き直す
             UpdateFlpDiscardPile();
@@ -563,56 +562,39 @@ namespace CardGames
         }
 
         //全体更新メソッド関連小メソッド
-        //・プレイヤー手札を描き直す
-        private void UpdatePlayerHand(Player player)
-        {
-            //フローレイアウトパネルを初期化
-            flpPlayerHand.Controls.Clear();
-            
-            //内部のカード情報をピクチャボックスに反映
-            foreach (Card card in player.HandDeck)
-            {
-                PictureBox pictureBox = new PictureBox();
-                pictureBox.Image = _cardImages[card.DisplayName];
-                pictureBox.Width = CardWidth;
-                pictureBox.Height = CardHeight;
-                pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                flpPlayerHand.Controls.Add(pictureBox);
-            }
-            
-        }
-        //・CPU手札を描き直す
-        private void UpdateCpuHands()
-        {
-            //フローレイアウトパネルを初期化
-            flpCpu1Hand.Controls.Clear();
-            flpCpu2Hand.Controls.Clear();
-            flpCpu3Hand.Controls.Clear();
 
-            //内部のカード情報をピクチャボックスに反映
-            for (int i = 1; i < _gameManager.Players.Count; i++)
+        //参加者の手札を書き直す
+        private void  UpdatePlayersHand()
+        {
+            //フローレイアウトパネルを初期化
+            ClearCardDisplayAreas();
+
+            foreach (Player player in _gameManager.Players)
             {
-                for (int j = 0; j < _gameManager.Players[i].HandCount; j++)
+                for (int i = 0; i < player.HandCount; i++)
                 {
+                    //CPUとプレイヤー共通のカード設定
                     PictureBox pictureBox = new PictureBox();
-                    pictureBox.Image = _cardBackImage;
                     pictureBox.Width = CardWidth;
                     pictureBox.Height = CardHeight;
-                    pictureBox.Tag = j;
                     pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
 
-                    switch (i)
+                    //CPUとプレイヤーの判定
+                    if (!player.IsCpu)
                     {
-                        case 1:
-                            flpCpu1Hand.Controls.Add(pictureBox);
-                            break;
-                        case 2:
-                            flpCpu2Hand.Controls.Add(pictureBox);
-                            break;
-                        case 3:
-                            flpCpu3Hand.Controls.Add(pictureBox);
-                            break;
-                    }     
+                        //プレイヤーは表面カードを表示
+                        pictureBox.Image = _cardImages[player.HandDeck[i].DisplayName];
+                    }
+                    else
+                    {
+                        //CPUは裏面カードを表示＆カードの配列番号をtagに保存
+                        pictureBox.Image = _cardBackImage;
+                        pictureBox.Tag = i;
+                    }
+
+                    //フローレイアウトパネルとプレイヤーの辞書を見て対象のプレイヤーのパネルにカードを追加
+                    _playerHandPanels[player].Controls.Add(pictureBox);
+
                 }
             }
         }
@@ -1097,6 +1079,7 @@ namespace CardGames
             pictureBox_Result.Visible = false;
 
             ClearCardDisplayAreas();
+            flpThrown.Controls.Clear();
             InitializeGameDisplay();
             UpdateDisplay();
         }

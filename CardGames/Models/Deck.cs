@@ -13,33 +13,51 @@ namespace CardGames.Models
 //誰にどう配るかはゲームごとのルールなので、BabanukiGameManager側で行う。
     internal class Deck
     {
+
+        //========================================
+        //フィールド
+        //========================================  
+
+        //カードリスト
         private List<Card> _deck = new List<Card>();
-        internal int RemainingCount => _deck.Count;
+
+        //カードリストgetter
         internal IReadOnlyList<Card> ReadDeck => _deck;
+
+        //カードリスト枚数getter
+        internal int RemainingCount => _deck.Count;
+
+        //シャッフル用ランダム
         private Random _random = new Random();
 
+        //========================================
+        //メソッド
+        //========================================
 
-
-        //残り枚数を返す
-
+        //デッキ作成
         internal void CreateDeck()
         {
             //一旦初期化
             _deck.Clear();
 
+            //スートで回す
             foreach (Suit suit in Enum.GetValues(typeof(Suit)))
             {
+                //ランクで回す
                 foreach (Rank rank in Enum.GetValues(typeof(Rank)))
                 {
                     //表示用文字組立
                     string displayName = GetSuitText(suit) + "-" + GetRankText(rank);
 
+                    //カードを作成
                     Card card = new Card(suit, rank,false,displayName);
+
+                    //カードリストに追加
                     _deck.Add(card);
                 }
-                //Console.WriteLine(decks.Count);//デバッグ用52枚になるはず
-
             }
+
+            //ジョーカー1枚作成・カードリストに追加
             Card joker = new Card(null,null,true,"Joker");
             _deck.Add(joker);
 
@@ -48,7 +66,7 @@ namespace CardGames.Models
             //    合計 53枚
         }
 
-
+        //山札シャッフル
         internal void Shuffle()
         {
             //Fisher-Yates シャッフルを採用する。
@@ -71,6 +89,7 @@ namespace CardGames.Models
             //山札から1枚取り出す
             Card targetCard = _deck[0];
             _deck.RemoveAt(0);
+
             return targetCard;
         }
 

@@ -23,7 +23,7 @@ namespace CardGames.Models
         internal IReadOnlyList<Card> HandDeck => _handDeck;
         internal int HandCount => _handDeck.Count;
 
-        //・プレイヤーかどうかを持つ
+        //・CPUかどうかを持つ
         internal bool IsCpu { get; }
 
         //・勝ち抜け済みかどうかを持つ
@@ -42,10 +42,10 @@ namespace CardGames.Models
         }
 
         //========================================
-        //基本メソッド
+        //メソッド
         //========================================
 
-            //カード追加
+        //手札にカード追加
         internal void AddCard(Card card)
         {
             _handDeck.Add(card);
@@ -62,11 +62,6 @@ namespace CardGames.Models
             _handDeck.RemoveAt(num);
             return card;
         }
-
-
-        //========================================
-        //専用メソッド
-        //========================================
 
         //勝ち抜けCPUの状態変更
         internal void MarkAsFinished()

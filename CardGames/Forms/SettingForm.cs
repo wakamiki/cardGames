@@ -13,6 +13,17 @@ namespace CardGames
 {
     public partial class SettingForm : Form
     {
+        //===============================
+        //フィールド
+        //===============================
+
+        // ×ボタンで「戻る」と同じ動きにする
+        private bool _isBacking = false;
+
+
+        //===============================
+        //イベントメソッド
+        //===============================
         internal SettingForm()
         {
             InitializeComponent();
@@ -102,7 +113,7 @@ namespace CardGames
         /// <param name="e"></param>
         private void btnGameStart_Click(object sender, EventArgs e)
         {
-            // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする
+            // ×ボタンで「戻る」と同じ動きにする
             _isBacking = true;
 
             // 次画面にプレイヤー名と人数を渡す
@@ -114,7 +125,7 @@ namespace CardGames
             // 次画面を作成、引数(プレイヤー名と人数,プレイヤー勝敗数)を渡す
             GameForm gmForm = new GameForm(_NameOfPlayer, _playerCount, _cpuCount,gameSession);
 
-            // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする 
+            // ×ボタンで「戻る」と同じ動きにする 
             this.Hide();
 
             // ゲーム画面を表示
@@ -125,10 +136,7 @@ namespace CardGames
 
         }
 
-        // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする
-        private bool _isBacking = false;
-
-        // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする　メソッド追加
+        // ×ボタンで「戻る」と同じ動きにする
         private void Form_FormClosing(object sender, FormClosingEventArgs e)
         {
 
@@ -151,7 +159,7 @@ namespace CardGames
         /// <param name="e"></param>
         private void btnGameEnd_Click(object sender, EventArgs e)
         {
-            // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする
+            // ×ボタンで「戻る」と同じ動きにする
             _isBacking = true; 
 
             // スタート画面を再表示
