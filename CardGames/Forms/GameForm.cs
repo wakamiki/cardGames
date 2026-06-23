@@ -45,6 +45,8 @@ namespace CardGames
 
         //選択カード保存
         private PictureBox _selectedPictureBox;
+        //ホバー中カード保存
+        private PictureBox _hoveredPictureBox;
 
         // ゲームログを管理するリスト
         private List<string> _gameLogs = new List<string>();
@@ -57,7 +59,7 @@ namespace CardGames
         // プレイヤーと対応する名前ラベルを結びつける辞書
         private Dictionary<Player, Label> _playerLabels = new Dictionary<Player, Label>();
 
-        //  trueで×ボタンで「戻る」と同じ動きにする
+        //  falseで×ボタンで「戻る」と同じ動きにする
         private bool _isBacking = false;
 
         //デバック用Form
@@ -149,11 +151,12 @@ namespace CardGames
             {
                 // 【ゲームスタート】
                 case GamePhase.BeforeStart:
-                    //ゲームログ更新
+
+                    //ゲームログ更新(ゲームスタート)
                     UpdateGameLog();
                     // ゲーム開始処理
                     _gameManager.StartGame();
-                    //画面再取得
+                    //画面更新
                     UpdateDisplay();
                     //カードを引く相手だけカード選択可能にする
                     EnableTargetPlayerCardSelection();
@@ -161,22 +164,24 @@ namespace CardGames
 
                 // 【プレイヤーターン:カード選択前】
                 case GamePhase.PlayerSelecting:
-                    // カード未選択なので基本は何もしない
+
+                    // カード未選択なのでボタン選択できない
                     break;
 
                 // 【プレイヤーターン:カード選択済み】
                 case GamePhase.PlayerConfirming:
-                    //カード配列番号取得
+
+                    //引きたいカードの配列番号取得
                     int cardIndex = TakeSelectedCardIndex();
                     //カードドロー
                     Card drawCard = _gameManager.PlayerTurnCardDraw(cardIndex);
-                    //ゲームログ更新
+                    //ゲームログ更新(ドローカード表示)
                     AddCardDrawLog(drawCard);
-                    //ターン進行
+                    //ターン進行&ゲームログ取得
                     List<string> logs = _gameManager.AdvanceTurn(drawCard);
-                    //ゲームログ更新
+                    //ゲームログ更新(捨てたペア表示、手札に加えたカード表示)
                     UpdateAdvanceTurnLogs(logs);
-                    //ゲーム進行状態更新
+                    //ゲーム進行状態を進める
                     _gameManager.SetCpuTurn();
                     //画面更新
                     UpdateDisplay();
@@ -184,54 +189,56 @@ namespace CardGames
 
                 // 【CPUターンスタート】
                 case GamePhase.CpuTurn:
+
                     // CPUがカードを引く
                     Card cpuDrawCard = _gameManager.CpuTurnCardDraw();
-                    //ゲームログ更新
+                    //ゲームログ更新(ドローカード表示)
                     AddCardDrawLog(cpuDrawCard);
-                    //ターン進行
+                    //ターン進行&ゲームログ取得
                     List<string> cpuLogs = _gameManager.AdvanceTurn(cpuDrawCard);
-                    //ゲームログ更新
+                    //ゲームログ更新(捨てたペア表示、手札に加えたカード表示)
                     UpdateAdvanceTurnLogs(cpuLogs);
                     //次の手番がプレイヤー時の遷移処理
+                    //【重要】必ず状態進行→画面更新→相手の手札選択可能処理の順番で処理すること。不具合が起こるため。
                     if (_gameManager.IsPlayerTurn())
                     {
                         _gameManager.SetPlayerSelecting();
-                        // UpdateButtons(); // 20260616 工藤 不具合対応
-                        // EnableTargetPlayerCardSelection(); // 20260616 工藤 不具合対応
                     }
                     // 画面全体を更新
                     UpdateDisplay();
-                    if (_gameManager.CurrentPhase == GamePhase.PlayerSelecting) // 20260616 工藤 不具合対応
+                    if (_gameManager.CurrentPhase == GamePhase.PlayerSelecting)
                     {
-                        EnableTargetPlayerCardSelection(); // 20260616 工藤 不具合対応
+                        EnableTargetPlayerCardSelection();
                     }
                     break;
 
-                //　【ゲームオーバー】
+                // 【ゲームオーバー】
                 case GamePhase.GameOver:
-                    // 敗北時 敗北数記録 タイトルへ戻る、または再スタート
+
+                    // 敗北数記録
                     _gameSession.AddPlayerLose();
+                    // 再スタート
                     ReStart();
                     break;
                 
                 //　【ゲーム勝利】
                 case GamePhase.GameWin:
-                    // 勝利時 勝利数記録 タイトルへ戻る、または再スタート
+
+                    // 勝利数記録
                     _gameSession.AddPlayerWin();
+                    // 再スタート
                     ReStart();
                     break;
             }
         }
 
-        //削除// 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする
-        //削除// private bool _isBacking = false;
-
-        // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする メソッド追加
+        // ×ボタンで「戻る」と同じ動きにする
         private void Form_FormClosing(object sender, FormClosingEventArgs e)
         {
-
+            //_isBackingがtrueなら何もしない
             if (_isBacking) return;
 
+            // 画面を閉じる処理が行われたならば
             if (e.CloseReason == CloseReason.UserClosing)
             {
                 // ×ボタン本来の「アプリを消し去る動き」を一旦キャンセル
@@ -241,17 +248,21 @@ namespace CardGames
             }
         }
 
+        //戻るボタン処理
         private void btnBack_Click(object sender, EventArgs e)
         {
-            _isBacking = true; // 20260619 工藤*UI改善 ×ボタンで「戻る」と同じ動きにする
+            _isBacking = true;
+            //新しい設定画面を作成・表示
             SettingForm frm3 = new SettingForm();
             frm3.Show();
+            //現在のFormを閉じる
             this.Close();
         }
 
         //======================================
-        //ロードイベント
+        //ロードイベント内メソッド
         //======================================
+
         //カード画像全読み込み
         internal void LoadCardImages()
         {
@@ -281,7 +292,8 @@ namespace CardGames
             //手札残数表示ラベル初期化
             InitializeHandCountLabels();
         }
-        //flpを初期化
+
+        //フローレイアウトパネルを初期化
         internal void ClearCardDisplayAreas()
         {
             flpCpu1Hand.Controls.Clear();
@@ -290,13 +302,15 @@ namespace CardGames
             flpPlayerHand.Controls.Clear();
             flpThrown.Controls.Clear();
         }
-        //操作ガイド・ゲームログテキストをクリア
+
+        //操作ガイド・ゲームログテキストを初期化
         internal void InitializeMessageAreas()
         {
             Operation.Text = string.Empty;
             Logs.Text = string.Empty;
         }
-        //手札枚数表示を0に
+
+        //手札枚数表示を0まい表示に
         internal void InitializeHandCountLabels()
         {
             DateOfCUP1.Text = "CPU１のてふだ のこり０まい";
@@ -304,20 +318,19 @@ namespace CardGames
             DateOfCUP3.Text = "CPU３のてふだ のこり０まい";
             DateOfPlayer.Text = _playerName + "のてふだ のこり０まい";
         }
+
+        //操作ガイド初期文設定
         internal void SetInitialOperationGuide()
         {
             Operation.Text = "▶「ゲーム開始」ボタンを押してください。";
         }
+
+        //ゲームログ初期文設定(今は初期化だけだがいずれ初期文設定を行う時用にメソッドを残しておく)
         internal void SetLogs()
         {
-
-            // // 20260622 工藤 レビュー指摘対応 No.10 初期化時もリストと画面をきれいにクリアする
-            //削除//Logs.Text = "";
             _gameLogs.Clear();
-            Logs.Text = string.Empty;
-
-
         }
+
         //フローレイアウトパネルとプレイヤーの紐づけ辞書・ラベルとプレイヤーの紐づけ辞書作成
         private void InitializePlayerViewMaps()
         {
@@ -334,102 +347,76 @@ namespace CardGames
             _playerLabels.Add(_gameManager.Players[3], DateOfCUP3);
         }
 
-        //======================================
-        //GamePhase.BeforeStart
-        //======================================
+        //=================================================
+        //GamePhase.BeforeStart　進行状態【ゲームスタート】
+        //=================================================
         //引く相手のカードを選択可能にする
         private void EnableTargetPlayerCardSelection()
         {
+            //相手のフローレイアウトパネル内のカード一つ一つに設定を追加
             foreach (Control control in _playerHandPanels[_gameManager.TargetPlayer].Controls)
             {
                 if (control is PictureBox pictureBox)
                 {
+                    //ピクチャボックスのクリックイベントを初期化
                     pictureBox.Click -= SelectableCardPictureBox_Click;
+                    //ピクチャボックスにクリックイベントを追加
                     pictureBox.Click += SelectableCardPictureBox_Click;
+                    //カーソルがあった時にカーソルを手表示に変更
                     pictureBox.Cursor = Cursors.Hand;
 
-                    //20260619 工藤*UI改善* CPUエリアのカード選択時の演出
+                    //ホバーイベントを初期化
                     pictureBox.MouseEnter -= Card_MouseEnter;
+                    //CPUエリアのカード選択時の演出のためホバーイベントを追加
                     pictureBox.MouseEnter += Card_MouseEnter;
 
-                    // 20260622 工藤 レビュー指摘対応 No.9 カーソル演出に伴いGeminiよりtypo指摘
-                    //削除// pictureBox.MouseEnter -= Card_MouseLeave;
-                    //削除// pictureBox.MouseEnter += Card_MouseLeave;
-                    pictureBox.MouseLeave -= Card_MouseLeave; // MouseLeave に修正
-                    pictureBox.MouseLeave += Card_MouseLeave; // MouseLeave に修正
+                    //ホバー解除時イベントを初期化
+                    pictureBox.MouseLeave -= Card_MouseLeave;
+                    //CPUエリアのカード選択時の演出のためホバー解除時イベントを追加
+                    pictureBox.MouseLeave += Card_MouseLeave;
+
+                    //描画イベントを初期化
+                    pictureBox.Paint -= Card_Paint;
+                    //描画イベントを追加
+                    pictureBox.Paint += Card_Paint;
 
                 }
             }
         }
 
-                //削除///* 20260619 工藤*UI改善 不要部品を削除 START
-                //// =================================================================
-                //// #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
-                //// 手番プレーヤーに背景色を付ける演出 を追加 
-                //// プレイヤーと手番インジケータ[pnl_Active]の紐づけ
-                //// =================================================================
-                //private void UpdateActivePlayerIndicator()
-                //{
-                //  // 一度全員のインジケータを非表示にする
-                //foreach (var panel in _activeIndicatorPanels.Values)
-                //{
-                //    panel.Visible = false;
-                //}
-
-                //// 現在の手番プレイヤーのインジケータを表示する
-                //if (_activeIndicatorPanels.ContainsKey(_gameManager.ActivePlayer))
-                //{
-                //    _activeIndicatorPanels[_gameManager.ActivePlayer].Visible = true;
-                //}
-
-                //// #60 リスタート実装  // 20260615 工藤 による追加分
-                //// ●勝●敗の表示
-                //lblResults.Text = $"{_playerName}さんの戦績：" +
-                //  $"{_gameSession.PlayerResult[0]}勝 {_gameSession.PlayerResult[1]}敗";
-
-                //}
-                //削除//    20260619 工藤*UI改善 不要部品を削除 END
-
-
-        //======================================
-        //GamePhase.PlayerSelecting
-        //======================================
-        //カードを選択
+        //===========================================================================
+        //GamePhase.PlayerSelecting　ゲーム進行状態【プレイヤーターン(カード選択前)】
+        //===========================================================================
+        //カードを選択するクリックイベント
         private void SelectableCardPictureBox_Click(object sender, EventArgs e)
         {
+            //クリックされたピクチャボックスを取得
             PictureBox clickedPictureBox = (PictureBox)sender;
 
-            // =================================================================
-            // #41_gameForm画面のボタンやログ表示の見た目を作りこむ // 20260615 工藤
-            // 手番プレーヤーに背景色を付ける演出 を追加 
-            // 手番インジケータを更新
-            // =================================================================
-            //UpdateActivePlayerIndicator();
-
-            //押されたカードの見た目変更
-            // 前に選択していたカードの見た目を戻す
+            //選択済みピクチャボックス内に何か入っていれば
             if (_selectedPictureBox != null)
             {
+                // 前に選択していたカードの見た目を戻す
                 _selectedPictureBox.BorderStyle = BorderStyle.None;
             }
 
-            // 今回クリックしたカードだけ選択状態にする
+            // 今回クリックしたカードを選択状態にする
             clickedPictureBox.BorderStyle = BorderStyle.Fixed3D;
 
             // 選択中のPictureBoxとして保存
             _selectedPictureBox = clickedPictureBox;
 
-            // ゲーム状態を「選択済み・決定待ち」にする
+            // ゲーム進行状態をカード選択済みに進行する
             _gameManager.SetPlayerConfirming();
 
             // 画面全体は作り直さず、ボタンだけ更新
+            // (画面を作り直すとフローレイアウトパネル設定が初期化してしまうため)
             UpdateButtons();
         }
 
-        //======================================
-        //GamePhase.PlayerConfirming
-        //======================================
-
+        //=============================================================================
+        //GamePhase.PlayerConfirming ゲーム進行状態【プレイヤーターン(カード選択済み)】
+        //=============================================================================
         //ピクチャボックスからカード配列番号を返しカード選択状態を解除
         private int TakeSelectedCardIndex()
         {
@@ -442,17 +429,9 @@ namespace CardGames
             return cardIndex;
         }
 
-
-        //======================================
-        //GamePhase.CpuTurn
-        //======================================
-
-        //======================================
-        //GamePhase.GameOver
-        //======================================
-        //======================================
-        //GamePhase.GameWin
-        //======================================
+        //================================================================
+        //GamePhase.GameWin GamePhase.GameOver ゲーム進行状態【勝敗】
+        //================================================================
 
         //勝敗判定などなど
         internal async void ShowGameResultIfNeeded() // 20260611 工藤 async を追記
@@ -500,22 +479,6 @@ namespace CardGames
             UpdateTurnGuide();
             //・そうさガイドを更新する 
             UpdateGameOperation();  // #55：ゲームログ表示内容実装 // 20260616 工藤 
-
-            /*
-            // 20260616 工藤 #41対応漏れ ここから
-            // すべてのアクティブインジケータ（Panel）の色を、一旦全部「透明」にリセットする
-            foreach (var panel in _activeIndicatorPanels.Values)
-            {
-                panel.BackColor = Color.Transparent; // 一度全員を透明に
-            }   
-
-            if (_gameManager.ActivePlayer != null && _activeIndicatorPanels.ContainsKey(_gameManager.ActivePlayer))
-            {
-                // 現在の手番の人だけを「黄色」に染める！
-                _activeIndicatorPanels[_gameManager.ActivePlayer].BackColor = Color.Yellow;
-            }
-            // 20260616 工藤 #41対応漏れ ここまで
-            */
 
             // 20260619 工藤*UI改善* プレーヤーのラベル表示の演出
             //一度全員のラベルの色をデフォルトの「白（Color.White）」にリセット
@@ -597,22 +560,49 @@ namespace CardGames
         // =================================================================
         private void Card_MouseEnter(object sender, EventArgs e)
         {
+            //ピクチャボックス以外での発火では反応しない
             if (sender is PictureBox pictureBox)
             {
-                // 20260622 工藤 レビュー指摘対応 No.9 演出の変更
-                //削除// pictureBox.Top -= 15; // 15ピクセル上に浮かせる
-                pictureBox.BorderStyle = BorderStyle.FixedSingle;
+                //ホバー中ピクチャボックスとして保存
+                _hoveredPictureBox = pictureBox;
+                //選択中のペイントイベント発火
+                pictureBox.Invalidate();
             }
         }
 
         private void Card_MouseLeave(object sender, EventArgs e)
         {
+            //ピクチャボックス以外での発火では反応しない
             if (sender is PictureBox pictureBox)
             {
+                if (_hoveredPictureBox == pictureBox)
+                {
+                    //ホバー中ピクチャボックスを解除
+                    _hoveredPictureBox = null;
+                }
+                //選択解除のペイントイベント発火
+                pictureBox.Invalidate();
+            }
+        }
 
-                // 20260622 工藤 レビュー指摘対応 No.9 演出の変更
-                //削除// pictureBox.Top += 15; // 元の位置に戻す
-                pictureBox.BorderStyle = BorderStyle.None;
+        private void Card_Paint(object sender, PaintEventArgs e)
+        {
+            //ピクチャボックス以外での発火では反応しない
+            if (!(sender is PictureBox pictureBox))
+            {
+                return;
+            }
+
+            // ホバー中のPictureBoxでなければ何も描かない
+            if (pictureBox != _hoveredPictureBox)
+            {
+                return;
+            }
+
+            //画像全体に白色(透明度60)のオーバーレイを作成する
+            using (Brush brush = new SolidBrush(Color.FromArgb(60, Color.White)))
+            {
+                e.Graphics.FillRectangle(brush, pictureBox.ClientRectangle);
             }
         }
 
