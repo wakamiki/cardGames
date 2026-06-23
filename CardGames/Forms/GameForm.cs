@@ -91,15 +91,20 @@ namespace CardGames
         {
             //ゲームフォーム作成
             InitializeComponent();
+
             //プレイヤーネーム設定
             _playerName = playerName;
+
             //参加人数内訳設定
             _playerCount = playerCount;
             _cpuCount = cpuCount;
+
             //勝敗記録用クラス設定
             _gameSession = gameSession;
+
             //ゲームマネージャー作成、設定
             _gameManager = new BabanukiGameManager();
+
             //ゲームマネージャーにプレイヤーネーム、参加人数内訳共有
             _gameManager.GameSettings(_playerName,_playerCount,_cpuCount);
         }
@@ -112,29 +117,40 @@ namespace CardGames
 
             //各種初期化
             InitializeGameDisplay();
+
             //操作ガイド初期文を入力
             SetInitialOperationGuide();
+
             //ゲームログ初期文を入力
             SetLogs();
+
             //進行ボタンテキスト=かいし
             btnMainAction.Text = "かいし";
+
             //デッキ、プレイヤー、プレイヤーリスト準備
             _gameManager.InitializeGame();
+
             //フローレイアウトパネルとプレイヤーの紐づけ辞書・ラベルとプレイヤーの紐づけ辞書作成
             InitializePlayerViewMaps();
+
             //表示用カード画像準備
             LoadCardImages();
+
             // 勝敗表示　配列[0]が勝ち数、配列[1]が負け数
             lblResults.Text = $"{_playerName}さんの戦績：" +
                 $"{_gameSession.PlayerResult[0]}勝 {_gameSession.PlayerResult[1]}敗";
+
             // 勝敗画像の設定
             this.Controls.Add(pictureBox_Result);
             pictureBox_Result.Parent = this;
+
             //表示場所設定
             pictureBox_Result.Location = new Point(0, 0);
+
             //サイズ設定
             pictureBox_Result.Size = this.ClientSize;
             pictureBox_Result.SizeMode = PictureBoxSizeMode.StretchImage;
+
             //通常時は隠す
             pictureBox_Result.Visible = false;
 
@@ -143,6 +159,7 @@ namespace CardGames
             flpCpu1Hand.BringToFront();
             flpCpu2Hand.BringToFront();
             flpCpu3Hand.BringToFront();
+
             //勝敗画面を最前面に設定
             pictureBox_Result.BringToFront();
         }
@@ -158,10 +175,13 @@ namespace CardGames
 
                     //ゲームログ更新(ゲームスタート)
                     UpdateGameLog();
+
                     // ゲーム開始処理
                     _gameManager.StartGame();
+
                     //画面更新
                     UpdateDisplay();
+
                     //カードを引く相手だけカード選択可能にする
                     EnableTargetPlayerCardSelection();
                     break;
@@ -177,16 +197,22 @@ namespace CardGames
 
                     //引きたいカードの配列番号取得
                     int cardIndex = TakeSelectedCardIndex();
+
                     //カードドロー
                     Card drawCard = _gameManager.PlayerTurnCardDraw(cardIndex);
+
                     //ゲームログ更新(ドローカード表示)
                     AddCardDrawLog(drawCard);
+
                     //ターン進行&ゲームログ取得
                     List<string> logs = _gameManager.AdvanceTurn(drawCard);
+
                     //ゲームログ更新(捨てたペア表示、手札に加えたカード表示)
                     UpdateAdvanceTurnLogs(logs);
+
                     //ゲーム進行状態を進める
                     _gameManager.SetCpuTurn();
+
                     //画面更新
                     UpdateDisplay();
                     break;
@@ -196,18 +222,23 @@ namespace CardGames
 
                     // CPUがカードを引く
                     Card cpuDrawCard = _gameManager.CpuTurnCardDraw();
+
                     //ゲームログ更新(ドローカード表示)
                     AddCardDrawLog(cpuDrawCard);
+
                     //ターン進行&ゲームログ取得
                     List<string> cpuLogs = _gameManager.AdvanceTurn(cpuDrawCard);
+
                     //ゲームログ更新(捨てたペア表示、手札に加えたカード表示)
                     UpdateAdvanceTurnLogs(cpuLogs);
+
                     //次の手番がプレイヤー時の遷移処理
                     //【重要】必ず状態進行→画面更新→相手の手札選択可能処理の順番で処理すること。不具合が起こるため。
                     if (_gameManager.IsPlayerTurn())
                     {
                         _gameManager.SetPlayerSelecting();
                     }
+
                     // 画面全体を更新
                     UpdateDisplay();
                     if (_gameManager.CurrentPhase == GamePhase.PlayerSelecting)
@@ -222,6 +253,7 @@ namespace CardGames
 
                     // 敗北数記録
                     _gameSession.AddPlayerLose();
+
                     // 再スタート
                     ReStart();
                     break;
@@ -231,6 +263,7 @@ namespace CardGames
 
                     // 勝利数記録
                     _gameSession.AddPlayerWin();
+
                     // 再スタート
                     ReStart();
                     break;
@@ -257,9 +290,11 @@ namespace CardGames
         private void btnBack_Click(object sender, EventArgs e)
         {
             _isBacking = true;
+
             //新しい設定画面を作成・表示
             SettingForm frm3 = new SettingForm();
             frm3.Show();
+
             //現在のFormを閉じる
             this.Close();
         }
@@ -273,12 +308,15 @@ namespace CardGames
         {
             //カード表示エリア初期化
             ClearCardDisplayAreas();
+
             //カード画像を辞書に追加(key==DisplayName)
             foreach (Card card in _gameManager.Deck)
             {
                 string key = card.DisplayName;
+
                 //Path.Combineは記号間違いでパスが壊れるのを防ぐため採用
                 string imagePaths = Path.Combine("images", "素材ズ", "07_トランプ表", key + ".png");
+
                 //キーと画像を対応させて辞書に追加
                 _cardImages.Add(key, Image.FromFile(imagePaths));
             }
@@ -292,8 +330,10 @@ namespace CardGames
         {
             //カード表示エリア初期化
             ClearCardDisplayAreas();
+
             //操作ガイド・ゲームログ初期化
             InitializeMessageAreas();
+
             //手札残数表示ラベル初期化
             InitializeHandCountLabels();
         }
@@ -355,6 +395,7 @@ namespace CardGames
         //=================================================
         //GamePhase.BeforeStart　進行状態【ゲームスタート】
         //=================================================
+
         //引く相手のカードを選択可能にする
         private void EnableTargetPlayerCardSelection()
         {
@@ -365,23 +406,28 @@ namespace CardGames
                 {
                     //ピクチャボックスのクリックイベントを初期化
                     pictureBox.Click -= SelectableCardPictureBox_Click;
+
                     //ピクチャボックスにクリックイベントを追加
                     pictureBox.Click += SelectableCardPictureBox_Click;
+
                     //カーソルがあった時にカーソルを手表示に変更
                     pictureBox.Cursor = Cursors.Hand;
 
                     //ホバーイベントを初期化
                     pictureBox.MouseEnter -= Card_MouseEnter;
+
                     //CPUエリアのカード選択時の演出のためホバーイベントを追加
                     pictureBox.MouseEnter += Card_MouseEnter;
 
                     //ホバー解除時イベントを初期化
                     pictureBox.MouseLeave -= Card_MouseLeave;
+
                     //CPUエリアのカード選択時の演出のためホバー解除時イベントを追加
                     pictureBox.MouseLeave += Card_MouseLeave;
 
                     //描画イベントを初期化
                     pictureBox.Paint -= Card_Paint;
+
                     //描画イベントを追加
                     pictureBox.Paint += Card_Paint;
 
@@ -432,6 +478,7 @@ namespace CardGames
             }
             //_selectedPictureBoxをnullにする(カード選択状態を解除)
             _selectedPictureBox = null;
+
             //配列番号を返す
             return cardIndex;
         }
@@ -479,12 +526,16 @@ namespace CardGames
         {
             //・プレイヤー手札を描き直す
             UpdatePlayerHand(_gameManager.Players[0]);
+
             //・CPU手札を描き直す
             UpdateCpuHands();
+
             //捨て札エリアを描き直す
             UpdateFlpDiscardPile();
+
             //・残り枚数を更新する
             UpdateTurnGuide();
+
             //・操作ガイドを更新する 
             UpdateGameOperation();
 
@@ -503,8 +554,10 @@ namespace CardGames
 
             //・ゲームログを更新する 
             UpdateGameLog();
+
             //・ボタンを更新する
             UpdateButtons();
+
             //・勝敗状態判定＆演出移行
             ShowGameResultIfNeeded();
         }
@@ -860,6 +913,7 @@ namespace CardGames
             {
                 //ホバー中ピクチャボックスとして保存
                 _hoveredPictureBox = pictureBox;
+
                 //選択中のペイントイベント発火
                 pictureBox.Invalidate();
             }
@@ -908,6 +962,7 @@ namespace CardGames
         {
             //捨て札エリア初期化
             flpThrown.Controls.Clear();
+
             //捨て札エリア内カード再描画
             foreach (Card card in _gameManager.DiscardPile)
             {
@@ -938,12 +993,12 @@ namespace CardGames
 
             // 2. 画像が出た状態で、メッセージボックスを出す
             ShowMessegeBoxWin();
-
         }
 
         private void ShowMessegeBoxWin()
         {
             MessageBox.Show("あなたの勝ちです！", "勝利", MessageBoxButtons.OK, MessageBoxIcon.None);
+
             //ボタンを勝敗後の表示に更新
             ShowResultActionButtons();
         }
@@ -971,6 +1026,7 @@ namespace CardGames
         private void ShowMessegeBoxLose()
         {
             MessageBox.Show("あなたの負けです。", "敗北", MessageBoxButtons.OK, MessageBoxIcon.None);
+
             //ボタンを勝敗後の表示に更新
             ShowResultActionButtons();
         }
@@ -1001,6 +1057,7 @@ namespace CardGames
                 if (_debugCommandIndex >= _debugCommand.Length)
                 {
                     _debugCommandIndex = 0;
+
                     //コマンド入力が全てあっていればtrue
                     return true;
                 }
@@ -1048,11 +1105,14 @@ namespace CardGames
         private async void ShowDebugWinResult()
         {
             ResetGameToBeforeStart();
+
             //通常ゲームスタート
             //ゲームログ更新
             UpdateGameLog();
+
             // ゲーム開始処理
             _gameManager.StartGame();
+
             //画面再取得
             UpdateDisplay();
 
@@ -1067,11 +1127,14 @@ namespace CardGames
         private async void ShowDebugLoseResult()
         {
             ResetGameToBeforeStart();
+
             //通常ゲームスタート
             //ゲームログ更新
             UpdateGameLog();
+
             // ゲーム開始処理
             _gameManager.StartGame();
+
             //画面再取得
             UpdateDisplay();
 
