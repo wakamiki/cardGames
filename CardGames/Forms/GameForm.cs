@@ -50,6 +50,10 @@ namespace CardGames
 
         // ゲームログを管理するリスト
         private List<string> _gameLogs = new List<string>();
+
+        //操作ガイド演出制御用の変数
+        private System.Threading.CancellationTokenSource _cts;
+        private string _currentFullMessage = "";
         // 文字重なり防止用のバージョン管理
         // 操作ガイドの文字送りが古い処理かどうかを判定する世代番号
         private int _operationGuideVersion = 0;
@@ -208,6 +212,7 @@ namespace CardGames
                     UpdateDisplay();
                     if (_gameManager.CurrentPhase == GamePhase.PlayerSelecting)
                     {
+                        //相手カードを選択可能に変更
                         EnableTargetPlayerCardSelection();
                     }
                     break;
@@ -310,7 +315,7 @@ namespace CardGames
             Logs.Text = string.Empty;
         }
 
-        //手札枚数表示を0まい表示に
+        //手札枚数表示を0まい表示に初期設定
         internal void InitializeHandCountLabels()
         {
             DateOfCUP1.Text = "CPU１のてふだ のこり０まい";
@@ -334,7 +339,7 @@ namespace CardGames
         //フローレイアウトパネルとプレイヤーの紐づけ辞書・ラベルとプレイヤーの紐づけ辞書作成
         private void InitializePlayerViewMaps()
         {
-            // パネルとプレイヤーの紐づけ
+            // パネルとプレイヤーの紐づけを登録
             _playerHandPanels.Add(_gameManager.Players[0], flpPlayerHand);
             _playerHandPanels.Add(_gameManager.Players[1],flpCpu1Hand);
             _playerHandPanels.Add(_gameManager.Players[2],flpCpu2Hand);
@@ -420,12 +425,14 @@ namespace CardGames
         //ピクチャボックスからカード配列番号を返しカード選択状態を解除
         private int TakeSelectedCardIndex()
         {
+            //配列番号が入っているはずの場所に数値以外が入っていたら例外を投げる
             if (!int.TryParse(_selectedPictureBox.Tag.ToString(), out int cardIndex))
             {
                 throw new InvalidOperationException("カードが選択されていません。");
             }
-            //_selectedPictureBoxをnullにする(選択状態を解除)
+            //_selectedPictureBoxをnullにする(カード選択状態を解除)
             _selectedPictureBox = null;
+            //配列番号を返す
             return cardIndex;
         }
 
@@ -433,40 +440,41 @@ namespace CardGames
         //GamePhase.GameWin GamePhase.GameOver ゲーム進行状態【勝敗】
         //================================================================
 
-        //勝敗判定などなど
-        internal async void ShowGameResultIfNeeded() // 20260611 工藤 async を追記
+        //勝敗判定からゲーム演出への移行メソッド(秒数指定演出があるためasync)
+        internal async void ShowGameResultIfNeeded()
         {
             if (_gameManager.CurrentPhase == GamePhase.GameOver)
             {
-                await ShowPlayerLoseResult();  // 20260611 工藤 await を追記
-                ShowMessegeBoxLose();
-                //画面変更メソッド
+                //敗北演出メソッドへ遷移
+                await ShowPlayerLoseResult();
             }
             else if (_gameManager.CurrentPhase == GamePhase.GameWin)
             {
-                await ShowPlayerWinResult(); // 20260611 工藤 await を追記
-                // ShowMessegeBoxWin();  // 20260616 工藤 移動 
-                //画面変更メソッド
+                //勝利演出メソッドへ遷移
+                await ShowPlayerWinResult();
             }
         }
 
         //リスタート処理
         private void ReStart()
         {
-            // 20260622 工藤 レビュー指摘対応 №6 余計なフォームが開くのを抑制
+            //余計なフォームが開くのを抑制
+            //(閉じるボタンイベントが発火しないよう設定)
             _isBacking = true;
 
+            //新しいGameFormを作成・表示
             GameForm nextForm = new GameForm(_playerName,_playerCount,_cpuCount, _gameSession);
             nextForm.Show();
 
+            //現在のGameFormを閉じる
             this.Close();
         }
 
 
-        //======================================
-        //共通メソッド
+
         //======================================
         //全体更新メソッド
+        //======================================
         private void UpdateDisplay()
         {
             //・プレイヤー手札を描き直す
@@ -477,38 +485,38 @@ namespace CardGames
             UpdateFlpDiscardPile();
             //・残り枚数を更新する
             UpdateTurnGuide();
-            //・そうさガイドを更新する 
-            UpdateGameOperation();  // #55：ゲームログ表示内容実装 // 20260616 工藤 
+            //・操作ガイドを更新する 
+            UpdateGameOperation();
 
-            // 20260619 工藤*UI改善* プレーヤーのラベル表示の演出
-            //一度全員のラベルの色をデフォルトの「白（Color.White）」にリセット
-
+            //プレーヤーのラベル表示の演出
+            //全員のラベルの色をデフォルトの「白（Color.White）」にリセット
             foreach (var label in _playerLabels.Values)
             {
                 label.ForeColor = Color.White;
             }
 
-            // 20260619 工藤*UI改善* プレーヤーのラベル表示の演出
-            // 現在の手番プレイヤー（ActivePlayer）の文字色だけを「ゴールド（Color.Gold）」にする！
+            // 現在の手番プレイヤー（ActivePlayer）の文字色だけをゴールド（Color.Gold)に設定
             if (_gameManager.ActivePlayer != null && _playerLabels.ContainsKey(_gameManager.ActivePlayer))
             {
-                _playerLabels[_gameManager.ActivePlayer].ForeColor = Color.Gold; // または Color.Yellow
+                _playerLabels[_gameManager.ActivePlayer].ForeColor = Color.Gold;
             }
-
 
             //・ゲームログを更新する 
             UpdateGameLog();
             //・ボタンを更新する
             UpdateButtons();
-            //・勝敗状態ならモーダルやMessageBoxを出す
+            //・勝敗状態判定＆演出移行
             ShowGameResultIfNeeded();
         }
+
         //全体更新メソッド関連小メソッド
         //・プレイヤー手札を描き直す
         private void UpdatePlayerHand(Player player)
         {
+            //フローレイアウトパネルを初期化
             flpPlayerHand.Controls.Clear();
             
+            //内部のカード情報をピクチャボックスに反映
             foreach (Card card in player.HandDeck)
             {
                 PictureBox pictureBox = new PictureBox();
@@ -522,11 +530,13 @@ namespace CardGames
         }
         //・CPU手札を描き直す
         private void UpdateCpuHands()
-        { 
+        {
+            //フローレイアウトパネルを初期化
             flpCpu1Hand.Controls.Clear();
             flpCpu2Hand.Controls.Clear();
             flpCpu3Hand.Controls.Clear();
 
+            //内部のカード情報をピクチャボックスに反映
             for (int i = 1; i < _gameManager.Players.Count; i++)
             {
                 for (int j = 0; j < _gameManager.Players[i].HandCount; j++)
@@ -554,74 +564,7 @@ namespace CardGames
             }
         }
 
-        // =================================================================
-        // #61_カードの選択状態が分かるような仕掛け実装(#49) // 20260612 工藤
-        // Card_MouseEnter(), Card_MouseLeave() を新規作成
-        // =================================================================
-        private void Card_MouseEnter(object sender, EventArgs e)
-        {
-            //ピクチャボックス以外での発火では反応しない
-            if (sender is PictureBox pictureBox)
-            {
-                //ホバー中ピクチャボックスとして保存
-                _hoveredPictureBox = pictureBox;
-                //選択中のペイントイベント発火
-                pictureBox.Invalidate();
-            }
-        }
-
-        private void Card_MouseLeave(object sender, EventArgs e)
-        {
-            //ピクチャボックス以外での発火では反応しない
-            if (sender is PictureBox pictureBox)
-            {
-                if (_hoveredPictureBox == pictureBox)
-                {
-                    //ホバー中ピクチャボックスを解除
-                    _hoveredPictureBox = null;
-                }
-                //選択解除のペイントイベント発火
-                pictureBox.Invalidate();
-            }
-        }
-
-        private void Card_Paint(object sender, PaintEventArgs e)
-        {
-            //ピクチャボックス以外での発火では反応しない
-            if (!(sender is PictureBox pictureBox))
-            {
-                return;
-            }
-
-            // ホバー中のPictureBoxでなければ何も描かない
-            if (pictureBox != _hoveredPictureBox)
-            {
-                return;
-            }
-
-            //画像全体に白色(透明度60)のオーバーレイを作成する
-            using (Brush brush = new SolidBrush(Color.FromArgb(60, Color.White)))
-            {
-                e.Graphics.FillRectangle(brush, pictureBox.ClientRectangle);
-            }
-        }
-
-
-        //捨て札エリアを描き直す
-        private void UpdateFlpDiscardPile()
-        {
-            flpThrown.Controls.Clear();
-            foreach (Card card in _gameManager.DiscardPile)
-            {
-                PictureBox pictureBox = new PictureBox();
-                pictureBox.Image = _cardImages[card.DisplayName];
-                pictureBox.Width = CardWidth;
-                pictureBox.Height = CardHeight;
-                pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                flpThrown.Controls.Add(pictureBox);
-            }
-        }
-        //・残り枚数を更新する
+        //・残り枚数表示を更新する
         private void UpdateTurnGuide()
         {
             for (int i = 0; i < _gameManager.Players.Count; i++)
@@ -645,18 +588,7 @@ namespace CardGames
             }
         }
 
-
-
-        // 20260622 工藤 レビュー指摘対応 No.11 スキップ対応版の操作ガイド更新
-        // 20260622 工藤 レビュー指摘対応 No.10-2  文字重なり防止用のバージョン管理
-        //削除// private void UpdateGameOperation()  // 20260619 工藤*UI改善* メソッドの頭に async を追加
-        // =================================================================
-        // #51：UpdateGameLog() ゲームログ・操作ログメソッド実装
-        // #55：ゲームログ表示内容実装
-        // #56：操作ガイド表示内容実装
-        // 20260616 工藤
-        // =================================================================
-
+        // 操作ガイド更新
         private async void UpdateGameOperation()
         {
 
@@ -668,15 +600,17 @@ namespace CardGames
                     _cts = null;
                 }
 
+                //テキスト初期化
                 Operation.Text = string.Empty;
 
-                GamePhase phase = _gameManager.CurrentPhase;
+                //文字列用意
                 string message = "";
 
-                switch (phase)
+            //ゲーム進行状態に応じてテキスト変化   
+            switch (_gameManager.CurrentPhase)
                 {
                     case GamePhase.PlayerSelecting:
-                        // 🌟 途中で綺麗に改行されるように、明示的に Environment.NewLine を仕込みます
+                        // 途中で綺麗に改行されるように、明示的に Environment.NewLine を仕込みます
                         message = $"▶あなたのターンです。{Environment.NewLine}{_gameManager.TargetPlayer.Name}からカードを1枚選んで「けってい」ボタンを押してください。";
                         break;
                     case GamePhase.PlayerConfirming:
@@ -693,11 +627,14 @@ namespace CardGames
                         break;
                 }
 
+                //messageに文字列があれば
                 if (!string.IsNullOrEmpty(message))
                 {
+                    //操作ガイド文字列を保存
                     _currentFullMessage = message;
 
-                    // 🌟今回の表示処理の世代番号を進めて、自分のバージョンを記憶
+                    // 今回の表示処理の世代番号を進めて、自分のバージョンを記憶
+                    //(非同期処理のため進行ボタンを連打すると文字が混ざる問題を解消するための措置)
                     _operationGuideVersion++;
                     int currentVersion = _operationGuideVersion;
 
@@ -707,7 +644,7 @@ namespace CardGames
                         _cts.Cancel();
                     }
 
-                    // 🌟今回専用の CancellationTokenSource をローカル変数として生成
+                    //　今回専用の CancellationTokenSource をローカル変数として生成
                     System.Threading.CancellationTokenSource localCts = new System.Threading.CancellationTokenSource();
                     _cts = localCts;
 
@@ -718,7 +655,7 @@ namespace CardGames
                     }
                     catch (OperationCanceledException)
                     {
-                        // 🌟自分が「最新の文字送り」の時だけ、クリックによるスキップとして全文を表示する
+                        // 自分が「最新の文字送り」の時だけ、クリックによるスキップとして全文を表示する
                         if (currentVersion == _operationGuideVersion)
                         {
                             Operation.Text = _currentFullMessage;
@@ -726,7 +663,7 @@ namespace CardGames
                     }
                     finally
                     {
-                        // 🌟古い文字送りの finally が、新しく始まっている次の _cts を誤って消さないようにガード
+                        // 古い文字送りの finally が、新しく始まっている次の _cts を誤って消さないようにガード
                         if (currentVersion == _operationGuideVersion)
                         {
                             localCts.Dispose();
@@ -740,15 +677,14 @@ namespace CardGames
                 }
             }
 
-        //20260619 工藤*UI改善* 
         /// <summary>
         /// 操作ガイドを一文字ずつ「ポポポ」と表示する演出
         /// </summary>
 
-        // 20260622 工藤 レビュー指摘対応 No.11 キャンセル対応の演出
+        // キャンセル対応の演出
         private async Task TypewriterEffectAsync(string targetMessage, System.Threading.CancellationToken token, int version)
         {
-            // 🌟メソッド開始時に自分がすでに古い世代になっていたら、何もせず即終了
+            // メソッド開始時に自分がすでに古い世代になっていたら、何もせず即終了
             if (version != _operationGuideVersion)
             {
                 return;
@@ -761,7 +697,7 @@ namespace CardGames
                 // キャンセル要求が来ていたら例外を投げる (末尾の全角スペースは削除)
                 token.ThrowIfCancellationRequested();
 
-                // 🌟ポポポ…の途中で新しい文字送りが始まっていたら、その場で処理を手放す
+                // ポポポ…の途中で新しい文字送りが始まっていたら、その場で処理を手放す
                 if (version != _operationGuideVersion)
                 {
                     return;
@@ -773,15 +709,22 @@ namespace CardGames
             }
         }
 
-        // =================================================================
-        // #51：UpdateGameLog() ゲームログ・操作ログメソッド実装
-        // #55：ゲームログ表示内容実装
-        // 20260616 工藤 メソッド新規作成
-        // =================================================================
+        //操作ガイドクリック時のスキップ処理
+        private void Operation_Click(object sender, EventArgs e)
+        {
+            // 文字送り実行中（_cts が存在している）であれば、キャンセルを発動する
+            if (_cts != null)
+            {
+                _cts.Cancel();
+            }
+        }
+
+        //ゲームログ更新
         private void UpdateGameLog()
         {
             string message = "";
 
+            //ゲーム進行状態に応じてテキスト変化
             switch (_gameManager.CurrentPhase)
             {
                 case GamePhase.BeforeStart:
@@ -803,15 +746,15 @@ namespace CardGames
                     message = "Game Win";
                     break;
             }
+
+            //messageがnullや空白じゃなければ
             if (!string.IsNullOrEmpty(message))
             {
 
-                // 20260619 工藤*UI改善* 新しいメッセージを「前側」に結合
+                // 新しいメッセージを「前側」に結合
                 Logs.Text = message + Environment.NewLine + Logs.Text;
 
-                // 20260622 工藤 レビュー指摘対応 No.10 メソッド差し替え
-                //削除// // 20260619 工藤*UI改善* 古い行を削る
-                //削除// LimitLogLines();
+                //古い行を削る
                 AddAndLimitLog(message);
             }
         }
@@ -824,43 +767,20 @@ namespace CardGames
             {
                 message = $"{_gameManager.ActivePlayer.Name}がカードを1枚引きました。";
 
-                // 20260622 工藤 レビュー指摘対応 No.10 メソッド差し替え
-                //削除// // Logs.AppendText(message+Environment.NewLine); // 20260619 工藤*UI改善 
-                //削除//Logs.Text = message + Environment.NewLine + Logs.Text; // 20260619 工藤*UI改善
-                //削除//LimitLogLines(); // 20260619 工藤*UI改善
-                AddAndLimitLog(message); // 20260622 工藤 レビュー指摘対応 No.10 新メソッド
+                AddAndLimitLog(message);
                 return;
             }
             else
             {
                 message = $"{_gameManager.ActivePlayer.Name}が{drawCard.DisplayName}のカードを1枚引きました。";
 
-                // 20260622 工藤 レビュー指摘対応 No.10 メソッド差し替え
-                //削除// // Logs.AppendText(message + Environment.NewLine); // 20260619 工藤*UI改善
-                //削除// Logs.Text = message + Environment.NewLine + Logs.Text; // 20260619 工藤*UI改善
-                //削除// LimitLogLines(); // 20260619 工藤*UI改善
-                AddAndLimitLog(message);  // 20260622 工藤 レビュー指摘対応 No.10 新メソッド
+                AddAndLimitLog(message);
             }
         }
 
         //ゲームログ更新(ターン進行後)
         private void UpdateAdvanceTurnLogs(List<string> logs)
         {
-
-            // 20260622 工藤 レビュー指摘対応 No.10 
-                    /* 不要な処理削除 ここから
-                            // 20260619 工藤*UI改善*  1. 今回届いた複数のログを、あらかじめ「改行」で1つの塊に合体させます
-                            string combinedLog = string.Join(Environment.NewLine, logs);
-
-                            if (!string.IsNullOrEmpty(combinedLog))
-                            {
-                                // 20260619 工藤*UI改善*  2. 塊ごと、現在のログの【一番前（上）】にガツンとドッキング！
-                                Logs.Text = combinedLog + Environment.NewLine + Logs.Text;
-                            }
-
-                            // 20260619 工藤*UI改善*  3. ループの外側で、最後に「1回だけ」スマートに行数を制限する
-                            LimitLogLines();
-                   不要な処理削除 ここまで */
             // 順番が逆にならないよう、古い順（届いた順）にリストに入れる
             foreach (string log in logs)
             {
@@ -869,27 +789,10 @@ namespace CardGames
 
         }
 
-        // 20260622 工藤 レビュー指摘対応 No.10 ログ更新と4行制限のロジック刷新 AddAndLimitLog() 新規追加
-        /* 不要なメソッド削除 ここから
-            // 20260619 工藤*UI改善* メソッド追加 
-            /// <summary>
-            /// ゲームログを最新の4行のみに制限する
-            /// </summary>
-            private void LimitLogLines()
-            {
-                //  1. 現在のテキストを「改行コード」で区切って、1行ずつの配列（名簿）に分解
-                string[] lines = Logs.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-
-                //  2. もし全体の行数が「4行」を超えていたら、古い行を切り捨て
-                if (lines.Length > 4)
-                {
-                    // 最新の4行だけを残す
-                    Logs.Text = string.Join(Environment.NewLine, lines.Take(4));
-                }
-            }
-        不要なメソッド削除 ここまで */
+        //ゲームログ追加順番制御メソッド
         private void AddAndLimitLog(string newMessage)
         {
+            //messageがなければリターン
             if (string.IsNullOrEmpty(newMessage)) return;
 
             // 1. リリストの【先頭（一番上）】に新しいログを割り込ませる
@@ -901,17 +804,14 @@ namespace CardGames
                 _gameLogs.RemoveAt(_gameLogs.Count - 1);
             }
 
-            // 3. リストの中身を改行で合体させて、画面のテキストボックスにドン！と代入する
+            // 3. リストの中身を改行で合体させて、画面のテキストボックスに代入する
             Logs.Text = string.Join(Environment.NewLine, _gameLogs);
         }
-
-        // 20260622 工藤 レビュー指摘対応 No.11 操作ガイド演出制御用の変数
-        private System.Threading.CancellationTokenSource _cts;
-        private string _currentFullMessage = "";
 
         //・ボタンを更新する
         private void UpdateButtons()
         {
+            //ゲーム進行状態に応じてテキスト・active変化
             switch (_gameManager.CurrentPhase)
             {
                 case GamePhase.BeforeStart:
@@ -937,7 +837,7 @@ namespace CardGames
             }
         }
 
-        //勝敗後画面表示
+        //勝敗後ボタン表示更新
         private void ShowResultActionButtons()
         {
             btnMainAction.Enabled = true;
@@ -945,42 +845,87 @@ namespace CardGames
         }
 
         //======================================
-        //共通演出メソッド
+        //演出メソッド
         //======================================
-        //工藤さん担当
 
-        //(仮)削除変更OK!
-        private void ShowMessegeBoxWin()
+        // =====================================
+        // カード選択イベント
+        // =====================================
+
+        //ピクチャボックス内にカーソルが侵入した時
+        private void Card_MouseEnter(object sender, EventArgs e)
         {
-            MessageBox.Show("あなたの勝ちです！","勝利",MessageBoxButtons.OK,MessageBoxIcon.None);
-            ShowResultActionButtons();
+            //ピクチャボックス以外での発火では反応しない
+            if (sender is PictureBox pictureBox)
+            {
+                //ホバー中ピクチャボックスとして保存
+                _hoveredPictureBox = pictureBox;
+                //選択中のペイントイベント発火
+                pictureBox.Invalidate();
+            }
         }
-        private void ShowMessegeBoxLose()
+
+        //ピクチャボックス内からカーソルが出た時
+        private void Card_MouseLeave(object sender, EventArgs e)
         {
-            MessageBox.Show("あなたの負けです。", "敗北", MessageBoxButtons.OK, MessageBoxIcon.None);
-            ShowResultActionButtons();
+            //ピクチャボックス以外での発火では反応しない
+            if (sender is PictureBox pictureBox)
+            {
+                if (_hoveredPictureBox == pictureBox)
+                {
+                    //ホバー中ピクチャボックスを解除
+                    _hoveredPictureBox = null;
+                }
+                //選択解除のペイントイベント発火
+                pictureBox.Invalidate();
+            }
         }
 
+        //ペイントイベント発火時
+        private void Card_Paint(object sender, PaintEventArgs e)
+        {
+            //ピクチャボックス以外での発火では反応しない
+            if (!(sender is PictureBox pictureBox))
+            {
+                return;
+            }
 
-        //勝ち抜けCPUの画面表示(アクティブじゃないのが分かるように)
+            // ホバー中のPictureBoxでなければ何も描かない
+            if (pictureBox != _hoveredPictureBox)
+            {
+                return;
+            }
 
-        //カードを引く際の演出
+            //画像全体に白色(透明度60)のオーバーレイを作成する
+            using (Brush brush = new SolidBrush(Color.FromArgb(60, Color.White)))
+            {
+                e.Graphics.FillRectangle(brush, pictureBox.ClientRectangle);
+            }
+        }
 
-        //カードを捨てる際の演出
+        //捨て札エリアを描き直す
+        private void UpdateFlpDiscardPile()
+        {
+            //捨て札エリア初期化
+            flpThrown.Controls.Clear();
+            //捨て札エリア内カード再描画
+            foreach (Card card in _gameManager.DiscardPile)
+            {
+                PictureBox pictureBox = new PictureBox();
+                pictureBox.Image = _cardImages[card.DisplayName];
+                pictureBox.Width = CardWidth;
+                pictureBox.Height = CardHeight;
+                pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                flpThrown.Controls.Add(pictureBox);
+            }
+        }
 
         // =================================================================
-        // #47_GameForm勝利時演出メソッド // 20260611 工藤
+        //　勝利時演出メソッド
         // =================================================================
         internal async Task ShowPlayerWinResult()
         {
-
-            /*効果音を使う場合 ※win_sound の準備が必要
-            SoundPlayer player = new SoundPlayer(Properties.Resources.win_sound);
-            player.Play();
-            */
-
-            // 20260617 工藤 指摘対応 コメントの修正 「（操作をロック）」を削除
-            // 1. 勝利画像をセットして、画面にバーンと表示する
+            // 1. 勝利画像をセットして、画面に表示する
             pictureBox_Result.Image = Properties.Resources._08_youWin;
             pictureBox_Result.Visible = true;
             pictureBox_Result.BringToFront(); // 一番手前に持ってくる
@@ -991,9 +936,16 @@ namespace CardGames
             // 5. 画像を消して、通常の画面に戻す
             pictureBox_Result.Visible = false;
 
-            // 2. 画像が出た状態で、お祝いメッセージボックスを出す
-            ShowMessegeBoxWin();  // 20260616 工藤 移動 
+            // 2. 画像が出た状態で、メッセージボックスを出す
+            ShowMessegeBoxWin();
 
+        }
+
+        private void ShowMessegeBoxWin()
+        {
+            MessageBox.Show("あなたの勝ちです！", "勝利", MessageBoxButtons.OK, MessageBoxIcon.None);
+            //ボタンを勝敗後の表示に更新
+            ShowResultActionButtons();
         }
 
         // =================================================================
@@ -1001,26 +953,26 @@ namespace CardGames
         // =================================================================
         internal async Task ShowPlayerLoseResult()
         {
-
-            /*効果音を使う場合 ※lose_sound の準備が必要
-            SoundPlayer player = new SoundPlayer(Properties.Resources.lose_sound);
-            player.Play();
-            */
-
-            // 1. 敗北画像をセットして、画面にバーンと表示する
+            // 1. 敗北画像をセットして、画面に表示する
             pictureBox_Result.Image = Properties.Resources._08_youLose;
             pictureBox_Result.Visible = true;
             pictureBox_Result.BringToFront();
 
-
             // 2. 画像が出た状態で、敗北メッセージボックスを出す
-            ShowMessegeBoxLose();  // 20260616 工藤 移動 
+            ShowMessegeBoxLose();
 
             // 3. 2秒間（2000ミリ秒）、画面をそのまま静止
             await Task.Delay(2000);
 
             // 4. 画像を消して、通常の画面に戻す
             pictureBox_Result.Visible = false;
+        }
+
+        private void ShowMessegeBoxLose()
+        {
+            MessageBox.Show("あなたの負けです。", "敗北", MessageBoxButtons.OK, MessageBoxIcon.None);
+            //ボタンを勝敗後の表示に更新
+            ShowResultActionButtons();
         }
 
         //=========================================================
@@ -1049,12 +1001,11 @@ namespace CardGames
                 if (_debugCommandIndex >= _debugCommand.Length)
                 {
                     _debugCommandIndex = 0;
+                    //コマンド入力が全てあっていればtrue
                     return true;
                 }
-
                 return false;
             }
-
             _debugCommandIndex = 0;
             return false;
         }
@@ -1093,7 +1044,7 @@ namespace CardGames
             UpdateDisplay();
         }
 
-        //勝利時演出確認メソッド
+        //デバック画面勝利時演出確認メソッド
         private async void ShowDebugWinResult()
         {
             ResetGameToBeforeStart();
@@ -1112,7 +1063,7 @@ namespace CardGames
 
         }
 
-        //敗北時演出確認メソッド
+        //デバック画面敗北時演出確認メソッド
         private async void ShowDebugLoseResult()
         {
             ResetGameToBeforeStart();
@@ -1129,18 +1080,5 @@ namespace CardGames
             await ShowPlayerLoseResult();
             ShowResultActionButtons();
         }
-
-        // 20260622 工藤 レビュー指摘対応 No.11 操作ガイドクリック時のスキップ処理
-        private void Operation_Click(object sender, EventArgs e)
-        {
-            // 文字送り実行中（_cts が存在している）であれば、キャンセルを発動する
-            if (_cts != null)
-            {
-                _cts.Cancel();
-            }
-        }
     }
-
-
-
 }
