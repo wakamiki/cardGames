@@ -221,8 +221,8 @@ namespace CardGames.Services
         internal string HandleDrawnCard(Card drawCard)
         {
             string log;
-            //手札の手前からカード1枚とる。(配列最後のカードはとらない)
-            for (int i = 0; i < _activePlayer.HandCount-1; i++)
+            //手札の手前からカード1枚とる。
+            for (int i = 0; i < _activePlayer.HandCount; i++)
             {
                 if (drawCard.IsPairWith(_activePlayer.HandDeck[i]))
                 {

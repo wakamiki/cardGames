@@ -610,13 +610,6 @@ namespace CardGames
                 pictureBox.Width = CardWidth;
                 pictureBox.Height = CardHeight;
                 pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                // 20260617 工藤 指摘対応 マウス操作の後に移動しました
-                // flpPlayerHand.Controls.Add(pictureBox);
-                // =================================================================
-                // #61_カードの選択状態が分かるような仕掛け実装(#49) // 20260612 工藤
-                // =================================================================
-                pictureBox.MouseEnter += Card_MouseEnter; // マウスが乗ったら浮く
-                pictureBox.MouseLeave += Card_MouseLeave; // マウスが離れたら戻る
                 flpPlayerHand.Controls.Add(pictureBox);
             }
             
