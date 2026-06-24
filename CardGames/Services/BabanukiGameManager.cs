@@ -109,7 +109,7 @@ namespace CardGames.Services
             //勝ち抜け参加者がいないかチェック
             foreach (var player in _players)
             {
-                CheckAndHandleFinishedPlayer(player);
+                MarkPlayerAsFinishedIfNoCards(player);
             }
 
             //最初のプレイヤーを指定
@@ -147,32 +147,39 @@ namespace CardGames.Services
         {
             //ゲームログ記録用リストを用意
             List<string> logs = new List<string>();
+            string tmp;
 
             //ペアを捨てる
             logs.Add(HandleDrawnCard(drawCard));
 
-            //勝ち抜けがいないかチェック(ifまとめないこと。まとめるとチェック漏れが起きる)
-            if (CheckAndHandleFinishedPlayer(_activePlayer))
+            //CPU勝ち抜けがいないかチェック
+            tmp = MarkPlayerAsFinishedIfNoCards(_activePlayer);
+            if (!string.IsNullOrEmpty(tmp))
             {
-                logs.Add($"{_activePlayer.Name}の手札がなくなりました。");
+                logs.Add(tmp);
+                tmp = null;
             }
-            if(CheckAndHandleFinishedPlayer(_targetPlayer))
+            tmp = MarkPlayerAsFinishedIfNoCards(_targetPlayer);
+            if (!string.IsNullOrEmpty(tmp))
             {
-                logs.Add($"{_targetPlayer.Name}の手札がなくなりました。");
+                logs.Add(tmp);
+                tmp = null;
             }
-                //【重要】必ずアクティブプレイヤー更新→ターゲットプレイヤー更新の順で処理すること
-                //現在ターンを次の有効なプレイヤーへ進める
-                _activePlayer = GetNextActivePlayer();
+
+            // ゲーム自体の勝敗判定
+            EveluateGameResult();
+            // 勝敗が決まったら、これ以上ターンを進めない
+            if (IsGameEnded())
+            {
+                return　logs;
+            }
+
+            //【重要】必ずアクティブプレイヤー更新→ターゲットプレイヤー更新の順で処理すること
+            //現在ターンを次の有効なプレイヤーへ進める
+            _activePlayer = GetNextActivePlayer();
 
             //ターゲットプレイヤーも更新する
             _targetPlayer = GetDrawTarget();
-
-            //ターゲットプレイヤーとアクティブプレイヤーが同じ時プレイヤー敗北　要変更　もっと分かりやすくする
-            if (_activePlayer==_targetPlayer)
-            {
-                //ゲーム進行状態を変更
-                PlayerLose();
-            }
 
             //ゲームログを返す
             return logs;
@@ -343,35 +350,95 @@ namespace CardGames.Services
             return index;
         }
 
-        //手札0枚時の勝ち抜け処理(CPU)
-        internal void MarkCpuAsFinished(Player cpu)
+        //CPU勝ち抜け時処理(返り値ゲームログ)
+        internal string MarkPlayerAsFinishedIfNoCards(Player player)
         {
-            //CPUのプレイヤー情報を書き替える
-            cpu.MarkAsFinished();
+            string log;
+            //trueでCPU勝ち抜け状態　falseでそれ以外
+            if (player.HandCount == 0)
+            {
+                if (player.IsCpu)
+                {
+                    player.MarkAsFinished();
+                    log = ($"{player.Name}の手札がなくなりました。");
+
+                }
+            }
+            return null;
         }
 
         // ==============================
         // ゲーム終了判定
         // ==============================
 
-        //手札チェック処理+勝利状態遷移　要変更対象
-        internal bool CheckAndHandleFinishedPlayer(Player player)
+
+
+        //ゲームの勝敗判定
+        internal void EveluateGameResult()
         {
-            //trueでCPU勝ち抜けログ追加　falseでそれ以外
-            if (player.HandCount == 0)
+            //すでにゲームの勝敗が決まっていたら何もしない
+            if (IsGameEnded())
             {
-                if (player.IsCpu)
+                return;
+            }
+
+            //①人間の参加者設定
+            Player humanPlayer = null;
+
+            foreach (Player player in _players)
+            {
+                //CPU判定を使って人間の参加者を指定
+                if (!player.IsCpu)
                 {
-                    MarkCpuAsFinished(player);
-                    return true;
-                }
-                else
-                {
-                    PlayerWin();
-                    return false;
+                    humanPlayer = player;
+                    break;
                 }
             }
-            return false;
+
+            //CPUのみなら判定しない
+            if (humanPlayer == null)
+            {
+                return;
+            }
+
+            //②プレイヤー本人の手札が０枚なら勝利状態へ進行
+            if (humanPlayer.HandCount == 0 || humanPlayer.IsFinished)
+            {
+                PlayerWin();
+                return;
+            }
+
+            //③現在勝ち抜けていない参加者人数
+            int remainingPlayerCount = 0;
+
+            //④最後に残ったプレイヤーを設定
+            Player lastRemainingPlayer = null;
+
+            foreach(Player player in _players)
+            {
+                //プレイヤーが勝ち抜け状態じゃない場合
+                if (!player.IsFinished && player.HandCount > 0)
+                {
+                    //勝ち抜けでない参加者カウンターを増やす
+                    remainingPlayerCount++;
+
+                    //foreachで指定されている参加者を代入
+                    lastRemainingPlayer = player;
+                }
+            }
+
+            //手札を持って残っているのが人間の参加者一人なら敗北
+            if (remainingPlayerCount == 1 && lastRemainingPlayer == humanPlayer)
+            {
+                PlayerLose();
+            }
+        }
+
+        //ゲームの決着がついているか判定
+        internal bool IsGameEnded()
+        {
+            return _currentPhase == GamePhase.GameOver
+                || _currentPhase == GamePhase.GameWin;
         }
 
         //=====================================

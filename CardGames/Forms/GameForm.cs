@@ -210,8 +210,12 @@ namespace CardGames
                     //ゲームログ更新(捨てたペア表示、手札に加えたカード表示)
                     UpdateAdvanceTurnLogs(logs);
 
-                    //ゲーム進行状態を進める
-                    _gameManager.SetCpuTurn();
+                    //ゲーム進行状態が勝敗状態に変化していなければCPUターンへ変更
+                    if (_gameManager.CurrentPhase != GamePhase.GameWin&&
+                        _gameManager.CurrentPhase != GamePhase.GameOver)
+                    {
+                        _gameManager.SetCpuTurn();
+                    }
 
                     //画面更新
                     UpdateDisplay();
@@ -233,14 +237,21 @@ namespace CardGames
                     UpdateAdvanceTurnLogs(cpuLogs);
 
                     //次の手番がプレイヤー時の遷移処理
-                    //【重要】必ず状態進行→画面更新→相手の手札選択可能処理の順番で処理すること。不具合が起こるため。
-                    if (_gameManager.IsPlayerTurn())
+                    //【重要】ここから下breakまで順序変更等で不具合が起こりやすいゾーン変更するときは慎重に扱うこと
+                    if (_gameManager.CurrentPhase != GamePhase.GameWin &&
+                        _gameManager.CurrentPhase != GamePhase.GameOver)
                     {
-                        _gameManager.SetPlayerSelecting();
+                        if (_gameManager.IsPlayerTurn())
+                        {
+                            _gameManager.SetPlayerSelecting();
+                        }
                     }
 
                     // 画面全体を更新
                     UpdateDisplay();
+
+                    //ゲーム進行状態判定追加予定地
+
                     if (_gameManager.CurrentPhase == GamePhase.PlayerSelecting)
                     {
                         //相手カードを選択可能に変更
