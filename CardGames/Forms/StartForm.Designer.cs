@@ -28,29 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StartForm));
             this.btnStart = new System.Windows.Forms.Button();
             this.btnEnd = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("MS UI Gothic", 19.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label1.Location = new System.Drawing.Point(288, 48);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(174, 33);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "CardGames";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            // 
             // btnStart
             // 
-            this.btnStart.BackColor = System.Drawing.SystemColors.Info;
-            this.btnStart.Font = new System.Drawing.Font("MS UI Gothic", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnStart.Location = new System.Drawing.Point(262, 117);
+            this.btnStart.BackColor = System.Drawing.Color.Peru;
+            this.btnStart.Font = new System.Drawing.Font("HGS創英角ｺﾞｼｯｸUB", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnStart.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.btnStart.Location = new System.Drawing.Point(500, 406);
             this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(228, 91);
+            this.btnStart.Size = new System.Drawing.Size(192, 54);
             this.btnStart.TabIndex = 1;
             this.btnStart.Text = "スタート";
             this.btnStart.UseVisualStyleBackColor = false;
@@ -58,11 +48,12 @@
             // 
             // btnEnd
             // 
-            this.btnEnd.BackColor = System.Drawing.SystemColors.Info;
-            this.btnEnd.Font = new System.Drawing.Font("MS UI Gothic", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnEnd.Location = new System.Drawing.Point(262, 238);
+            this.btnEnd.BackColor = System.Drawing.Color.Peru;
+            this.btnEnd.Font = new System.Drawing.Font("HGP創英角ｺﾞｼｯｸUB", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnEnd.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.btnEnd.Location = new System.Drawing.Point(126, 406);
             this.btnEnd.Name = "btnEnd";
-            this.btnEnd.Size = new System.Drawing.Size(228, 91);
+            this.btnEnd.Size = new System.Drawing.Size(186, 54);
             this.btnEnd.TabIndex = 2;
             this.btnEnd.Text = "終了";
             this.btnEnd.UseVisualStyleBackColor = false;
@@ -72,20 +63,20 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ClientSize = new System.Drawing.Size(800, 483);
             this.Controls.Add(this.btnEnd);
             this.Controls.Add(this.btnStart);
-            this.Controls.Add(this.label1);
+            this.DoubleBuffered = true;
+            this.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.Name = "StartForm";
             this.Text = "スタート画面";
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnEnd;
     }
