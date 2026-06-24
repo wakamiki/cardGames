@@ -73,6 +73,13 @@ namespace CardGames.Services
         //ロードイベント時準備
         internal void InitializeGame()
         {
+            //状態を初期化
+            _players.Clear();
+            _discardPile.Clear();
+            _activePlayer = null;
+            _targetPlayer = null;
+            _currentPhase = GamePhase.BeforeStart;
+
             //プレイヤーを準備
             Player player1 = new Player(_nameOfPlayer, false);
             Player cpu1 = new Player("CPU1",true);

@@ -66,9 +66,6 @@ namespace CardGames
         //  falseで×ボタンで「戻る」と同じ動きにする
         private bool _isBacking = false;
 
-        //デバック用Form
-        private DebugForm _debugForm;
-
         //デバック画面起動コード
         private readonly Keys[] _debugCommand =
 {
@@ -83,6 +80,10 @@ namespace CardGames
 };
         //デバック画面起動コード判定用
         private int _debugCommandIndex = 0;
+
+        //デバック画面ボタン連打防止
+        private bool _isDebugActionRunning = false;
+
 
         //======================================
         //イベントメソッド
@@ -249,8 +250,6 @@ namespace CardGames
 
                     // 画面全体を更新
                     UpdateDisplay();
-
-                    //ゲーム進行状態判定追加予定地
 
                     if (_gameManager.CurrentPhase == GamePhase.PlayerSelecting)
                     {
@@ -1063,64 +1062,142 @@ namespace CardGames
         //デバックフォーム表示
         private void ShowDebugForm()
         {
-            //デバック画面が複数開かないよう判定
-            if (_debugForm == null || _debugForm.IsDisposed)
+
+            if (!CanOpenDebugForm())
             {
-                _debugForm = new DebugForm(
-                    ResetGameToBeforeStart,
-                    ShowDebugWinResult,
-                    ShowDebugLoseResult
+                MessageBox.Show(
+                    "デバッグ画面はゲーム開始前のみ開けます。",
+                    "デバッグ画面",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
                 );
 
-                _debugForm.Show(this);
+                return;
             }
-            else
+
+            //デバック画面が複数開かないよう制御
+            using (DebugForm debugForm = new DebugForm(
+                ResetGameToBeforeStart,
+                ShowDebugWinResult,
+                ShowDebugLoseResult
+            ))
             {
-                _debugForm.Activate();
+                //デバック画面表示中はGameForm操作不能
+                debugForm.ShowDialog(this);
             }
+        }
+
+        //デバック画面表示タイミング制御
+        private bool CanOpenDebugForm()
+        {
+            //ゲーム開始前だけ true
+            //ゲーム進行中・勝敗後は false
+            return _gameManager.CurrentPhase == GamePhase.BeforeStart;
         }
 
         //ゲームリセットメソッド
         private void ResetGameToBeforeStart()
         {
-            _gameManager.SetBeforeStart();
+
+            // 操作ガイドの文字送りが動いていたら止める
+            if (_cts != null)
+            {
+                _cts.Cancel();
+                _cts.Dispose();
+                _cts = null;
+            }
+
+            _operationGuideVersion++;
+            _currentFullMessage = "";
+
+            // GameManagerを初期状態に戻す
             _gameManager.InitializeGame();
 
+            // GameManagerのPlayerが作り直されるので、辞書も作り直す
+            _playerHandPanels.Clear();
+            _playerLabels.Clear();
+            InitializePlayerViewMaps();
+
+            // 選択・ホバー状態を解除
+            _hoveredPictureBox = null;
             _selectedPictureBox = null;
             pictureBox_Result.Visible = false;
+            pictureBox_Result.Image = null;
+
+            // ログを初期化
+            _gameLogs.Clear();
 
             ClearCardDisplayAreas();
             flpThrown.Controls.Clear();
+            InitializeMessageAreas();
+            InitializeHandCountLabels();
             InitializeGameDisplay();
-            UpdateDisplay();
+            SetInitialOperationGuide();
+
+            // ボタンを初期状態に戻す
+            btnMainAction.Enabled = true;
+            btnMainAction.Text = "かいし";
         }
 
         //デバック画面勝利時演出確認メソッド
         private async void ShowDebugWinResult()
         {
-            ResetGameToBeforeStart();
+            //デバック画面ボタン連打防止
+            if (_isDebugActionRunning)
+            {
+                return;
+            }
 
-            //通常ゲームスタート
-            //ゲームログ更新
-            UpdateGameLog();
+            _isDebugActionRunning = true;
 
-            // ゲーム開始処理
-            _gameManager.StartGame();
+            try
+            {
 
-            //画面再取得
-            UpdateDisplay();
+                //ゲームリセット
+                ResetGameToBeforeStart();
 
-            //即勝利判定へ
-            _gameManager.PlayerWin();
-            await ShowPlayerWinResult();
-            ShowResultActionButtons();
+                //通常ゲームスタート
+                //ゲームログ更新
+                UpdateGameLog();
+
+                // ゲーム開始処理
+                _gameManager.StartGame();
+                _gameManager.PlayerWin();
+
+                //画面再取得
+                UpdatePlayersHand();
+                UpdateFlpDiscardPile();
+                UpdateTurnGuide();
+                UpdateButtons();
+
+                //即勝利判定へ
+                await ShowPlayerWinResult();
+                ShowResultActionButtons();
+
+            }
+            finally
+            {
+                _isDebugActionRunning = false;
+            }
 
         }
 
         //デバック画面敗北時演出確認メソッド
         private async void ShowDebugLoseResult()
         {
-            ResetGameToBeforeStart();
+
+            //デバック画面ボタン連打防止
+            if (_isDebugActionRunning)
+            {
+                return;
+            }
+
+            _isDebugActionRunning = true;
+
+            try
+            {
+                //ゲームリセット
+                ResetGameToBeforeStart();
 
             //通常ゲームスタート
             //ゲームログ更新
@@ -1128,14 +1205,23 @@ namespace CardGames
 
             // ゲーム開始処理
             _gameManager.StartGame();
+            _gameManager.PlayerLose();
 
             //画面再取得
-            UpdateDisplay();
+            UpdatePlayersHand();
+            UpdateFlpDiscardPile();
+            UpdateTurnGuide();
+            UpdateButtons();
 
             //即敗北判定へ
-            _gameManager.PlayerLose();
             await ShowPlayerLoseResult();
             ShowResultActionButtons();
+
+            }
+            finally
+            {
+                _isDebugActionRunning = false;
+            }
         }
     }
 }

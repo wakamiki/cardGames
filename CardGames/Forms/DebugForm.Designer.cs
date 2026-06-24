@@ -38,6 +38,7 @@
             this.resetGroupBox = new System.Windows.Forms.GroupBox();
             this.btnReset = new System.Windows.Forms.Button();
             this.resetLabel = new System.Windows.Forms.Label();
+            this.Caution = new System.Windows.Forms.Label();
             this.winGroupBox.SuspendLayout();
             this.loseGroupBox.SuspendLayout();
             this.resetGroupBox.SuspendLayout();
@@ -120,7 +121,7 @@
             // 
             this.resetGroupBox.Controls.Add(this.btnReset);
             this.resetGroupBox.Controls.Add(this.resetLabel);
-            this.resetGroupBox.Location = new System.Drawing.Point(43, 12);
+            this.resetGroupBox.Location = new System.Drawing.Point(43, 78);
             this.resetGroupBox.Name = "resetGroupBox";
             this.resetGroupBox.Size = new System.Drawing.Size(215, 133);
             this.resetGroupBox.TabIndex = 2;
@@ -147,12 +148,23 @@
             this.resetLabel.TabIndex = 1;
             this.resetLabel.Text = "ゲームリセット";
             // 
+            // Caution
+            // 
+            this.Caution.AutoSize = true;
+            this.Caution.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.Caution.Location = new System.Drawing.Point(39, 24);
+            this.Caution.Name = "Caution";
+            this.Caution.Size = new System.Drawing.Size(492, 23);
+            this.Caution.TabIndex = 2;
+            this.Caution.Text = "デバッグ画面表示中はGameFomrは操作できません。";
+            // 
             // DebugForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ButtonShadow;
             this.ClientSize = new System.Drawing.Size(650, 421);
+            this.Controls.Add(this.Caution);
             this.Controls.Add(this.loseGroupBox);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.resetGroupBox);
@@ -166,6 +178,7 @@
             this.resetGroupBox.ResumeLayout(false);
             this.resetGroupBox.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -181,5 +194,6 @@
         private System.Windows.Forms.GroupBox resetGroupBox;
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Label resetLabel;
+        private System.Windows.Forms.Label Caution;
     }
 }
