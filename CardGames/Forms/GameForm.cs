@@ -163,6 +163,12 @@ namespace CardGames
 
             //勝敗画面を最前面に設定
             pictureBox_Result.BringToFront();
+
+            //チュートリアル画像の設定
+            this.Controls.Add(tutorialView);
+            tutorialView.Parent = this;
+            tutorialView.Location = new Point(0, 0);
+            tutorialView.BringToFront();
         }
 
         //進行ボタンクリックイベント
@@ -307,6 +313,25 @@ namespace CardGames
 
             //現在のFormを閉じる
             this.Close();
+        }
+
+
+        //======================================
+        //チュートリアル画面表示メソッド
+        //======================================
+
+        //チュートリアル画面表示
+        private void btnTutorial_Click(object sender, EventArgs e)
+        {
+            tutorialView.Image = Properties.Resources._11_tutorial;
+            tutorialView.Visible = true;
+            tutorialView.BringToFront();
+        }
+
+        //チュートリアル画面を閉じる
+        private void tutorialView_Click(object sender, EventArgs e)
+        {
+            tutorialView.Visible = false;
         }
 
         //======================================

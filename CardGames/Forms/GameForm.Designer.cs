@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameForm));
             this.DateOfCUP1 = new System.Windows.Forms.Label();
             this.DateOfCUP2 = new System.Windows.Forms.Label();
             this.DateOfCUP3 = new System.Windows.Forms.Label();
@@ -44,8 +45,11 @@
             this.lblResults = new System.Windows.Forms.Label();
             this.Operation = new System.Windows.Forms.Label();
             this.Logs = new System.Windows.Forms.Label();
+            this.btnTutorial = new System.Windows.Forms.Button();
+            this.tutorialView = new System.Windows.Forms.PictureBox();
             this.flpCpu1Hand.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tutorialView)).BeginInit();
             this.SuspendLayout();
             // 
             // DateOfCUP1
@@ -232,11 +236,38 @@
             this.Logs.TabIndex = 19;
             this.Logs.Text = "操作ログ";
             // 
+            // btnTutorial
+            // 
+            this.btnTutorial.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnTutorial.BackgroundImage")));
+            this.btnTutorial.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.btnTutorial.Location = new System.Drawing.Point(824, 610);
+            this.btnTutorial.Name = "btnTutorial";
+            this.btnTutorial.Size = new System.Drawing.Size(140, 74);
+            this.btnTutorial.TabIndex = 20;
+            this.btnTutorial.UseVisualStyleBackColor = true;
+            this.btnTutorial.Click += new System.EventHandler(this.btnTutorial_Click);
+            // 
+            // tutorialView
+            // 
+            this.tutorialView.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.tutorialView.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.tutorialView.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.tutorialView.Image = ((System.Drawing.Image)(resources.GetObject("tutorialView.Image")));
+            this.tutorialView.Location = new System.Drawing.Point(-4, -5);
+            this.tutorialView.Name = "tutorialView";
+            this.tutorialView.Size = new System.Drawing.Size(985, 712);
+            this.tutorialView.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.tutorialView.TabIndex = 21;
+            this.tutorialView.TabStop = false;
+            this.tutorialView.Visible = false;
+            this.tutorialView.Click += new System.EventHandler(this.tutorialView_Click);
+            // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(976, 696);
+            this.Controls.Add(this.btnTutorial);
             this.Controls.Add(this.Logs);
             this.Controls.Add(this.Operation);
             this.Controls.Add(this.lblResults);
@@ -252,6 +283,7 @@
             this.Controls.Add(this.DateOfCUP3);
             this.Controls.Add(this.DateOfCUP2);
             this.Controls.Add(this.DateOfCUP1);
+            this.Controls.Add(this.tutorialView);
             this.KeyPreview = true;
             this.Name = "GameForm";
             this.Text = "ゲーム画面";
@@ -260,6 +292,7 @@
             this.Click += new System.EventHandler(this.Operation_Click);
             this.flpCpu1Hand.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Result)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tutorialView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -283,5 +316,7 @@
         private System.Windows.Forms.PictureBox pictureBox_Result;
         private System.Windows.Forms.Label Operation;
         private System.Windows.Forms.Label Logs;
+        private System.Windows.Forms.Button btnTutorial;
+        private System.Windows.Forms.PictureBox tutorialView;
     }
 }
