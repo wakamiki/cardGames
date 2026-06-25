@@ -614,6 +614,7 @@ namespace CardGames
                     pictureBox.Height = CardHeight;
                     pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
 
+
                     //CPUとプレイヤーの判定
                     if (!player.IsCpu)
                     {
@@ -630,6 +631,11 @@ namespace CardGames
                     //フローレイアウトパネルとプレイヤーの辞書を見て対象のプレイヤーのパネルにカードを追加
                     _playerHandPanels[player].Controls.Add(pictureBox);
 
+                    //山札を右スクロール
+                    if (flpPlayerHand.Controls.Count > 0)
+                    {
+                        flpPlayerHand.ScrollControlIntoView(flpPlayerHand.Controls[flpPlayerHand.Controls.Count - 1]);
+                    }
                 }
             }
         }
@@ -989,6 +995,13 @@ namespace CardGames
                 pictureBox.Height = CardHeight;
                 pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
                 flpThrown.Controls.Add(pictureBox);
+
+            }
+
+            //山札を右スクロール
+            if (flpThrown.Controls.Count > 0)
+            {
+                flpThrown.ScrollControlIntoView(flpThrown.Controls[flpThrown.Controls.Count - 1]);
             }
         }
 
@@ -1021,7 +1034,7 @@ namespace CardGames
         }
 
         // =================================================================
-        // #48_GameForm敗北時画面演出 // 20260611 工藤 
+        // #48_GameForm敗北時画面演出
         // =================================================================
         internal async Task ShowPlayerLoseResult()
         {
@@ -1123,6 +1136,9 @@ namespace CardGames
         //ゲームリセットメソッド
         private void ResetGameToBeforeStart()
         {
+            //デバッグによる勝敗結果をGame画面に反映しないよう掃除 ゲームマネージャーのフェーズを「開始前」に修正
+            _gameManager.SetBeforeStart();
+
 
             // 操作ガイドの文字送りが動いていたら止める
             if (_cts != null)
@@ -1162,6 +1178,10 @@ namespace CardGames
             // ボタンを初期状態に戻す
             btnMainAction.Enabled = true;
             btnMainAction.Text = "かいし";
+
+            //デバッグによる勝敗結果をGame画面に反映しないよう掃除 戦績表示を本来の数に描き直す
+            lblResults.Text = $"{_playerName}さんの戦績：{_gameSession.PlayerResult[0]}勝 {_gameSession.PlayerResult[1]}敗";
+
         }
 
         //デバック画面勝利時演出確認メソッド
@@ -1198,6 +1218,9 @@ namespace CardGames
                 //即勝利判定へ
                 await ShowPlayerWinResult();
                 ShowResultActionButtons();
+
+                //デバッグによる勝敗結果をGame画面に反映しないよう掃除 ボタンを「かいし」に強制リセット
+                ResetGameToBeforeStart();
 
             }
             finally
@@ -1241,6 +1264,9 @@ namespace CardGames
             //即敗北判定へ
             await ShowPlayerLoseResult();
             ShowResultActionButtons();
+
+             //デバッグによる勝敗結果をGame画面に反映しないよう掃除 ボタンを「かいし」に強制リセット
+             ResetGameToBeforeStart();
 
             }
             finally
